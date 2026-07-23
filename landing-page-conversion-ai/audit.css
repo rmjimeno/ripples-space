@@ -28,8 +28,7 @@
   border: 1px solid rgba(233, 196, 138, 0.34);
   box-shadow: 0 10px 30px -16px rgba(0,0,0,.55), inset 0 0 0 1px rgba(254,237,201,.04);
 }
-.price-tag__now { font-family: var(--serif); font-size: 1.75rem; font-weight: 600; line-height: 1; color: var(--cream); letter-spacing: -0.01em; }
-.price-tag__was { font-size: 1rem; line-height: 1; color: var(--taupe-dim); text-decoration-thickness: 1.5px; }
+.price-tag__was { font-size: 1.05rem; line-height: 1; color: var(--taupe-dim); text-decoration-thickness: 1.5px; }
 .price-tag__off {
   font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; line-height: 1;
   color: var(--oxblood-dark); background: var(--gold);
