@@ -3,28 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ripples Space · AI Automation for Changemakers, Coaches & Course Creators</title>
-  <meta name="description" content="Behind-the-scenes automations that handle the busywork (the follow-ups, the onboarding, the admin) so coaches, course creators, and changemakers get their time back for the work only they can do." />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>Ripples Space · Launching soon</title>
+  <meta name="description" content="Digital experiences that drive business growth. Combining brand strategy, web design, and AI-powered automation to create seamless customer journeys that build trust, drive conversions, and foster loyalty. Join the waitlist." />
 
   <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* ============ WAITLIST / COMING SOON (page-specific) ============ */
+    .wait { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 96px 0 120px; overflow: hidden; background: var(--oxblood); }
+    .wait__inner { position: relative; z-index: 2; width: 100%; max-width: 700px; margin: 0 auto; padding: 0 clamp(22px, 6vw, 40px); text-align: center; }
+
+    .wait__mark { display: inline-flex; color: var(--gold); margin-bottom: 30px; }
+    .wait__mark svg { width: 72px; height: 72px; overflow: visible; }
+    .wait__mark svg circle { stroke-width: 8; }
+    .wait__mark .ripple-ring { display: none; }
+    .wait__mark .ripples-orbit { transform-box: view-box; transform-origin: 129px 129px; animation: brandOrbit 22s linear infinite; }
+
+    .wait__badge { display: inline-flex; align-items: center; gap: 9px; font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 26px; }
+    .wait__badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 0 rgba(233,196,138,.55); animation: waitPulse 2.4s var(--ease) infinite; }
+    @keyframes waitPulse { 0% { box-shadow: 0 0 0 0 rgba(233,196,138,.5); } 70% { box-shadow: 0 0 0 9px rgba(233,196,138,0); } 100% { box-shadow: 0 0 0 0 rgba(233,196,138,0); } }
+
+    .wait__title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.9rem, 4.4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; color: var(--cream); margin-bottom: 24px; text-wrap: balance; }
+    .wait__title em { font-style: italic; color: var(--gold); }
+
+    .wait__sub { font-size: clamp(1.02rem, 1.6vw, 1.22rem); line-height: 1.6; color: var(--taupe); max-width: 52ch; margin: 0 auto 40px; }
+
+    /* form */
+    .wait-form { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; }
+    .wait-form__field { flex: 1; position: relative; }
+    .wait-form input[type="email"] {
+      width: 100%; height: 54px; padding: 0 20px; border-radius: 11px;
+      background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.20);
+      color: var(--cream); font-family: var(--sans); font-size: 15.5px;
+      transition: border-color .3s ease, background .3s ease, box-shadow .3s ease;
+    }
+    .wait-form input[type="email"]::placeholder { color: var(--taupe-dim); }
+    .wait-form input[type="email"]:focus { outline: none; border-color: var(--gold); background: rgba(254, 237, 201, 0.10); box-shadow: 0 0 0 4px rgba(233,196,138,.12); }
+    .wait-form input[type="email"].is-invalid { border-color: #d9805e; box-shadow: 0 0 0 4px rgba(217,128,94,.14); }
+    .wait-form .btn { height: 54px; white-space: nowrap; flex: none; }
+
+    .wait__note { margin-top: 18px; font-size: 13px; letter-spacing: .03em; color: var(--taupe-dim); }
+    .wait__error { margin-top: 12px; min-height: 18px; font-size: 13.5px; color: #f0a988; opacity: 0; transition: opacity .3s ease; }
+    .wait__error.show { opacity: 1; }
+
+    /* success state */
+    .wait-success { display: none; max-width: 500px; margin: 0 auto; padding: 26px 28px; border-radius: 14px; background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.18); }
+    .wait-success.show { display: block; }
+    .wait-success__ic { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 14px; display: grid; place-items: center; background: var(--gold); color: var(--oxblood-dark); font-size: 20px; }
+    .wait-success h2 { font-family: var(--serif); font-weight: 500; font-size: 1.7rem; color: var(--cream); margin-bottom: 8px; }
+    .wait-success p { font-size: 15px; color: var(--taupe); }
+
+    .wait__foot { position: absolute; left: 0; right: 0; bottom: 26px; z-index: 2; text-align: center; font-size: 12.5px; letter-spacing: .04em; color: var(--taupe-dim); }
+
+    @media (max-width: 560px) {
+      .wait-form { flex-direction: column; }
+      .wait-form .btn { width: 100%; }
+    }
+  </style>
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
+  <a class="skip-link" href="#top">Skip to content</a>
 
-  <!-- ============ NAV ============ -->
+  <!-- Minimal nav: brand only (also lets shared main.js run cleanly) -->
   <header class="nav" id="nav">
     <div class="nav__inner">
       <a class="brand" href="#top" aria-label="Ripples Space home">
         <span class="brand__mark" aria-hidden="true">
           <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
             <g class="rl-static">
-              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#rg1)"/>
-              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#rg2)"/>
-              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#rg3)"/>
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#ng1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#ng2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#ng3)"/>
             </g>
             <g class="ripples-orbit">
               <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
@@ -39,420 +89,102 @@
               <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
             </g>
             <defs>
-              <linearGradient id="rg1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-              <linearGradient id="rg2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-              <linearGradient id="rg3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
             </defs>
           </svg>
         </span>
         <span class="brand__word">Ripples&nbsp;Space</span>
       </a>
-      <nav class="nav__links" aria-label="Primary">
-        <a href="#problem">The problem</a>
-        <a href="#work">What I automate</a>
-        <a href="#process">How it works</a>
-        <a href="#faq">FAQ</a>
-      </nav>
-      <a href="#book" class="btn btn--cream nav__cta">Book a call</a>
     </div>
   </header>
 
-  <main id="top">
-
-    <!-- ============ HERO (red) ============ -->
-    <section class="hero" id="hero">
-      <canvas class="hero__canvas" id="ripple-canvas" aria-hidden="true"></canvas>
+  <!-- ============ WAITLIST HERO ============ -->
+  <main id="top" tabindex="-1">
+    <section class="hero wait" id="hero">
+      <canvas class="hero__canvas" id="ripple-canvas" data-intensity="0.8" aria-hidden="true"></canvas>
       <div class="hero__veil" aria-hidden="true"></div>
 
-      <div class="hero__inner">
-        <div class="hero__copy">
-          <p class="eyebrow reveal">Digital Growth Systems for Changemakers, Coaches &amp; Course Creators</p>
-          <h1 class="hero__title reveal">
-            You didn't build your business<br/>to spend your days<br/><em>copy&#8209;pasting.</em>
-          </h1>
-          <p class="hero__sub reveal">
-            You built it to coach, to teach, to change things. I set up the behind-the-scenes
-            automations that handle your busywork: the follow-ups, the onboarding, the
-            "did that student ever get their login?" So your hours go back to the people you're here to serve.
-          </p>
-          <div class="hero__actions reveal">
-            <a href="#book" class="btn btn--cream btn--lg magnetic">Book a call</a>
-            <a href="#work" class="btn btn--ghost btn--lg">See what I automate</a>
-          </div>
-          <p class="hero__trust reveal">Real systems, built to protect your time instead of filling it.</p>
-        </div>
+      <div class="wait__inner">
+        <span class="wait__badge reveal"><i></i> Launching soon</span>
 
-        <div class="hero__stage reveal" aria-hidden="true">
-          <div class="panel dash" id="dash">
-            <div class="dash__bar">
-              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              <span class="dash__title">ripples · your system</span>
-              <span class="dash__live"><i></i>live</span>
-            </div>
-            <div class="dash__body">
-              <div class="stat">
-                <span class="stat__label">Hours saved / week</span>
-                <span class="stat__num" data-count="11">0</span>
-              </div>
-              <div class="dash__chart">
-                <svg viewBox="0 0 300 90" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stop-color="#e9c48a" stop-opacity="0.35"/>
-                      <stop offset="1" stop-color="#e9c48a" stop-opacity="0"/>
-                    </linearGradient>
-                  </defs>
-                  <path id="chart-area" d="M0,70 L40,62 L80,66 L120,48 L160,52 L200,34 L240,30 L300,16 L300,90 L0,90 Z" fill="url(#area)"/>
-                  <path id="chart-line" d="M0,70 L40,62 L80,66 L120,48 L160,52 L200,34 L240,30 L300,16" fill="none" stroke="#a2472f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <div class="dash__feed" id="feed">
-                <div class="feed__row"><span class="tick">✓</span><span>New inquiry → replied &amp; nurtured</span><time>now</time></div>
-                <div class="feed__row"><span class="tick">✓</span><span>Discovery call booked</span><time>2m</time></div>
-                <div class="feed__row"><span class="tick">✓</span><span>New student → course access granted</span><time>18m</time></div>
-              </div>
-            </div>
-          </div>
+        <h1 class="wait__title reveal">Digital Experiences That <em>Drive Business Growth</em></h1>
 
-          <div class="float-card fc1">
-            <span class="fc__icon">✦</span>
-            <div><strong>New inquiry</strong><small>replied in 30s</small></div>
-          </div>
-          <div class="float-card fc2">
-            <span class="fc__icon">✓</span>
-            <div><strong>Call booked</strong><small>added to your calendar</small></div>
-          </div>
-        </div>
-      </div>
-
-      <a href="#problem" class="scroll-cue reveal" aria-label="Scroll to next section">
-        <i></i>
-      </a>
-    </section>
-
-    <!-- ============ THE REAL PROBLEM (light) ============ -->
-    <section class="section" id="problem">
-      <div class="wrap wrap--narrow">
-        <p class="eyebrow reveal">The real problem</p>
-        <h2 class="section__title reveal">You've already tried <em>fixing it yourself.</em></h2>
-
-        <ul class="tried">
-          <li class="reveal">Bought the all-in-one platform.</li>
-          <li class="reveal">Watched hours of setup tutorials.</li>
-          <li class="reveal">Hired a VA to paste things faster.</li>
-          <li class="reveal">Wired up a few Zapier zaps.</li>
-          <li class="reveal">Started a Notion system you never kept up.</li>
-          <li class="reveal">Followed "automation hacks" from a reel.</li>
-        </ul>
-
-        <p class="tried__after reveal">And you're <em>still</em> the one holding it all together.</p>
-        <div class="prose">
-          <p class="reveal">Here's what's actually going on: there was never one big mistake to fix. It comes down to a dozen small handoffs that never got built, so every inquiry, every enrollment, every follow-up still routes through <em>you</em>.</p>
-          <p class="reveal">Add another tool and you've just got one more thing to babysit. The answer lives in the wiring between the tools you already own, not in another subscription.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ WHAT IT'S COSTING (light-alt) ============ -->
-    <section class="section sec--alt" id="cost">
-      <div class="wrap wrap--narrow">
-        <p class="eyebrow reveal">Sound familiar?</p>
-        <h2 class="section__title reveal">The busywork is costing you<br/>more than you think.</h2>
-
-        <ul class="symptoms">
-          <li class="reveal"><span aria-hidden="true">·</span> Leads and inquiries go cold because follow-up waits on you.</li>
-          <li class="reveal"><span aria-hidden="true">·</span> New students email asking where on earth their login is.</li>
-          <li class="reveal"><span aria-hidden="true">·</span> Every launch is the same manual scramble, rebuilt from scratch.</li>
-          <li class="reveal"><span aria-hidden="true">·</span> You're answering the same five DMs you answered last week.</li>
-          <li class="reveal"><span aria-hidden="true">·</span> You're doing admin at 11pm instead of resting or creating.</li>
-          <li class="reveal"><span aria-hidden="true">·</span> Growing your impact just means <em>more</em> landing on your plate.</li>
-        </ul>
-
-        <p class="closer reveal">None of this makes you behind. You've simply outgrown running the whole thing from <em>your own two hands.</em></p>
-      </div>
-    </section>
-
-    <!-- ============ WHAT I AUTOMATE + FLOW (red — emphasis) ============ -->
-    <section class="section sec--red" id="work">
-      <div class="wrap">
-        <div class="work__grid">
-          <div class="work__copy">
-            <p class="eyebrow reveal">What I do</p>
-            <h2 class="section__title reveal">I build you one system that runs the busywork on its own.</h2>
-            <p class="lede reveal">
-              We map the repetitive work eating your week, then I build it out for you:
-              usually on GoHighLevel, sometimes as a custom app when your business needs its own.
-              Either way you get one system that runs reliably and sounds like you, without you holding it together.
-            </p>
-            <ul class="automations reveal">
-              <li>Inquiry → instant reply → booked discovery call</li>
-              <li>Student &amp; client onboarding that runs itself</li>
-              <li>Course access, reminders &amp; check-ins on autopilot</li>
-              <li>A CRM that stays organized without you</li>
-              <li>Launch sequences that fire right on schedule</li>
-              <li>Weekly numbers in your inbox, already pulled together</li>
-            </ul>
-          </div>
-
-          <div class="work__stage reveal" aria-hidden="true">
-            <div class="panel flow" id="flow">
-              <div class="flow__head">Automation in motion</div>
-              <div class="flow__diagram">
-                <svg class="flow__wires" viewBox="0 0 120 320" preserveAspectRatio="none">
-                  <path class="wire" d="M60,44 L60,96"/>
-                  <path class="wire" d="M60,140 L60,192"/>
-                  <path class="wire" d="M60,236 L60,288"/>
-                  <circle class="pulse" r="4" cx="60" cy="44"/>
-                </svg>
-                <div class="node" data-node="0">
-                  <span class="node__ic">◆</span>
-                  <div class="node__tx"><strong>Trigger</strong><small>New inquiry lands</small></div>
-                </div>
-                <div class="node" data-node="1">
-                  <span class="node__ic">◷</span>
-                  <div class="node__tx"><strong>Tag &amp; route</strong><small>Sorted in your CRM</small></div>
-                </div>
-                <div class="node" data-node="2">
-                  <span class="node__ic">✉</span>
-                  <div class="node__tx"><strong>Warm follow-up</strong><small>Personal, on-brand, instant</small></div>
-                </div>
-                <div class="node" data-node="3">
-                  <span class="node__ic">✓</span>
-                  <div class="node__tx"><strong>Call booked</strong><small>Discovery call on your calendar</small></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ WHAT CHANGES / PILLARS (light) ============ -->
-    <section class="section">
-      <div class="wrap">
-        <div class="head--narrow">
-          <p class="eyebrow reveal">What changes</p>
-          <h2 class="section__title reveal">You stop being the bottleneck.</h2>
-        </div>
-        <div class="pillars">
-          <article class="pillar reveal">
-            <span class="pillar__num">01</span>
-            <h3>You get your time back</h3>
-            <p>Hours of repeat work handled for you, every day, without you touching it.</p>
-          </article>
-          <article class="pillar reveal">
-            <span class="pillar__num">02</span>
-            <h3>Nothing slips through the cracks</h3>
-            <p>Every inquiry answered, every student onboarded the same way, even mid-launch.</p>
-          </article>
-          <article class="pillar reveal">
-            <span class="pillar__num">03</span>
-            <h3>It runs without you</h3>
-            <p>Your business keeps serving people while you rest, create, or step away entirely.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ YOUR WEEK / TASKS (light-alt) ============ -->
-    <section class="section sec--alt">
-      <div class="wrap wrap--narrow">
-        <p class="eyebrow reveal">Your week, automated</p>
-        <h2 class="section__title reveal">Watch the busywork handle itself.</h2>
-        <p class="lede reveal">The same to-do list you've been carrying, cleared one item at a time.</p>
-        <div class="tasks panel reveal" id="tasks" aria-hidden="true">
-          <div class="task"><span class="cb"></span><span class="task__t">Reply to yesterday's inquiries</span><span class="task__by">by ripples</span></div>
-          <div class="task"><span class="cb"></span><span class="task__t">Follow up with the leads who ghosted</span><span class="task__by">by ripples</span></div>
-          <div class="task"><span class="cb"></span><span class="task__t">Send the welcome pack to the new student</span><span class="task__by">by ripples</span></div>
-          <div class="task"><span class="cb"></span><span class="task__t">Chase the unpaid invoice (again)</span><span class="task__by">by ripples</span></div>
-          <div class="task"><span class="cb"></span><span class="task__t">Update the CRM after this week's calls</span><span class="task__by">by ripples</span></div>
-          <div class="task"><span class="cb"></span><span class="task__t">Pull together the launch numbers</span><span class="task__by">by ripples</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ PROCESS (light) ============ -->
-    <section class="section" id="process">
-      <div class="wrap process__grid">
-        <div class="process__head">
-          <p class="eyebrow reveal">How it works</p>
-          <h2 class="section__title reveal">A simple, four-step way to get your time back.</h2>
-          <p class="process__note reveal">Four steps, one goal: your business running without you stuck in the middle of it.</p>
-        </div>
-
-        <div class="timeline" id="timeline">
-          <span class="timeline__line" aria-hidden="true"><span class="timeline__fill"></span></span>
-          <ol class="timeline__steps">
-            <li class="tstep reveal">
-              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">1</span></span>
-              <div class="tstep__card">
-                <span class="tstep__eyebrow">Step one</span>
-                <h3>Start with a systems call</h3>
-                <p>We look at where your hours actually go and find the busywork worth automating first. It's free, and you'll walk away with clarity either way.</p>
-              </div>
-            </li>
-            <li class="tstep reveal">
-              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">2</span></span>
-              <div class="tstep__card">
-                <span class="tstep__eyebrow">Step two</span>
-                <h3>I map your ripple system</h3>
-                <p>A clear plan of what to automate, in what order, and the hours each piece hands back. No jargon, so you'll follow every step.</p>
-              </div>
-            </li>
-            <li class="tstep reveal">
-              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">3</span></span>
-              <div class="tstep__card">
-                <span class="tstep__eyebrow">Step three</span>
-                <h3>I build it for you</h3>
-                <p>Automations set up, tested, and documented so they just work, while you keep coaching, teaching, and creating.</p>
-              </div>
-            </li>
-            <li class="tstep reveal">
-              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">4</span></span>
-              <div class="tstep__card">
-                <span class="tstep__eyebrow">Step four</span>
-                <h3>You get your time back</h3>
-                <p>A plain-English walkthrough so you know exactly how it runs. Then it keeps running for you. That's the whole point.</p>
-              </div>
-            </li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ============ FIT (light-alt) ============ -->
-    <section class="section sec--alt">
-      <div class="wrap wrap--narrow">
-        <p class="eyebrow reveal">Will this fit?</p>
-        <h2 class="section__title reveal">Let's talk about fit.</h2>
-        <div class="fit__grid">
-          <div class="fit__col fit__col--yes reveal">
-            <h3>This is built for you if</h3>
-            <ul>
-              <li>You're looking for a collaborative partner, not just a pair of hands.</li>
-              <li>You're a coach, creator, or changemaker who'd rather buy back time than grind harder.</li>
-              <li>You're not techie, and you have zero interest in becoming techie.</li>
-              <li>You're open to changing how you work, not just stacking on another app.</li>
-              <li>You want growth that feels sustainable, not frantic.</li>
-            </ul>
-          </div>
-          <div class="fit__col fit__col--no reveal">
-            <h3>This probably isn't for you if</h3>
-            <ul>
-              <li>You want someone who just follows instructions, not a partner who thinks with you.</li>
-              <li>You're not ready to delegate, and you'd rather micromanage every detail.</li>
-              <li>You want a quick hack, not a system you can rely on.</li>
-              <li>You're chasing growth-at-any-cost tactics and pressure funnels.</li>
-              <li>You want it all built and running by tomorrow morning.</li>
-            </ul>
-          </div>
-        </div>
-
-        <p class="agenda reveal">
-          <em>It all starts with a call.</em> We'll talk through your business, I'll ask about how you
-          actually work, and together we'll map out your process, for free. No pressure and no obligation:
-          if it's a fit, we build it, and if not, you'll still leave with a much clearer picture of your systems.
+        <p class="wait__sub reveal">
+          Combining brand strategy, web design, and AI-powered automation to create
+          seamless customer journeys that build trust, drive conversions, and foster loyalty.
         </p>
 
-        <div class="fit__cta reveal">
-          <a href="#book" class="btn btn--ink btn--lg magnetic">Book your automation strategy call</a>
+        <!-- Waitlist form. Wire the action/endpoint to your GHL form or email list. -->
+        <form class="wait-form reveal" id="waitlist-form" novalidate>
+          <div class="wait-form__field">
+            <label for="wait-email" class="sr-only">Email address</label>
+            <input type="email" id="wait-email" name="email" placeholder="you@example.com" autocomplete="email" required aria-describedby="wait-note wait-error" />
+          </div>
+          <button type="submit" class="btn btn--cream btn--lg magnetic">Join the waitlist</button>
+        </form>
+        <p class="wait__error reveal" id="wait-error" role="alert" aria-live="assertive"></p>
+        <p class="wait__note reveal" id="wait-note">Be the first to know when we launch. No spam, ever.</p>
+
+        <!-- Success state (revealed after submit) -->
+        <div class="wait-success" id="wait-success" role="status" aria-live="polite">
+          <div class="wait-success__ic" aria-hidden="true">✓</div>
+          <h2>You're on the list.</h2>
+          <p>Thank you — we'll be in touch the moment Ripples Space opens its doors.</p>
         </div>
       </div>
-    </section>
 
-    <!-- ============ FAQ (light) ============ -->
-    <section class="section" id="faq">
-      <div class="wrap wrap--narrow">
-        <p class="eyebrow reveal">A few straight answers</p>
-        <h2 class="section__title reveal">Questions you're probably asking.</h2>
-
-        <div class="accordion">
-          <details class="qa reveal">
-            <summary>I'm not techie at all. Is this really for me?<span class="qa__x"></span></summary>
-            <div class="qa__a"><p>That's exactly who I build for. You never touch the wiring. I do. You get plain-English explanations and a system that simply runs. Being non-techie is a reason to do this, not a reason to avoid it.</p></div>
-          </details>
-          <details class="qa reveal">
-            <summary>What tools do you work with?<span class="qa__x"></span></summary>
-            <div class="qa__a"><p>GoHighLevel is my home base, so most systems I build live there. When your business needs something of its own, I build a custom app instead. Either way you get one system made to fit how you actually work, not a pile of tools you have to manage.</p></div>
-          </details>
-          <details class="qa reveal">
-            <summary>Will automation make my coaching feel impersonal?<span class="qa__x"></span></summary>
-            <div class="qa__a"><p>The opposite. Done well, automation handles the mechanical parts so you have <em>more</em> room to show up for your people where it counts. Every message still goes out in your voice, on your terms, with no fake urgency or pressure tricks.</p></div>
-          </details>
-          <details class="qa reveal">
-            <summary>How long does setup take?<span class="qa__x"></span></summary>
-            <div class="qa__a"><p>Most systems are mapped in days and live within 2 to 3 weeks, depending on scope. We build the highest-impact busywork first, so you feel the time savings early rather than waiting for everything at once.</p></div>
-          </details>
-          <details class="qa reveal">
-            <summary>What does it cost?<span class="qa__x"></span></summary>
-            <div class="qa__a"><p>It depends on what we're building, but projects usually start around $2,000. We'll pin down exact numbers on the call, once I understand what your system actually needs.</p></div>
-          </details>
-          <details class="qa reveal">
-            <summary>What if something breaks later?<span class="qa__x"></span></summary>
-            <div class="qa__a"><p>After every build I offer a free 14-day support window, so if any bugs turn up I fix them at no extra cost. Everything is documented and tested too, and I don't disappear after handoff, so I'm reachable when your business grows and the system needs to grow with it.</p></div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ FINAL CTA (red — emphasis) ============ -->
-    <section class="section sec--red cta" id="book">
-      <canvas class="cta__canvas" id="ripple-canvas-2" aria-hidden="true"></canvas>
-      <div class="wrap wrap--narrow cta__inner">
-        <p class="eyebrow center reveal">Ready when you are</p>
-        <h2 class="cta__title reveal">Let's get your time back.</h2>
-        <p class="cta__sub reveal">
-          Book a free systems call. We'll find the busywork worth automating first,
-          and you'll leave with a clear next step, whether or not we build together.
-        </p>
-        <div class="cta__actions reveal">
-          <a href="#" class="btn btn--cream btn--lg magnetic" id="book-btn">Book an automation strategy call</a>
-        </div>
-        <p class="cta__note reveal">No pressure, ever. Just a clear next step.</p>
-      </div>
+      <p class="wait__foot">© 2026 Ripples Space. Creating ripples of impact.</p>
     </section>
   </main>
-
-  <!-- ============ FOOTER ============ -->
-  <footer class="footer">
-    <div class="wrap footer__inner">
-      <div class="footer__brand">
-        <span class="brand__mark" aria-hidden="true">
-          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
-            <g class="rl-static">
-              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#rg1f)"/>
-              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#rg2f)"/>
-              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#rg3f)"/>
-            </g>
-            <g class="ripples-orbit">
-              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
-              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
-              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
-              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
-            </g>
-            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
-            <g fill="none" stroke="currentColor">
-              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
-              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
-              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
-            </g>
-            <defs>
-              <linearGradient id="rg1f" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-              <linearGradient id="rg2f" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-              <linearGradient id="rg3f" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-            </defs>
-          </svg>
-        </span>
-        <span class="brand__word">Ripples Space</span>
-      </div>
-      <p class="footer__copy">© 2026 Ripples Space. Creating ripples of impact.</p>
-    </div>
-  </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="main.js"></script>
+
+  <!-- Waitlist form handling -->
+  <script>
+    (function () {
+      var form = document.getElementById("waitlist-form");
+      if (!form) return;
+      var input = document.getElementById("wait-email");
+      var errorEl = document.getElementById("wait-error");
+      var success = document.getElementById("wait-success");
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.classList.add("show");
+        input.classList.add("is-invalid");
+      }
+      function clearError() {
+        errorEl.textContent = "";
+        errorEl.classList.remove("show");
+        input.classList.remove("is-invalid");
+      }
+      input.addEventListener("input", clearError);
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var value = input.value.trim();
+        if (!value) { showError("Please enter your email address."); input.focus(); return; }
+        if (!EMAIL_RE.test(value)) { showError("That email doesn't look quite right — mind checking it?"); input.focus(); return; }
+        clearError();
+
+        // TODO: send `value` to your real waitlist endpoint (GHL form, Mailchimp, etc.).
+        // e.g. fetch("https://your-endpoint", { method: "POST", body: JSON.stringify({ email: value }) })
+        // For now we confirm visually.
+        form.style.display = "none";
+        var note = document.querySelector(".wait__note");
+        if (note) note.style.display = "none";
+        success.classList.add("show");
+        if (window.gsap) {
+          gsap.fromTo(success, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" });
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

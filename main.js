@@ -5,9 +5,20 @@
 (function () {
   "use strict";
 
-  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motionMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function readMotionPref() {
+    try { return localStorage.getItem("ripples-motion"); } catch (e) { return null; }
+  }
+  // A stored user choice ("reduce" | "full") wins; otherwise follow the OS setting.
+  const motionPref = readMotionPref();
+  const REDUCED = motionPref ? motionPref === "reduce" : motionMQ.matches;
+  document.documentElement.classList.toggle("motion-reduced", REDUCED);
+
   const hasGSAP = typeof gsap !== "undefined";
   const hasTHREE = typeof THREE !== "undefined";
+
+  // Infinite/decorative GSAP loops, collected so they can be paused on demand.
+  const infiniteTweens = [];
 
   /* -------------------------------------------------------
      1 · THREE.JS RIPPLE FIELD (hero + cta backgrounds)
@@ -33,11 +44,11 @@
       float t = u_time;
 
       float h = 0.0;
-      h += ripple(p, vec2(0.22 * ar, 0.72), t,        1.5, 24.0);
-      h += ripple(p, vec2(0.82 * ar, 0.30), t * 0.85, 1.1, 20.0) * 0.8;
-      h += ripple(p, vec2(0.55 * ar, 0.05), t * 0.7,  0.9, 16.0) * 0.6;
+      h += ripple(p, vec2(0.22 * ar, 0.72), t * 0.6,  1.0, 15.0);
+      h += ripple(p, vec2(0.82 * ar, 0.30), t * 0.5,  0.8, 13.0) * 0.8;
+      h += ripple(p, vec2(0.55 * ar, 0.05), t * 0.42, 0.7, 11.0) * 0.6;
       vec2 m = vec2(u_mouse.x * ar, u_mouse.y);
-      h += ripple(p, m, t, 2.1, 32.0) * 1.3;
+      h += ripple(p, m, t * 0.75, 1.2, 16.0) * 0.45;
       h *= 0.5;
 
       vec3 base = vec3(0.286, 0.012, 0.031); // #490308
@@ -46,7 +57,7 @@
 
       float vign = smoothstep(1.25, 0.15, distance(uv, vec2(0.5)));
       vec3 col = mix(deep, base, uv.y);
-      col += gold * max(h, 0.0) * 0.20 * u_intensity * vign;
+      col += gold * max(h, 0.0) * 0.17 * u_intensity * vign;
       col = mix(col, deep, (1.0 - vign) * 0.45);
       gl_FragColor = vec4(col, 1.0);
     }
@@ -83,9 +94,9 @@
     const inst = {
       renderer, uniforms, target, resize,
       render(time) {
-        // ease mouse
-        uniforms.u_mouse.value.x += (target.mx - uniforms.u_mouse.value.x) * 0.05;
-        uniforms.u_mouse.value.y += (target.my - uniforms.u_mouse.value.y) * 0.05;
+        // ease mouse (gentle, so the pointer nudges rather than chases)
+        uniforms.u_mouse.value.x += (target.mx - uniforms.u_mouse.value.x) * 0.03;
+        uniforms.u_mouse.value.y += (target.my - uniforms.u_mouse.value.y) * 0.03;
         uniforms.u_time.value = time;
         renderer.render(scene, camera);
       }
@@ -95,10 +106,15 @@
     return inst;
   }
 
+  function intensityFor(canvas, fallback) {
+    if (!canvas) return fallback;
+    const v = parseFloat(canvas.getAttribute("data-intensity"));
+    return isNaN(v) ? fallback : v;
+  }
   const heroCanvas = document.getElementById("ripple-canvas");
   const ctaCanvas = document.getElementById("ripple-canvas-2");
-  const heroRipple = createRipple(heroCanvas, 1.0);
-  createRipple(ctaCanvas, 0.8);
+  const heroRipple = createRipple(heroCanvas, intensityFor(heroCanvas, 0.85));
+  createRipple(ctaCanvas, intensityFor(ctaCanvas, 0.7));
 
   // pointer → hero ripple
   if (heroRipple) {
@@ -111,27 +127,97 @@
   }
 
   let start = performance.now();
-  let running = ripples.length > 0;
+  let running = ripples.length > 0 && !REDUCED;
   function loop(now) {
     if (!running) return;
     const t = (now - start) / 1000;
     for (const r of ripples) r.render(t);
     requestAnimationFrame(loop);
   }
-  if (running && !REDUCED) requestAnimationFrame(loop);
-  else if (running && REDUCED) { for (const r of ripples) r.render(2.0); } // one static frame
+  if (running) requestAnimationFrame(loop);
+  else if (ripples.length) { for (const r of ripples) r.render(2.0); } // hold one calm static frame
+
+  const isReduced = () => document.documentElement.classList.contains("motion-reduced");
 
   let rt;
   window.addEventListener("resize", () => {
     clearTimeout(rt);
-    rt = setTimeout(() => { for (const r of ripples) r.resize(); if (REDUCED) for (const r of ripples) r.render(2.0); }, 150);
+    rt = setTimeout(() => { for (const r of ripples) r.resize(); if (!running) for (const r of ripples) r.render(2.0); }, 150);
   });
 
   // pause rAF when tab hidden
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) { running = false; }
-    else if (ripples.length && !REDUCED) { running = true; start = performance.now() - 2000; requestAnimationFrame(loop); }
+    else if (ripples.length && !isReduced()) { running = true; start = performance.now() - 2000; requestAnimationFrame(loop); }
   });
+
+  /* -------------------------------------------------------
+     Motion preference: runtime pause/resume + persistence
+  ------------------------------------------------------- */
+  function setRipplesRunning(on) {
+    if (on) {
+      if (ripples.length && !running) { running = true; start = performance.now() - 2000; requestAnimationFrame(loop); }
+    } else {
+      running = false;
+      for (const r of ripples) r.render(2.0); // hold a calm static frame
+    }
+  }
+  function applyMotion(reduce) {
+    document.documentElement.classList.toggle("motion-reduced", reduce);
+    setRipplesRunning(!reduce);
+    infiniteTweens.forEach((t) => { if (t && t.pause && t.resume) { reduce ? t.pause() : t.resume(); } });
+  }
+  window.RipplesMotion = {
+    isReduced: isReduced,
+    set: function (reduce) {
+      try { localStorage.setItem("ripples-motion", reduce ? "reduce" : "full"); } catch (e) {}
+      applyMotion(reduce);
+    },
+    toggle: function () { window.RipplesMotion.set(!isReduced()); }
+  };
+
+  // Keep in sync if the OS setting changes while the page is open and the
+  // user hasn't set an explicit override.
+  if (motionMQ.addEventListener) {
+    motionMQ.addEventListener("change", (e) => {
+      if (readMotionPref()) return; // explicit user choice wins
+      applyMotion(e.matches);
+      if (window.__syncMotionToggle) window.__syncMotionToggle();
+    });
+  }
+
+  /* --- inject an accessible reduce-motion toggle (both pages) --- */
+  if (ripples.length && !document.querySelector(".motion-toggle")) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "motion-toggle";
+    btn.innerHTML =
+      '<svg class="motion-toggle__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<circle cx="12" cy="12" r="2" fill="currentColor"/>' +
+      '<path d="M12 6.4a5.6 5.6 0 0 1 5.6 5.6M12 2.8a9.2 9.2 0 0 1 9.2 9.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>' +
+      '<path class="motion-toggle__slash" d="M4 4l16 16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>' +
+      '</svg><span class="motion-toggle__label"></span>';
+    const label = btn.querySelector(".motion-toggle__label");
+    function sync() {
+      const reduced = isReduced();
+      label.textContent = reduced ? "Enable motion" : "Reduce motion";
+      btn.setAttribute("aria-label", reduced ? "Enable animations" : "Reduce animations");
+      btn.setAttribute("title", reduced ? "Turn animations back on" : "Reduce on-screen motion");
+      btn.setAttribute("data-reduced", reduced ? "true" : "false");
+    }
+    window.__syncMotionToggle = sync;
+    btn.addEventListener("click", () => { window.RipplesMotion.toggle(); sync(); });
+    sync();
+    // Prefer sitting inside the hero (scrolls away, less distracting).
+    // Fall back to a fixed corner if there's no hero on the page.
+    const heroHost = document.querySelector(".hero");
+    if (heroHost) {
+      heroHost.appendChild(btn);
+    } else {
+      btn.classList.add("motion-toggle--floating");
+      document.body.appendChild(btn);
+    }
+  }
 
   /* -------------------------------------------------------
      2 · NAV state
@@ -168,7 +254,7 @@
       gsap.to("#hero .reveal", { opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.09, delay: 0.15 });
     }
 
-    // Cormorant Garamond changes layout heights significantly once loaded —
+    // Web fonts / late layout shifts can change section heights —
     // recompute all ScrollTrigger positions so reveals fire where they should.
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("load", refresh);
@@ -204,9 +290,9 @@
 
     /* --- floating hero cards --- */
     if (!REDUCED) {
-      gsap.to(".fc1", { y: -14, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1 });
-      gsap.to(".fc2", { y: 12, duration: 3.8, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 0.4 });
-      gsap.to(".dash", { y: -8, duration: 4.5, ease: "sine.inOut", yoyo: true, repeat: -1 });
+      if (document.querySelector(".fc1")) infiniteTweens.push(gsap.to(".fc1", { y: -14, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1 }));
+      if (document.querySelector(".fc2")) infiniteTweens.push(gsap.to(".fc2", { y: 12, duration: 3.8, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 0.4 }));
+      if (document.querySelector(".dash")) infiniteTweens.push(gsap.to(".dash", { y: -8, duration: 4.5, ease: "sine.inOut", yoyo: true, repeat: -1 }));
     }
 
     /* --- automation flow: pulse + node activation loop --- */
@@ -231,7 +317,14 @@
       };
       ScrollTrigger.create({
         trigger: flow, start: "top 80%",
-        onEnter: () => { if (!started) { started = true; buildLoop(); } }
+        onEnter: () => {
+          if (!started) {
+            started = true;
+            const tl = buildLoop();
+            infiniteTweens.push(tl);
+            if (isReduced()) tl.pause(); // respect a toggle set before this scrolled in
+          }
+        }
       });
     }
 

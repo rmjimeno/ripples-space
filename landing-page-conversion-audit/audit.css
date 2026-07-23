@@ -34,7 +34,7 @@
 .hero--audit .hero__inner { display: block; max-width: 860px; text-align: center; }
 .hero--audit .hero__copy { display: flex; flex-direction: column; align-items: center; }
 .hero--audit .eyebrow { margin-bottom: 26px; }
-.hero--audit .hero__title { font-size: clamp(2.4rem, 6vw, 4.4rem); margin-bottom: 22px; }
+.hero--audit .hero__title { font-size: clamp(2rem, 4.6vw, 3.5rem); margin-bottom: 22px; }
 .hero--audit .hero__sub { max-width: 46ch; margin: 0 auto 34px; font-size: clamp(1.1rem, 1.8vw, 1.35rem); color: var(--cream); opacity: .92; }
 .hero--audit .hero__actions { justify-content: center; }
 .hero--audit .hero__trust { margin-top: 24px; }
