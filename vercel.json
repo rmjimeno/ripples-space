@@ -4,12 +4,17 @@
   "redirects": [
     {
       "source": "/landing-page-conversion-audit",
-      "destination": "/landing-page-conversion-ai",
+      "destination": "/landing-page-conversion-ai/",
       "permanent": true
     },
     {
-      "source": "/landing-page-conversion-audit/:path*",
-      "destination": "/landing-page-conversion-ai/:path*",
+      "source": "/landing-page-conversion-audit/",
+      "destination": "/landing-page-conversion-ai/",
+      "permanent": true
+    },
+    {
+      "source": "/landing-page-conversion-audit/:path+",
+      "destination": "/landing-page-conversion-ai/:path+",
       "permanent": true
     }
   ]
