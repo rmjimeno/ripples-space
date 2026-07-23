@@ -1,0 +1,127 @@
+/* ============================================================
+   Ripples Space — Landing Page Conversion Audit
+   Conversion-first page. Reuses the shared design system in
+   ../styles.css; only page-specific components live here.
+   NOTE: this page ships WITHOUT the shared main.js (three.js +
+   GSAP) on purpose — a script error on the original page cost
+   visitors. Everything here works with zero JavaScript.
+   ============================================================ */
+
+/* ---- nav: always-on dark bar (no JS scroll handler on this page) ---- */
+.nav {
+  background: rgba(42, 2, 6, 0.9);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom: 1px solid rgba(254, 237, 201, 0.10);
+}
+
+/* ---- brand wordmark: "Landing Page Conversion AI" (stacked, AI italic) ---- */
+.brand { align-items: center; }
+.brand__word { font-size: 16.5px; line-height: 1.04; letter-spacing: .01em; }
+.brand__word em { font-style: italic; color: var(--gold); }
+.footer__brand .brand__word { font-size: 17px; }
+
+/* ---- price pill in eyebrow row ---- */
+.price-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--oxblood-dark); background: var(--gold);
+}
+.price-pill s { color: rgba(76,0,4,.5); text-decoration-thickness: 1.5px; }
+
+/* ============ HERO — single column, centered, no mockup ============ */
+.hero--audit { min-height: auto; padding: clamp(150px, 20vh, 220px) 0 clamp(90px, 12vh, 130px); }
+.hero--audit .hero__inner { display: block; max-width: 860px; text-align: center; }
+.hero--audit .hero__copy { display: flex; flex-direction: column; align-items: center; }
+.hero--audit .eyebrow { margin-bottom: 26px; }
+.hero--audit .hero__title { font-size: clamp(2.4rem, 6vw, 4.4rem); margin-bottom: 22px; }
+.hero--audit .hero__sub { max-width: 46ch; margin: 0 auto 34px; font-size: clamp(1.1rem, 1.8vw, 1.35rem); color: var(--cream); opacity: .92; }
+.hero--audit .hero__actions { justify-content: center; }
+.hero--audit .hero__trust { margin-top: 24px; }
+
+/* ============ shared: centered section head + cta ============ */
+.head--center { max-width: 44ch; margin: 0 auto 14px; text-align: center; }
+.head--center .eyebrow { text-align: center; }
+.section__cta { display: flex; justify-content: center; margin-top: 52px; }
+
+/* ============ BENEFITS — "what you'll walk away with" ============ */
+.benefits {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px;
+  margin-top: 54px;
+}
+.benefit {
+  padding: 32px 30px; border: 1px solid var(--card-line); border-radius: var(--radius);
+  background: var(--card);
+  transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+}
+.benefit:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 24px 50px -30px rgba(63,10,13,.35); }
+.benefit__ic {
+  width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent); margin-bottom: 18px;
+}
+.benefit__ic svg { width: 22px; height: 22px; }
+.benefit h3 { font-family: var(--serif); font-weight: 500; font-size: 1.5rem; line-height: 1.15; color: var(--fg); margin-bottom: 10px; }
+.benefit p { color: var(--fg-soft); font-size: 15.5px; }
+
+/* ============ SEE WHAT YOU'LL RECEIVE — phone mockup + sections ============ */
+.receive__lede { text-align: center; }
+.receive-grid {
+  display: grid; grid-template-columns: minmax(0, 320px) 1fr;
+  gap: clamp(40px, 6vw, 80px); align-items: center; margin-top: 60px;
+}
+
+/* real device frame with an internally scrollable screenshot */
+.phone {
+  position: relative; width: 300px; max-width: 100%; margin: 0 auto;
+  background: #17100e; border-radius: 46px; padding: 13px;
+  box-shadow: 0 44px 90px -34px rgba(0,0,0,.6), inset 0 0 0 2px rgba(254,237,201,.08);
+}
+.phone__notch {
+  position: absolute; top: 13px; left: 50%; transform: translateX(-50%);
+  width: 128px; height: 26px; background: #17100e; border-radius: 0 0 16px 16px; z-index: 3;
+}
+.phone__notch::after {
+  content: ""; position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+  width: 46px; height: 5px; border-radius: 3px; background: rgba(254,237,201,.18);
+}
+.phone__screen {
+  position: relative; border-radius: 34px; overflow: hidden;
+  background: #f7f4ec; height: 600px; max-height: 74vh;
+}
+.phone__scroll {
+  height: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; scrollbar-color: rgba(162,71,47,.55) transparent;
+}
+.phone__scroll img { width: 100%; height: auto; display: block; }
+.phone__scroll::-webkit-scrollbar { width: 6px; }
+.phone__scroll::-webkit-scrollbar-track { background: transparent; }
+.phone__scroll::-webkit-scrollbar-thumb { background: rgba(162,71,47,.55); border-radius: 3px; }
+.phone__hint {
+  margin-bottom: 20px; text-align: center; font-size: 11.5px; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--fg-dim);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.phone__hint svg { width: 14px; height: 14px; }
+
+/* the 8 report sections, annotated */
+.callouts { display: grid; grid-template-columns: 1fr; gap: 4px; }
+.callout { display: flex; gap: 16px; padding: 15px 4px; border-top: 1px solid var(--line); }
+.callout:first-child { border-top: none; }
+.callout__num { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-family: var(--sans); font-weight: 600; font-size: 14px; }
+.callout__tx h4 { font-family: var(--serif); font-weight: 500; font-size: 1.14rem; color: var(--fg); line-height: 1.2; margin-bottom: 2px; }
+.callout__tx p { color: var(--fg-soft); font-size: 14px; }
+
+/* ============ HOW IT WORKS — 3 simple steps ============ */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; }
+.step { position: relative; padding: 34px 30px; border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card); text-align: left; }
+.step__num { font-family: var(--serif); font-size: 2.4rem; line-height: 1; color: var(--accent); display: block; margin-bottom: 14px; }
+.step h3 { font-family: var(--serif); font-weight: 500; font-size: 1.4rem; color: var(--fg); margin-bottom: 8px; }
+.step p { color: var(--fg-soft); font-size: 15px; }
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 960px) {
+  .benefits { grid-template-columns: 1fr; }
+  .receive-grid { grid-template-columns: 1fr; gap: 44px; justify-items: center; }
+  .callouts { max-width: 560px; }
+  .steps { grid-template-columns: 1fr; }
+}
