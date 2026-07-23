@@ -12,8 +12,8 @@
 (function () {
   "use strict";
 
-  var GA_MEASUREMENT_ID  = "G-XXXXXXXXXX"; // <-- your Google Analytics 4 Measurement ID
-  var CLARITY_PROJECT_ID = "XXXXXXXXXX";   // <-- your Microsoft Clarity project ID
+  var GA_MEASUREMENT_ID  = "G-XXXXXXXXXX"; // <-- add your Google Analytics 4 Measurement ID to enable GA4 (off for now)
+  var CLARITY_PROJECT_ID = "xnicq3g0o1";   // Microsoft Clarity project ID (active)
 
   var gaReady = GA_MEASUREMENT_ID && GA_MEASUREMENT_ID.indexOf("XXXX") === -1;
   var clarityReady = CLARITY_PROJECT_ID && CLARITY_PROJECT_ID.indexOf("XXXX") === -1;
