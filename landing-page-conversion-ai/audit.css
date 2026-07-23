@@ -21,13 +21,20 @@
 .footer__brand .brand__word { font-size: 17px; }
 
 /* ---- price pill in eyebrow row ---- */
-.price-pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 14px; border-radius: 999px;
-  font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--oxblood-dark); background: var(--gold);
+.price-tag {
+  display: inline-flex; align-items: center; gap: 13px;
+  padding: 7px 8px 7px 20px; margin-bottom: 26px; border-radius: 999px;
+  background: rgba(233, 196, 138, 0.10);
+  border: 1px solid rgba(233, 196, 138, 0.34);
+  box-shadow: 0 10px 30px -16px rgba(0,0,0,.55), inset 0 0 0 1px rgba(254,237,201,.04);
 }
-.price-pill s { color: rgba(76,0,4,.5); text-decoration-thickness: 1.5px; }
+.price-tag__now { font-family: var(--serif); font-size: 1.75rem; font-weight: 600; line-height: 1; color: var(--cream); letter-spacing: -0.01em; }
+.price-tag__was { font-size: 1rem; line-height: 1; color: var(--taupe-dim); text-decoration-thickness: 1.5px; }
+.price-tag__off {
+  font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; line-height: 1;
+  color: var(--oxblood-dark); background: var(--gold);
+  padding: 8px 12px; border-radius: 999px; white-space: nowrap;
+}
 
 /* ============ HERO — single column, centered, no mockup ============ */
 .hero--audit { min-height: auto; padding: clamp(150px, 20vh, 220px) 0 clamp(90px, 12vh, 130px); }
