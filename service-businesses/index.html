@@ -18,13 +18,14 @@
     .bookmodal__backdrop{position:absolute;inset:0;background:rgba(42,2,6,.62);-webkit-backdrop-filter:blur(6px) saturate(1.1);backdrop-filter:blur(6px) saturate(1.1);cursor:pointer;}
     .bookmodal__dialog{position:relative;z-index:1;display:flex;flex-direction:column;width:min(560px,100%);max-height:min(880px,92vh);background:var(--paper-card);border:1px solid rgba(63,10,13,.10);border-radius:var(--radius);box-shadow:0 50px 100px -30px rgba(0,0,0,.6),0 0 0 1px rgba(233,196,138,.14);overflow:hidden;transform:translateY(14px) scale(.985);transition:transform .4s var(--ease);}
     .bookmodal.is-open .bookmodal__dialog{transform:none;}
-    .bookmodal__head{position:relative;padding:22px 56px 16px 26px;background:linear-gradient(180deg,#fff,var(--paper-card));border-bottom:1px solid rgba(63,10,13,.08);}
+    .bookmodal__head{position:relative;padding:22px 108px 16px 26px;background:linear-gradient(180deg,#fff,var(--paper-card));border-bottom:1px solid rgba(63,10,13,.08);}
     .bookmodal__eyebrow{display:inline-block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);font-weight:600;margin-bottom:8px;}
     .bookmodal__title{font-family:var(--serif);color:var(--ink);font-size:clamp(21px,3.4vw,26px);line-height:1.14;margin:0;font-weight:600;}
     .bookmodal__sub{margin:8px 0 0;color:var(--ink-soft);font-size:14px;line-height:1.5;}
-    .bookmodal__close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(63,10,13,.12);background:#fff;color:var(--ink);font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:background .25s ease,transform .3s var(--ease),color .25s ease;}
-    .bookmodal__close:hover{background:var(--oxblood);color:var(--cream);transform:rotate(90deg);}
-    .bookmodal__close:focus-visible{outline:2px solid var(--clay);outline-offset:2px;}
+    .bookmodal__close{position:absolute;top:14px;right:14px;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 13px;border-radius:999px;border:none;background:var(--oxblood);color:var(--cream);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.02em;line-height:1;cursor:pointer;box-shadow:0 8px 20px -8px rgba(42,2,6,.55);transition:background .25s ease,transform .25s var(--ease),box-shadow .25s ease;}
+    .bookmodal__close .bookmodal__x{font-size:18px;line-height:1;font-weight:400;}
+    .bookmodal__close:hover{background:var(--oxblood-deep);transform:translateY(-1px);box-shadow:0 12px 26px -8px rgba(42,2,6,.6);}
+    .bookmodal__close:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
     .bookmodal__body{position:relative;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
     .bookmodal__body iframe{display:block;width:100%;min-height:640px;border:0;}
     body.bookmodal-open{overflow:hidden;}
@@ -480,7 +481,7 @@
   <div class="bookmodal" id="book-modal" aria-hidden="true">
     <div class="bookmodal__backdrop" data-book-close></div>
     <div class="bookmodal__dialog" role="dialog" aria-modal="true" aria-labelledby="book-modal-title">
-      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close>&times;</button>
+      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close><span class="bookmodal__x" aria-hidden="true">&times;</span>Exit</button>
       <div class="bookmodal__head">
         <span class="bookmodal__eyebrow">Ripples Space</span>
         <h2 class="bookmodal__title" id="book-modal-title">Book your automation strategy call</h2>
