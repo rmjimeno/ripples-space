@@ -10,6 +10,32 @@
   <script src="../analytics.js"></script>
 
   <link rel="stylesheet" href="../styles.css" />
+
+  <!-- Booking modal (page-specific, on-brand) -->
+  <style>
+    .bookmodal{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,40px);opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility 0s linear .35s;}
+    .bookmodal.is-open{opacity:1;visibility:visible;transition:opacity .35s var(--ease);}
+    .bookmodal__backdrop{position:absolute;inset:0;background:rgba(42,2,6,.62);-webkit-backdrop-filter:blur(6px) saturate(1.1);backdrop-filter:blur(6px) saturate(1.1);cursor:pointer;}
+    .bookmodal__dialog{position:relative;z-index:1;display:flex;flex-direction:column;width:min(560px,100%);max-height:min(880px,92vh);background:var(--paper-card);border:1px solid rgba(63,10,13,.10);border-radius:var(--radius);box-shadow:0 50px 100px -30px rgba(0,0,0,.6),0 0 0 1px rgba(233,196,138,.14);overflow:hidden;transform:translateY(14px) scale(.985);transition:transform .4s var(--ease);}
+    .bookmodal.is-open .bookmodal__dialog{transform:none;}
+    .bookmodal__head{position:relative;padding:22px 56px 16px 26px;background:linear-gradient(180deg,#fff,var(--paper-card));border-bottom:1px solid rgba(63,10,13,.08);}
+    .bookmodal__eyebrow{display:inline-block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);font-weight:600;margin-bottom:8px;}
+    .bookmodal__title{font-family:var(--serif);color:var(--ink);font-size:clamp(21px,3.4vw,26px);line-height:1.14;margin:0;font-weight:600;}
+    .bookmodal__sub{margin:8px 0 0;color:var(--ink-soft);font-size:14px;line-height:1.5;}
+    .bookmodal__close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(63,10,13,.12);background:#fff;color:var(--ink);font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:background .25s ease,transform .3s var(--ease),color .25s ease;}
+    .bookmodal__close:hover{background:var(--oxblood);color:var(--cream);transform:rotate(90deg);}
+    .bookmodal__close:focus-visible{outline:2px solid var(--clay);outline-offset:2px;}
+    .bookmodal__body{position:relative;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;}
+    .bookmodal__body iframe{display:block;width:100%;min-height:640px;border:0;}
+    body.bookmodal-open{overflow:hidden;}
+    @media (max-width:560px){
+      .bookmodal{padding:0;}
+      .bookmodal__dialog{width:100%;height:100%;max-height:100%;border-radius:0;}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .bookmodal,.bookmodal__dialog,.bookmodal__close{transition:none;}
+    }
+  </style>
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
@@ -53,7 +79,7 @@
         <a href="#process">How it works</a>
         <a href="#faq">FAQ</a>
       </nav>
-      <a href="#book" class="btn btn--cream nav__cta">Book a call</a>
+      <a href="https://systems.rheannejimeno.com/widget/booking/gsg9HnVtgyetrzjWUPlN" class="btn btn--cream nav__cta" data-book-open>Book a call</a>
     </div>
   </header>
 
@@ -76,7 +102,7 @@
             spends its time on the work that pays instead of the admin around it.
           </p>
           <div class="hero__actions reveal">
-            <a href="#book" class="btn btn--cream btn--lg magnetic">Book a call</a>
+            <a href="https://systems.rheannejimeno.com/widget/booking/gsg9HnVtgyetrzjWUPlN" class="btn btn--cream btn--lg magnetic" data-book-open>Book a call</a>
             <a href="#work" class="btn btn--ghost btn--lg">See what I automate</a>
           </div>
           <p class="hero__trust reveal">Real systems that book more jobs and take load off your team.</p>
@@ -356,7 +382,7 @@
         </p>
 
         <div class="fit__cta reveal">
-          <a href="#book" class="btn btn--ink btn--lg magnetic">Book your automation strategy call</a>
+          <a href="https://systems.rheannejimeno.com/widget/booking/gsg9HnVtgyetrzjWUPlN" class="btn btn--ink btn--lg magnetic" data-book-open>Book your automation strategy call</a>
         </div>
       </div>
     </section>
@@ -407,7 +433,7 @@
           and you'll leave with a clear next step, whether or not we build together.
         </p>
         <div class="cta__actions reveal">
-          <a href="#" class="btn btn--cream btn--lg magnetic" id="book-btn">Book an automation strategy call</a>
+          <a href="https://systems.rheannejimeno.com/widget/booking/gsg9HnVtgyetrzjWUPlN" class="btn btn--cream btn--lg magnetic" id="book-btn" data-book-open>Book an automation strategy call</a>
         </div>
         <p class="cta__note reveal">No pressure, ever. Just a clear next step.</p>
       </div>
@@ -450,9 +476,74 @@
     </div>
   </footer>
 
+  <!-- ============ BOOKING MODAL ============ -->
+  <div class="bookmodal" id="book-modal" aria-hidden="true">
+    <div class="bookmodal__backdrop" data-book-close></div>
+    <div class="bookmodal__dialog" role="dialog" aria-modal="true" aria-labelledby="book-modal-title">
+      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close>&times;</button>
+      <div class="bookmodal__head">
+        <span class="bookmodal__eyebrow">Ripples Space</span>
+        <h2 class="bookmodal__title" id="book-modal-title">Book your automation strategy call</h2>
+        <p class="bookmodal__sub">Pick a time that works. No pressure, just a clear next step.</p>
+      </div>
+      <div class="bookmodal__body">
+        <iframe src="https://systems.rheannejimeno.com/widget/booking/gsg9HnVtgyetrzjWUPlN" title="Book a call with Ripples Space" style="width:100%;border:none;overflow:hidden;" scrolling="no" id="gsg9HnVtgyetrzjWUPlN_1784855858655"></iframe>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="../main.js"></script>
+
+  <!-- GoHighLevel booking widget resizer -->
+  <script src="https://systems.rheannejimeno.com/js/form_embed.js" type="text/javascript"></script>
+
+  <!-- Booking modal controller (page-specific) -->
+  <script>
+    (function () {
+      var modal = document.getElementById("book-modal");
+      if (!modal) return;
+      var dialog = modal.querySelector(".bookmodal__dialog");
+      var closeBtn = modal.querySelector(".bookmodal__close");
+      var lastFocus = null;
+
+      function openModal(e) {
+        if (e) e.preventDefault();
+        lastFocus = document.activeElement;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("bookmodal-open");
+        setTimeout(function () { closeBtn && closeBtn.focus(); }, 60);
+      }
+      function closeModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("bookmodal-open");
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+      }
+
+      document.querySelectorAll("[data-book-open]").forEach(function (el) {
+        el.addEventListener("click", openModal);
+      });
+      modal.querySelectorAll("[data-book-close]").forEach(function (el) {
+        el.addEventListener("click", closeModal);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+      });
+
+      // Keep focus inside the dialog while it's open
+      dialog.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || !modal.classList.contains("is-open")) return;
+        var f = modal.querySelectorAll('button, [href], iframe, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+    })();
+  </script>
 </body>
 </html>
