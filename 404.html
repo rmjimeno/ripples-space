@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page not found · Ripples Space</title>
+  <meta name="description" content="That page has drifted out of reach. Head back to Ripples Space — digital experiences and AI-powered automation that drive business growth." />
+  <meta name="robots" content="noindex" />
+
+  <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
+  <script src="/analytics.js"></script>
+
+  <link rel="stylesheet" href="/styles.css" />
+
+  <style>
+    /* ============ 404 (page-specific) ============ */
+    .lost { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 96px 0 120px; overflow: hidden; background: var(--oxblood); }
+    .lost__inner { position: relative; z-index: 2; width: 100%; max-width: 640px; margin: 0 auto; padding: 0 clamp(22px, 6vw, 40px); text-align: center; }
+
+    .lost__code { font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+
+    .lost__title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.9rem, 4.4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; color: var(--cream); margin-bottom: 18px; text-wrap: balance; }
+    .lost__title em { font-style: italic; color: var(--gold); }
+
+    .lost__sub { font-size: clamp(1.02rem, 1.6vw, 1.18rem); line-height: 1.6; color: var(--taupe); max-width: 46ch; margin: 0 auto 30px; }
+
+    .lost__actions { display: flex; justify-content: center; margin-bottom: 30px; }
+
+    .lost__links { display: grid; gap: 12px; max-width: 480px; margin: 0 auto; }
+    .lost__links-label { font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--taupe-dim); margin-bottom: 16px; }
+
+    .lost-link {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 16px 20px; border-radius: 12px; text-align: left;
+      background: rgba(254, 237, 201, 0.05); border: 1px solid rgba(254, 237, 201, 0.16);
+      color: var(--cream); font-size: 15.5px;
+      transition: transform .5s var(--ease), background .3s ease, border-color .3s ease;
+    }
+    .lost-link:hover { background: rgba(254, 237, 201, 0.10); border-color: var(--gold); transform: translateY(-2px); }
+    .lost-link:focus-visible { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(233,196,138,.22); }
+    .lost-link span:last-child { color: var(--gold); flex: none; }
+
+    .lost__foot { position: absolute; left: 0; right: 0; bottom: 26px; z-index: 2; text-align: center; font-size: 12.5px; letter-spacing: .04em; color: var(--taupe-dim); }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <a class="skip-link" href="#top">Skip to content</a>
+
+  <!-- Minimal nav: brand only (also lets shared main.js run cleanly) -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="brand" href="/" aria-label="Ripples Space home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#ng1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#ng2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#ng3)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="ng1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples&nbsp;Space</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ============ 404 ============ -->
+  <main id="top" tabindex="-1">
+    <section class="hero lost" id="hero">
+      <canvas class="hero__canvas" id="ripple-canvas" data-intensity="0.8" aria-hidden="true"></canvas>
+      <div class="hero__veil" aria-hidden="true"></div>
+
+      <div class="lost__inner">
+        <p class="lost__code reveal">404 — Page not found</p>
+
+        <h1 class="lost__title reveal">This one <em>rippled out</em> of reach</h1>
+
+        <p class="lost__sub reveal">
+          The link may be old, or the page has moved on. Nothing lost — here's the way back.
+        </p>
+
+        <div class="lost__actions reveal">
+          <a class="btn btn--cream btn--lg magnetic" href="/">Back to home</a>
+        </div>
+
+        <p class="lost__links-label reveal" id="lost-label">Or pick up where you left off</p>
+        <nav class="lost__links reveal" aria-labelledby="lost-label">
+          <a class="lost-link" href="/changemakers/">
+            <span>I am a coach/course creator/changemaker</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+          <a class="lost-link" href="/service-businesses/">
+            <span>I have a service-based business</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+          <a class="lost-link" href="/landing-page-conversion-ai/">
+            <span>Landing page conversion audit</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </nav>
+      </div>
+
+      <p class="lost__foot">© 2026 Ripples Space. Creating ripples of impact.</p>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="/main.js"></script>
+</body>
+</html>

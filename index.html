@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ripples Space · Launching soon</title>
-  <meta name="description" content="Digital experiences that drive business growth. Combining brand strategy, web design, and AI-powered automation to create seamless customer journeys that build trust, drive conversions, and foster loyalty. Join the waitlist." />
+  <title>Ripples Space · Digital Experiences That Drive Business Growth</title>
+  <meta name="description" content="Digital experiences that drive business growth. Combining brand strategy, web design, and AI-powered automation to create seamless customer journeys that build trust, drive conversions, and foster loyalty." />
 
   <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
   <script src="analytics.js"></script>
@@ -12,55 +12,60 @@
   <link rel="stylesheet" href="styles.css" />
 
   <style>
-    /* ============ WAITLIST / COMING SOON (page-specific) ============ */
-    .wait { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 96px 0 120px; overflow: hidden; background: var(--oxblood); }
+    /* ============ COMING SOON HERO (page-specific) ============ */
+    .wait { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 84px 0 100px; overflow: hidden; background: var(--oxblood); }
     .wait__inner { position: relative; z-index: 2; width: 100%; max-width: 700px; margin: 0 auto; padding: 0 clamp(22px, 6vw, 40px); text-align: center; }
 
-    .wait__mark { display: inline-flex; color: var(--gold); margin-bottom: 30px; }
-    .wait__mark svg { width: 72px; height: 72px; overflow: visible; }
-    .wait__mark svg circle { stroke-width: 8; }
-    .wait__mark .ripple-ring { display: none; }
-    .wait__mark .ripples-orbit { transform-box: view-box; transform-origin: 129px 129px; animation: brandOrbit 22s linear infinite; }
-
-    .wait__badge { display: inline-flex; align-items: center; gap: 9px; font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 26px; }
-    .wait__badge i { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 0 rgba(233,196,138,.55); animation: waitPulse 2.4s var(--ease) infinite; }
-    @keyframes waitPulse { 0% { box-shadow: 0 0 0 0 rgba(233,196,138,.5); } 70% { box-shadow: 0 0 0 9px rgba(233,196,138,0); } 100% { box-shadow: 0 0 0 0 rgba(233,196,138,0); } }
+    /* Hero mark: hairline rings + live ripple, matching the Ripples Space brand mark */
+    .wait__mark { display: inline-flex; color: var(--cream); margin-bottom: 16px; }
+    .wait__mark svg { width: clamp(96px, 11vw, 112px); height: clamp(96px, 11vw, 112px); overflow: visible; }
+    .wait__mark svg circle { stroke-width: 1; }
+    .wait__mark .ripples-orbit,
+    .wait__mark .ripples-core,
+    .wait__mark .ripple-ring { transform-box: view-box; transform-origin: 129px 129px; }
+    .wait__mark .ripples-orbit { animation: markOrbit 28s linear infinite; }
+    .wait__mark .ripples-core { animation: markCorePulse 4.5s ease-in-out infinite; }
+    .wait__mark .ripple-ring { opacity: 0; animation: markRipple 6s ease-out infinite; }
+    .wait__mark .ripple-ring.delay-1 { animation-delay: 2s; }
+    .wait__mark .ripple-ring.delay-2 { animation-delay: 4s; }
+    @keyframes markOrbit { to { transform: rotate(360deg); } }
+    @keyframes markCorePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .92; transform: scale(1.08); } }
+    @keyframes markRipple { 0% { opacity: .5; transform: scale(.55); } 80% { opacity: 0; } 100% { opacity: 0; transform: scale(1.5); } }
 
     .wait__title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.9rem, 4.4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; color: var(--cream); margin-bottom: 24px; text-wrap: balance; }
     .wait__title em { font-style: italic; color: var(--gold); }
 
-    .wait__sub { font-size: clamp(1.02rem, 1.6vw, 1.22rem); line-height: 1.6; color: var(--taupe); max-width: 52ch; margin: 0 auto 40px; }
+    .wait__sub { font-size: clamp(1.02rem, 1.6vw, 1.22rem); line-height: 1.6; color: var(--taupe); max-width: 52ch; margin: 0 auto 28px; }
 
-    /* form */
-    .wait-form { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; }
-    .wait-form__field { flex: 1; position: relative; }
-    .wait-form input[type="email"] {
-      width: 100%; height: 54px; padding: 0 20px; border-radius: 11px;
-      background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.20);
-      color: var(--cream); font-family: var(--sans); font-size: 15.5px;
-      transition: border-color .3s ease, background .3s ease, box-shadow .3s ease;
+    /* choose-your-path links */
+    .wait__prompt { font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--taupe-dim); margin-bottom: 18px; }
+
+    .wait-paths { display: grid; gap: 14px; max-width: 560px; margin: 0 auto; }
+    .path-link {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 20px 24px; border-radius: 13px; text-align: left;
+      background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.18);
+      color: var(--cream);
+      transition: transform .5s var(--ease), background .3s ease, border-color .3s ease, box-shadow .5s var(--ease);
     }
-    .wait-form input[type="email"]::placeholder { color: var(--taupe-dim); }
-    .wait-form input[type="email"]:focus { outline: none; border-color: var(--gold); background: rgba(254, 237, 201, 0.10); box-shadow: 0 0 0 4px rgba(233,196,138,.12); }
-    .wait-form input[type="email"].is-invalid { border-color: #d9805e; box-shadow: 0 0 0 4px rgba(217,128,94,.14); }
-    .wait-form .btn { height: 54px; white-space: nowrap; flex: none; }
+    .path-link:hover { background: rgba(254, 237, 201, 0.10); border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 18px 40px -20px rgba(0,0,0,.6); }
+    .path-link:focus-visible { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(233,196,138,.22); }
 
-    .wait__note { margin-top: 18px; font-size: 13px; letter-spacing: .03em; color: var(--taupe-dim); }
-    .wait__error { margin-top: 12px; min-height: 18px; font-size: 13.5px; color: #f0a988; opacity: 0; transition: opacity .3s ease; }
-    .wait__error.show { opacity: 1; }
+    .path-link__label { font-family: var(--serif); font-size: clamp(1.02rem, 2.2vw, 1.16rem); line-height: 1.35; }
+    .path-link__meta { display: block; margin-top: 4px; font-family: var(--sans); font-size: 13px; letter-spacing: .02em; color: var(--taupe-dim); }
 
-    /* success state */
-    .wait-success { display: none; max-width: 500px; margin: 0 auto; padding: 26px 28px; border-radius: 14px; background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.18); }
-    .wait-success.show { display: block; }
-    .wait-success__ic { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 14px; display: grid; place-items: center; background: var(--gold); color: var(--oxblood-dark); font-size: 20px; }
-    .wait-success h2 { font-family: var(--serif); font-weight: 500; font-size: 1.7rem; color: var(--cream); margin-bottom: 8px; }
-    .wait-success p { font-size: 15px; color: var(--taupe); }
+    .path-link__arrow {
+      flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+      color: var(--gold); border: 1px solid rgba(233,196,138,.35);
+      transition: transform .45s var(--ease), background .3s ease, color .3s ease, border-color .3s ease;
+    }
+    .path-link__arrow svg { width: 15px; height: 15px; }
+    .path-link:hover .path-link__arrow { background: var(--gold); border-color: var(--gold); color: var(--oxblood-dark); transform: translateX(3px); }
 
     .wait__foot { position: absolute; left: 0; right: 0; bottom: 26px; z-index: 2; text-align: center; font-size: 12.5px; letter-spacing: .04em; color: var(--taupe-dim); }
 
     @media (max-width: 560px) {
-      .wait-form { flex-direction: column; }
-      .wait-form .btn { width: 100%; }
+      .path-link { padding: 18px 20px; }
     }
   </style>
 </head>
@@ -103,14 +108,39 @@
     </div>
   </header>
 
-  <!-- ============ WAITLIST HERO ============ -->
+  <!-- ============ COMING SOON HERO ============ -->
   <main id="top" tabindex="-1">
     <section class="hero wait" id="hero">
       <canvas class="hero__canvas" id="ripple-canvas" data-intensity="0.8" aria-hidden="true"></canvas>
       <div class="hero__veil" aria-hidden="true"></div>
 
       <div class="wait__inner">
-        <span class="wait__badge reveal"><i></i> Launching soon</span>
+        <span class="wait__mark reveal" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#hg1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#hg2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#hg3)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="hg1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="hg2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="hg3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
 
         <h1 class="wait__title reveal">Digital Experiences That <em>Drive Business Growth</em></h1>
 
@@ -119,23 +149,29 @@
           seamless customer journeys that build trust, drive conversions, and foster loyalty.
         </p>
 
-        <!-- Waitlist form. Wire the action/endpoint to your GHL form or email list. -->
-        <form class="wait-form reveal" id="waitlist-form" novalidate>
-          <div class="wait-form__field">
-            <label for="wait-email" class="sr-only">Email address</label>
-            <input type="email" id="wait-email" name="email" placeholder="you@example.com" autocomplete="email" required aria-describedby="wait-note wait-error" />
-          </div>
-          <button type="submit" class="btn btn--cream btn--lg magnetic">Join the waitlist</button>
-        </form>
-        <p class="wait__error reveal" id="wait-error" role="alert" aria-live="assertive"></p>
-        <p class="wait__note reveal" id="wait-note">Be the first to know when we launch. No spam, ever.</p>
+        <p class="wait__prompt reveal" id="paths-label">Which sounds like you?</p>
 
-        <!-- Success state (revealed after submit) -->
-        <div class="wait-success" id="wait-success" role="status" aria-live="polite">
-          <div class="wait-success__ic" aria-hidden="true">✓</div>
-          <h2>You're on the list.</h2>
-          <p>Thank you — we'll be in touch the moment Ripples Space opens its doors.</p>
-        </div>
+        <nav class="wait-paths reveal" aria-labelledby="paths-label">
+          <a class="path-link" href="/changemakers/">
+            <span class="path-link__label">
+              I am a coach/course creator/changemaker
+              <span class="path-link__meta">Let's get your hours back for the work only you can do</span>
+            </span>
+            <span class="path-link__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="path-link" href="/service-businesses/">
+            <span class="path-link__label">
+              I have a service-based business
+              <span class="path-link__meta">Turn more inquiries into booked, paying clients</span>
+            </span>
+            <span class="path-link__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+        </nav>
       </div>
 
       <p class="wait__foot">© 2026 Ripples Space. Creating ripples of impact.</p>
@@ -146,48 +182,5 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="main.js"></script>
-
-  <!-- Waitlist form handling -->
-  <script>
-    (function () {
-      var form = document.getElementById("waitlist-form");
-      if (!form) return;
-      var input = document.getElementById("wait-email");
-      var errorEl = document.getElementById("wait-error");
-      var success = document.getElementById("wait-success");
-      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      function showError(msg) {
-        errorEl.textContent = msg;
-        errorEl.classList.add("show");
-        input.classList.add("is-invalid");
-      }
-      function clearError() {
-        errorEl.textContent = "";
-        errorEl.classList.remove("show");
-        input.classList.remove("is-invalid");
-      }
-      input.addEventListener("input", clearError);
-
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var value = input.value.trim();
-        if (!value) { showError("Please enter your email address."); input.focus(); return; }
-        if (!EMAIL_RE.test(value)) { showError("That email doesn't look quite right — mind checking it?"); input.focus(); return; }
-        clearError();
-
-        // TODO: send `value` to your real waitlist endpoint (GHL form, Mailchimp, etc.).
-        // e.g. fetch("https://your-endpoint", { method: "POST", body: JSON.stringify({ email: value }) })
-        // For now we confirm visually.
-        form.style.display = "none";
-        var note = document.querySelector(".wait__note");
-        if (note) note.style.display = "none";
-        success.classList.add("show");
-        if (window.gsap) {
-          gsap.fromTo(success, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" });
-        }
-      });
-    })();
-  </script>
 </body>
 </html>
