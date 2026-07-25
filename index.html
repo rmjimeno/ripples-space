@@ -9,6 +9,17 @@
   <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
   <script src="analytics.js"></script>
 
+  <!-- Motion state before first paint: no flash of un-revealed content, and
+       no pre-hiding for visitors without JS. Mirrors main.js. -->
+  <script>
+    (function () {
+      var d = document.documentElement, p = null;
+      try { p = localStorage.getItem("ripples-motion"); } catch (e) {}
+      d.classList.add("js");
+      if (p ? p === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion-reduced");
+    })();
+  </script>
+
   <link rel="stylesheet" href="styles.css" />
 
   <style>
@@ -151,8 +162,8 @@
 
         <p class="wait__prompt reveal" id="paths-label">Which sounds like you?</p>
 
-        <nav class="wait-paths reveal" aria-labelledby="paths-label">
-          <a class="path-link" href="/changemakers/">
+        <nav class="wait-paths" aria-labelledby="paths-label">
+          <a class="path-link reveal" href="/changemakers/">
             <span class="path-link__label">
               I am a coach/course creator/changemaker
               <span class="path-link__meta">Let's get your hours back for the work only you can do</span>
@@ -162,7 +173,7 @@
             </span>
           </a>
 
-          <a class="path-link" href="/service-businesses/">
+          <a class="path-link reveal" href="/service-businesses/">
             <span class="path-link__label">
               I have a service-based business
               <span class="path-link__meta">Turn more inquiries into booked, paying clients</span>

@@ -367,7 +367,19 @@ a { color: inherit; text-decoration: none; }
 .footer__copy { font-size: 13px; color: var(--taupe-dim); }
 
 /* ============ REVEAL ============ */
-/* will-change applied transiently by GSAP during the tween */
+/* will-change applied transiently by GSAP during the tween.
+
+   Reveal targets start hidden in CSS so they never flash in at their final
+   position before the scripts run. Gated on html.js (set by the inline head
+   script) so a no-JS visitor still sees everything, and skipped entirely when
+   motion is reduced. */
+html.js:not(.motion-reduced) .reveal { opacity: 0; transform: translateY(26px); }
+
+/* GSAP rewrites `transform` frame-by-frame during the reveal. Any CSS
+   transform transition on the same element (.pillar, .path-link, .btn …)
+   would re-interpolate every write and smear the motion, so suppress it
+   until the element has landed and main.js adds .is-revealed. */
+html.js .reveal:not(.is-revealed) { transition: none; }
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 960px) {
@@ -446,7 +458,10 @@ main[tabindex="-1"]:focus { outline: none; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
   html { scroll-behavior: auto; }
 }
+/* Kept in step with the media query above so the in-page toggle is honest —
+   it quiets transitions too, not just keyframe loops. */
 html.motion-reduced *, html.motion-reduced *::before, html.motion-reduced *::after {
   animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
 }
 html.motion-reduced { scroll-behavior: auto; }

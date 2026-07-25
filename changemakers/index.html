@@ -9,12 +9,30 @@
   <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
   <script src="../analytics.js"></script>
 
+  <!-- Motion state before first paint: no flash of un-revealed content, and
+       no pre-hiding for visitors without JS. Mirrors main.js. -->
+  <script>
+    (function () {
+      var d = document.documentElement, p = null;
+      try { p = localStorage.getItem("ripples-motion"); } catch (e) {}
+      d.classList.add("js");
+      if (p ? p === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion-reduced");
+    })();
+  </script>
+
   <link rel="stylesheet" href="../styles.css" />
 
   <!-- Booking modal (page-specific, on-brand) -->
   <style>
-    .bookmodal{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,40px);opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility 0s linear .35s;}
-    .bookmodal.is-open{opacity:1;visibility:visible;transition:opacity .35s var(--ease);}
+    .bookmodal{position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;padding:clamp(16px,4vw,40px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s var(--ease),visibility 0s linear .35s;}
+    .bookmodal.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .35s var(--ease);}
+    /* Critical: GHL's form_embed.js rewrites the iframe's inline style to
+       visibility:visible; pointer-events:auto, which defeats the closed modal
+       and leaves the eagerly-loaded iframe swallowing every click in the
+       centre of the viewport (dead buttons, un-clickable accordion text).
+       !important beats the (non-important) inline style so the closed overlay
+       is truly inert. */
+    .bookmodal:not(.is-open) .bookmodal__body iframe{pointer-events:none!important;visibility:hidden!important;}
     .bookmodal__backdrop{position:absolute;inset:0;background:rgba(42,2,6,.62);-webkit-backdrop-filter:blur(6px) saturate(1.1);backdrop-filter:blur(6px) saturate(1.1);cursor:pointer;}
     .bookmodal__dialog{position:relative;z-index:1;display:flex;flex-direction:column;width:min(560px,100%);max-height:min(880px,92vh);background:var(--paper-card);border:1px solid rgba(63,10,13,.10);border-radius:var(--radius);box-shadow:0 50px 100px -30px rgba(0,0,0,.6),0 0 0 1px rgba(233,196,138,.14);overflow:hidden;transform:translateY(14px) scale(.985);transition:transform .4s var(--ease);}
     .bookmodal.is-open .bookmodal__dialog{transform:none;}
@@ -32,9 +50,14 @@
       .bookmodal{padding:0;}
       .bookmodal__dialog{width:100%;height:100%;max-height:100%;border-radius:0;}
     }
+    /* `transition:none` (not just a shortened duration) so the visibility
+       delay is dropped too and the overlay can't linger after close. */
     @media (prefers-reduced-motion: reduce){
       .bookmodal,.bookmodal__dialog,.bookmodal__close{transition:none;}
     }
+    html.motion-reduced .bookmodal,
+    html.motion-reduced .bookmodal__dialog,
+    html.motion-reduced .bookmodal__close{transition:none !important;}
   </style>
 </head>
 <body>

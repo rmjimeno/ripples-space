@@ -10,6 +10,17 @@
   <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
   <script src="/analytics.js"></script>
 
+  <!-- Motion state before first paint: no flash of un-revealed content, and
+       no pre-hiding for visitors without JS. Mirrors main.js. -->
+  <script>
+    (function () {
+      var d = document.documentElement, p = null;
+      try { p = localStorage.getItem("ripples-motion"); } catch (e) {}
+      d.classList.add("js");
+      if (p ? p === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion-reduced");
+    })();
+  </script>
+
   <link rel="stylesheet" href="/styles.css" />
 
   <style>
@@ -102,16 +113,16 @@
         </div>
 
         <p class="lost__links-label reveal" id="lost-label">Or pick up where you left off</p>
-        <nav class="lost__links reveal" aria-labelledby="lost-label">
-          <a class="lost-link" href="/changemakers/">
+        <nav class="lost__links" aria-labelledby="lost-label">
+          <a class="lost-link reveal" href="/changemakers/">
             <span>I am a coach/course creator/changemaker</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
-          <a class="lost-link" href="/service-businesses/">
+          <a class="lost-link reveal" href="/service-businesses/">
             <span>I have a service-based business</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
-          <a class="lost-link" href="/landing-page-conversion-ai/">
+          <a class="lost-link reveal" href="/landing-page-conversion-ai/">
             <span>Landing page conversion audit</span>
             <span aria-hidden="true">&rarr;</span>
           </a>

@@ -19,6 +19,10 @@
 
   // Infinite/decorative GSAP loops, collected so they can be paused on demand.
   const infiniteTweens = [];
+  // Sections register here so the in-page toggle can settle them mid-session,
+  // not just at load. Each handler receives the new "reduce" state.
+  const motionHandlers = [];
+  const onMotionChange = (fn) => motionHandlers.push(fn);
 
   /* -------------------------------------------------------
      1 · THREE.JS RIPPLE FIELD (hero + cta backgrounds)
@@ -166,6 +170,7 @@
     document.documentElement.classList.toggle("motion-reduced", reduce);
     setRipplesRunning(!reduce);
     infiniteTweens.forEach((t) => { if (t && t.pause && t.resume) { reduce ? t.pause() : t.resume(); } });
+    motionHandlers.forEach((fn) => { try { fn(reduce); } catch (e) {} });
   }
   window.RipplesMotion = {
     isReduced: isReduced,
@@ -233,25 +238,48 @@
   if (hasGSAP) {
     if (typeof ScrollTrigger !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
+    // `.is-revealed` re-enables the element's own CSS transitions once it has
+    // landed (see styles.css) — they'd otherwise fight the reveal tween.
+    const settle = (items) => gsap.utils.toArray(items).forEach((el) => el.classList.add("is-revealed"));
+
     if (REDUCED) {
       gsap.set(".reveal", { opacity: 1, y: 0 });
+      settle(".reveal");
     } else {
-      // staggered reveal, grouped by nearest section
-      gsap.utils.toArray(".reveal").forEach((el) => {
-        gsap.set(el, { opacity: 0, y: 26 });
-      });
-      gsap.utils.toArray("section, .hero").forEach((section) => {
+      gsap.set(".reveal", { opacity: 0, y: 26 });
+
+      // Staggered reveal, grouped by nearest section. The hero is excluded:
+      // it sits in view at load, so a ScrollTrigger would fire a second tween
+      // competing with the entrance below.
+      gsap.utils.toArray("section:not(.hero)").forEach((section) => {
         const items = section.querySelectorAll(".reveal");
         if (!items.length) return;
         ScrollTrigger.create({
           trigger: section,
           start: "top 78%",
           once: true,
-          onEnter: () => gsap.to(items, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 })
+          onEnter: () => gsap.to(items, {
+            opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08,
+            onComplete: () => settle(items)
+          })
         });
       });
+
       // hero reveals immediately on load
-      gsap.to("#hero .reveal", { opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.09, delay: 0.15 });
+      const heroItems = gsap.utils.toArray(".hero .reveal");
+      if (heroItems.length) {
+        gsap.to(heroItems, {
+          opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.09, delay: 0.15,
+          onComplete: () => settle(heroItems)
+        });
+      }
+
+      // Toggling mid-session shouldn't leave anything below the fold hidden.
+      onMotionChange((reduce) => {
+        if (!reduce) return;
+        gsap.set(".reveal", { opacity: 1, y: 0 });
+        settle(".reveal");
+      });
     }
 
     // Web fonts / late layout shifts can change section heights —
@@ -333,9 +361,12 @@
     if (timeline) {
       const fill = timeline.querySelector(".timeline__fill");
       const markers = timeline.querySelectorAll(".tstep__marker");
-      if (REDUCED) {
+      const completeTimeline = () => {
         gsap.set(fill, { height: "100%" });
         markers.forEach((m) => m.classList.add("is-on"));
+      };
+      if (REDUCED) {
+        completeTimeline();
       } else {
         ScrollTrigger.create({
           trigger: timeline,
@@ -343,6 +374,7 @@
           end: "bottom 82%",
           scrub: 0.6,
           onUpdate: (self) => {
+            if (isReduced()) return; // toggled off mid-scroll — leave it settled
             const p = self.progress;
             gsap.set(fill, { height: (p * 100) + "%" });
             markers.forEach((m, i) => {
@@ -350,6 +382,7 @@
             });
           }
         });
+        onMotionChange((reduce) => { if (reduce) completeTimeline(); });
       }
     }
 
@@ -357,7 +390,8 @@
     const tasks = document.getElementById("tasks");
     if (tasks) {
       const items = tasks.querySelectorAll(".task");
-      if (REDUCED) { items.forEach((t) => t.classList.add("done")); }
+      const clearAll = () => items.forEach((t) => t.classList.add("done"));
+      if (REDUCED) { clearAll(); }
       else {
         ScrollTrigger.create({
           trigger: tasks, start: "top 72%", once: true,
@@ -367,11 +401,17 @@
             });
           }
         });
+        // Reducing motion part-way through the sequence shouldn't strand it.
+        onMotionChange((reduce) => { if (reduce) clearAll(); });
       }
     }
   } else {
-    // no GSAP: ensure everything is visible
-    document.querySelectorAll(".reveal").forEach((el) => { el.style.opacity = 1; });
+    // no GSAP: ensure everything is visible (CSS pre-hides + offsets .reveal)
+    document.querySelectorAll(".reveal").forEach((el) => {
+      el.style.opacity = 1;
+      el.style.transform = "none";
+      el.classList.add("is-revealed");
+    });
     document.querySelectorAll("#tasks .task").forEach((t) => t.classList.add("done"));
   }
 
@@ -383,16 +423,23 @@
     const panel = qa.querySelector(".qa__a");
     summary.addEventListener("click", (e) => {
       e.preventDefault();
+      const animate = hasGSAP && !isReduced();
       const isOpen = qa.hasAttribute("open");
+      // Impatient clicking would otherwise stack tweens and desync `open`
+      // from the panel's inline height.
+      if (hasGSAP) gsap.killTweensOf(panel);
+      const reset = () => { if (hasGSAP) gsap.set(panel, { clearProps: "height" }); };
+
       if (isOpen) {
-        if (hasGSAP && !REDUCED) {
-          gsap.to(panel, { height: 0, duration: 0.4, ease: "power2.inOut", onComplete: () => qa.removeAttribute("open") });
-        } else { qa.removeAttribute("open"); }
+        if (animate) {
+          gsap.to(panel, { height: 0, duration: 0.4, ease: "power2.inOut",
+            onComplete: () => { qa.removeAttribute("open"); reset(); } });
+        } else { qa.removeAttribute("open"); reset(); }
       } else {
         qa.setAttribute("open", "");
-        if (hasGSAP && !REDUCED) {
-          gsap.fromTo(panel, { height: 0 }, { height: "auto", duration: 0.5, ease: "power2.out" });
-        }
+        if (animate) {
+          gsap.fromTo(panel, { height: 0 }, { height: "auto", duration: 0.5, ease: "power2.out", onComplete: reset });
+        } else { reset(); }
       }
     });
   });
@@ -400,18 +447,25 @@
   /* -------------------------------------------------------
      5 · Magnetic buttons
   ------------------------------------------------------- */
-  if (hasGSAP && !REDUCED && window.matchMedia("(pointer:fine)").matches) {
-    document.querySelectorAll(".magnetic").forEach((btn) => {
+  const magnetic = document.querySelectorAll(".magnetic");
+  if (hasGSAP && magnetic.length && window.matchMedia("(pointer:fine)").matches) {
+    magnetic.forEach((btn) => {
+      // GSAP writes `transform` inline, which cancels the button's CSS
+      // :hover lift outright — so carry the lift inside the tween instead.
+      const lift = btn.classList.contains("btn") ? -2 : 0;
       btn.addEventListener("pointermove", (e) => {
+        if (isReduced()) return;
         const r = btn.getBoundingClientRect();
         const x = (e.clientX - r.left - r.width / 2) * 0.3;
-        const y = (e.clientY - r.top - r.height / 2) * 0.4;
+        const y = (e.clientY - r.top - r.height / 2) * 0.4 + lift;
         gsap.to(btn, { x, y, duration: 0.5, ease: "power3.out" });
       });
       btn.addEventListener("pointerleave", () => {
-        gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" });
+        gsap.to(btn, { x: 0, y: 0, duration: isReduced() ? 0.15 : 0.6, ease: isReduced() ? "power2.out" : "elastic.out(1, 0.4)" });
       });
     });
+    // Reducing motion while a button is displaced should snap it back.
+    onMotionChange((reduce) => { if (reduce) gsap.to(magnetic, { x: 0, y: 0, duration: 0.2 }); });
   }
 
   /* -------------------------------------------------------
