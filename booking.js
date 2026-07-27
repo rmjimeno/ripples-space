@@ -438,9 +438,11 @@
       state.instant = null;
       nextBtn.setAttribute("aria-disabled", "true");
       renderTimes();
-      var count = (groupByDay().map[key] || []).length;
-      /* Deliberately does not repeat the date — the radio just announced it. */
-      say(count + (count === 1 ? " time available for this date." : " times available for this date."));
+      /* Deliberately silent. This fires on every arrow-key press through the
+         date list, and rewriting the status line on each one made the widget
+         visibly twitch. Nothing is lost: the radio announces its own state,
+         and the time group's legend already names the date, the timezone and
+         the count via "1 of 8" when focus reaches it. */
     }
 
     /* Keys browsers don't give a radio group for free.
