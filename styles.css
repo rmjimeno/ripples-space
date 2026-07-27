@@ -423,6 +423,11 @@ html.js .reveal:not(.is-revealed) { transition: none; }
    Gold reads well on the dark/red surfaces; dark red on the light sections. */
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
 .section:not(.sec--red) :focus-visible { outline-color: var(--red-accent); }
+/* The booking dialog is a direct child of <body>, so it never matched the
+   .section rule above and inherited the gold ring — gold on --paper-card is
+   ~1.6:1 and fails 1.4.11. These surfaces are always light, so pin them. */
+.bookmodal :focus-visible,
+.bookcal :focus-visible { outline-color: var(--red-accent); }
 /* Don't show the ring for mouse users who don't need it */
 :focus:not(:focus-visible) { outline: none; }
 /* Programmatic skip-link target: move focus without a full-width outline */
@@ -450,6 +455,253 @@ main[tabindex="-1"]:focus { outline: none; }
 @media (max-width: 560px) {
   .motion-toggle { right: 14px; bottom: 14px; padding: 9px 13px; font-size: 12px; }
   .motion-toggle--floating { left: 12px; right: auto; bottom: 12px; }
+}
+
+/* ============================================================
+   BOOKING MODAL
+   Was duplicated byte-for-byte in changemakers/ and service-businesses/.
+   Lifted here so there is one copy; the controller lives in booking.js.
+   ============================================================ */
+.bookmodal {
+  position: fixed; inset: 0; z-index: 10001;
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .35s var(--ease), visibility 0s linear .35s;
+}
+.bookmodal.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .35s var(--ease); }
+.bookmodal__backdrop {
+  position: absolute; inset: 0; background: rgba(42,2,6,.62);
+  -webkit-backdrop-filter: blur(6px) saturate(1.1); backdrop-filter: blur(6px) saturate(1.1);
+  cursor: pointer;
+}
+.bookmodal__dialog {
+  position: relative; z-index: 1; display: flex; flex-direction: column;
+  width: min(620px, 100%); max-height: min(900px, 92vh);
+  background: var(--paper-card); border: 1px solid rgba(63,10,13,.10); border-radius: var(--radius);
+  box-shadow: 0 50px 100px -30px rgba(0,0,0,.6), 0 0 0 1px rgba(233,196,138,.14);
+  overflow: hidden; transform: translateY(14px) scale(.985);
+  transition: transform .4s var(--ease);
+}
+.bookmodal.is-open .bookmodal__dialog { transform: none; }
+.bookmodal__dialog:focus { outline: none; }
+.bookmodal__head {
+  position: relative; padding: 22px 52px 16px 26px;
+  background: linear-gradient(180deg, #fff, var(--paper-card));
+  border-bottom: 1px solid rgba(63,10,13,.08);
+}
+.bookmodal__eyebrow {
+  display: inline-block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--clay); font-weight: 600; margin-bottom: 8px;
+}
+.bookmodal__title {
+  font-family: var(--serif); color: var(--ink); font-size: clamp(21px, 3.4vw, 26px);
+  line-height: 1.14; margin: 0; font-weight: 600;
+}
+.bookmodal__sub { margin: 8px 0 0; color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
+.bookmodal__close {
+  position: absolute; top: 12px; right: 12px; z-index: 3;
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border: none; background: transparent; color: var(--oxblood);
+  font-size: 26px; line-height: 1; cursor: pointer; border-radius: 50%;
+  transition: background .2s ease, transform .25s var(--ease), color .2s ease;
+}
+.bookmodal__close:hover { background: rgba(73,3,8,.08); color: var(--oxblood-deep); transform: rotate(90deg); }
+.bookmodal__body { position: relative; background: #fff; overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; padding: 22px 26px 26px; }
+body.bookmodal-open { overflow: hidden; }
+
+@media (max-width: 560px) {
+  .bookmodal { padding: 0; }
+  .bookmodal__dialog { width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bookmodal, .bookmodal__dialog, .bookmodal__close { transition: none; }
+}
+html.motion-reduced .bookmodal,
+html.motion-reduced .bookmodal__dialog,
+html.motion-reduced .bookmodal__close { transition: none !important; }
+
+/* ============================================================
+   BOOKING WIDGET (.bookcal)
+   Rendered by booking.js into any [data-bookcal] mount.
+   ============================================================ */
+.bookcal {
+  /* The contextual tokens (--fg, --card, …) are declared on .section, and the
+     modal lives outside every .section — so each is given a raw-palette
+     fallback. Everything below consumes only --bc-*. */
+  --bc-fg:      var(--fg, var(--ink));
+  --bc-soft:    var(--fg-soft, var(--ink-soft));
+  --bc-card:    var(--card, var(--paper-card));
+  --bc-accent:  var(--accent, var(--red-accent));
+  /* Not --card-line: at .12 alpha it composites to ~1.2:1, fine for a card
+     edge but a 1.4.11 failure on a control boundary. This is ~3.4:1. */
+  --bc-line:    rgba(73, 3, 8, .50);
+  --bc-line-soft: rgba(73, 3, 8, .16);
+  --bc-error:   #a3121a;
+
+  font-family: var(--sans);
+  color: var(--bc-fg);
+}
+
+/* A step with `display:flex` would beat [hidden]'s UA `display:none`, leaving
+   hidden steps visible AND tabbable. Cheap insurance. */
+.bookcal [hidden] { display: none !important; }
+
+/* The fixed nav would otherwise sit over a focused chip near the top of the
+   inline widget (2.4.11 Focus Not Obscured). */
+.bookcal :is(input, button, select, textarea, a[href], [tabindex]) { scroll-margin-top: 96px; }
+
+/* No-JS fallback: same html.js gate the .reveal system uses. */
+html.js .bookcal__fallback { display: none; }
+.bookcal__fallback { padding: 4px 0 8px; }
+.bookcal__fallback-title { font-family: var(--serif); font-size: 20px; color: var(--ink); margin-bottom: 10px; font-weight: 600; }
+.bookcal__fallback p { color: var(--ink-soft); font-size: 15px; line-height: 1.6; }
+.bookcal__fallback a { color: var(--red-accent); border-bottom: 1px solid currentColor; }
+
+/* ---- progress ---- */
+.bookcal__progress {
+  list-style: none; display: flex; gap: 8px; flex-wrap: wrap;
+  margin: 0 0 20px; padding: 0;
+  font-size: 12.5px; letter-spacing: .04em; color: var(--bc-soft);
+}
+.bookcal__progress-item { display: inline-flex; align-items: center; gap: 7px; }
+.bookcal__progress-item + .bookcal__progress-item::before { content: ""; width: 16px; height: 1px; background: var(--bc-line-soft); margin-right: 7px; }
+.bookcal__progress-num {
+  display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%;
+  background: var(--bc-line-soft); color: var(--bc-fg); font-size: 11.5px; font-weight: 600;
+}
+.bookcal__progress-item[aria-current="step"] { color: var(--bc-fg); font-weight: 600; }
+.bookcal__progress-item[aria-current="step"] .bookcal__progress-num { background: var(--ink); color: var(--paper); }
+
+/* ---- steps ---- */
+.bookcal__step { display: flex; flex-direction: column; }
+.bookcal__step-title { font-family: var(--serif); font-size: clamp(19px, 2.6vw, 23px); font-weight: 600; color: var(--bc-fg); line-height: 1.2; }
+.bookcal__step-title:focus { outline: none; }
+.bookcal__step-note { margin-top: 5px; font-size: 14px; color: var(--bc-soft); }
+
+/* ---- timezone ---- */
+.bookcal__tz { margin-top: 18px; }
+.bookcal__label { display: block; font-size: 14px; font-weight: 600; color: var(--bc-fg); margin-bottom: 5px; }
+.bookcal__select,
+.bookcal__input,
+.bookcal__textarea {
+  width: 100%; font-family: var(--sans); font-size: 15px; color: var(--bc-fg);
+  background: #fff; border: 1px solid var(--bc-line); border-radius: 10px;
+  padding: 11px 13px; min-height: 44px;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.bookcal__textarea { resize: vertical; line-height: 1.55; }
+.bookcal__select:hover,
+.bookcal__input:hover,
+.bookcal__textarea:hover { border-color: var(--ink); }
+.bookcal__input[aria-invalid="true"],
+.bookcal__textarea[aria-invalid="true"] { border-color: var(--bc-error); box-shadow: 0 0 0 3px rgba(163,18,26,.10); }
+
+/* ---- status line (the only live region) ---- */
+.bookcal__status { min-height: 22px; margin-top: 14px; font-size: 14px; color: var(--bc-soft); }
+.bookcal__status:empty { min-height: 0; margin-top: 0; }
+
+/* ---- chip groups ---- */
+.bookcal__group { border: 0; padding: 0; margin: 18px 0 0; min-width: 0; }
+.bookcal__legend { padding: 0; font-size: 14px; font-weight: 600; color: var(--bc-fg); margin-bottom: 10px; }
+.bookcal__month { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--bc-soft); margin: 14px 0 8px; }
+.bookcal__month:first-of-type { margin-top: 0; }
+.bookcal__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.bookcal__chip { position: relative; display: inline-flex; }
+.bookcal__chip-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; appearance: none; cursor: pointer; }
+.bookcal__chip-face {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-height: 44px; padding: 6px 15px;
+  background: #fff; border: 1px solid var(--bc-line); border-radius: 10px;
+  font-size: 14.5px; color: var(--bc-fg); line-height: 1.25; text-align: center;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.bookcal__chip-input:hover ~ .bookcal__chip-face { border-color: var(--ink); background: #fffdf7; }
+.bookcal__chip-input:focus-visible ~ .bookcal__chip-face { outline: 3px solid var(--red-accent); outline-offset: 3px; }
+/* Checked state must not be colour-only (1.4.1) — and background-color is
+   discarded in forced-colors, where the opacity:0 input is invisible. The
+   glyph and the border weight are what survive. */
+.bookcal__chip-input:checked ~ .bookcal__chip-face {
+  border-color: var(--ink); border-width: 2px; padding: 5px 14px;
+  background: rgba(73,3,8,.06); font-weight: 600;
+}
+.bookcal__chip-input:checked ~ .bookcal__chip-face::before { content: "✓ "; font-weight: 700; }
+.bookcal__chip-dow { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--bc-soft); }
+.bookcal__chip-input:checked ~ .bookcal__chip-face .bookcal__chip-dow { color: var(--bc-fg); }
+.bookcal__chip-day { font-weight: 500; }
+.bookcal__more { margin-top: 12px; align-self: flex-start; }
+
+.bookcal__group--times { animation: none; }
+
+/* ---- review list ---- */
+.bookcal__summary {
+  margin: 16px 0 22px; padding: 16px 18px;
+  background: var(--bc-card); border: 1px solid var(--bc-line-soft); border-radius: 12px;
+}
+.bookcal__summary-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.bookcal__summary-row + .bookcal__summary-row { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--bc-line-soft); }
+.bookcal__summary-term { flex: none; width: 88px; font-size: 13.5px; color: var(--bc-soft); }
+.bookcal__summary-value { font-size: 14.5px; font-weight: 500; color: var(--bc-fg); }
+
+/* ---- fields ---- */
+.bookcal__field { margin-top: 16px; }
+.bookcal__optional { font-weight: 400; color: var(--bc-soft); }
+.bookcal__hint { font-size: 13.5px; color: var(--bc-soft); margin-bottom: 6px; }
+.bookcal__error { font-size: 13.5px; font-weight: 600; color: var(--bc-error); }
+.bookcal__error:not(:empty) { margin-bottom: 6px; }
+
+/* ---- custom fields from the GHL calendar ---- */
+.bookcal__group--check { margin-top: 16px; }
+.bookcal__checks { display: grid; gap: 2px; }
+.bookcal__check { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.bookcal__check-input { flex: none; width: 20px; height: 20px; accent-color: var(--ink); cursor: pointer; }
+.bookcal__check-label { font-size: 15px; color: var(--bc-fg); cursor: pointer; flex: 1; }
+
+/* Honeypot. Off-screen rather than display:none so bots still "see" it. */
+.bookcal__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ---- error summary ---- */
+.bookcal__errors {
+  margin-top: 16px; padding: 15px 18px;
+  border: 2px solid var(--bc-error); border-radius: 12px; background: rgba(163,18,26,.05);
+}
+.bookcal__errors:focus { outline: none; box-shadow: 0 0 0 3px rgba(163,18,26,.22); }
+.bookcal__errors-title { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--bc-error); margin-bottom: 7px; }
+.bookcal__errors-list { margin: 0; padding-left: 19px; font-size: 14px; }
+.bookcal__errors-list li + li { margin-top: 4px; }
+.bookcal__errors-list a { color: var(--bc-error); font-weight: 600; border-bottom: 1px solid currentColor; }
+
+/* ---- actions ---- */
+.bookcal__actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+.bookcal__actions .btn { min-height: 44px; }
+/* aria-disabled, not disabled — the control keeps its place in the tab order
+   so it can explain itself instead of vanishing under the user's fingers. */
+.bookcal [aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.bookcal [aria-disabled="true"]:hover { transform: none; box-shadow: none; }
+
+/* ---- terminal states ---- */
+.bookcal__done, .bookcal__notice { padding: 6px 0 4px; }
+.bookcal__done-title, .bookcal__notice-title { font-family: var(--serif); font-size: clamp(20px, 3vw, 25px); font-weight: 600; color: var(--bc-fg); line-height: 1.2; }
+.bookcal__done-title:focus, .bookcal__notice-title:focus { outline: none; }
+.bookcal__done-body, .bookcal__notice p { margin-top: 10px; color: var(--bc-soft); font-size: 15px; line-height: 1.6; }
+.bookcal__done-body strong { color: var(--bc-fg); font-weight: 600; }
+.bookcal__done-actions, .bookcal__notice .btn { margin-top: 18px; }
+.bookcal__done a, .bookcal__notice a:not(.btn) { color: var(--red-accent); border-bottom: 1px solid currentColor; }
+
+/* Step + reveal transitions. Global reduced-motion rules already flatten these
+   to .001ms, so no separate handling is needed. */
+.bookcal__step, .bookcal__done, .bookcal__notice { animation: bookcal-in .28s var(--ease) both; }
+@keyframes bookcal-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+@media (forced-colors: active) {
+  .bookcal__chip-face { border-color: ButtonBorder; }
+  .bookcal__chip-input:checked ~ .bookcal__chip-face { border-color: Highlight; }
+}
+
+@media (max-width: 560px) {
+  .bookcal__summary-term { width: 100%; }
+  .bookcal__actions .btn { flex: 1 1 100%; }
 }
 
 /* ============ REDUCED MOTION ============ */

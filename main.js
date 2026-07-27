@@ -468,18 +468,5 @@
     onMotionChange((reduce) => { if (reduce) gsap.to(magnetic, { x: 0, y: 0, duration: 0.2 }); });
   }
 
-  /* -------------------------------------------------------
-     6 · Book-a-call placeholder handler
-  ------------------------------------------------------- */
-  const bookBtn = document.getElementById("book-btn");
-  if (bookBtn) {
-    bookBtn.addEventListener("click", (e) => {
-      // Replace href with your real booking link (Calendly / GHL calendar) later.
-      if (bookBtn.getAttribute("href") === "#") {
-        e.preventDefault();
-        bookBtn.textContent = "Add your booking link →";
-        gsap && gsap.fromTo(bookBtn, { scale: 0.98 }, { scale: 1, duration: 0.4, ease: "back.out(2)" });
-      }
-    });
-  }
+  /* Booking lives in booking.js — it renders the widget and owns the modal. */
 })();
