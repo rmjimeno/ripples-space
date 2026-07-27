@@ -597,9 +597,17 @@ html.js .bookcal__fallback { display: none; }
 .bookcal__input[aria-invalid="true"],
 .bookcal__textarea[aria-invalid="true"] { border-color: var(--bc-error); box-shadow: 0 0 0 3px rgba(163,18,26,.10); }
 
-/* ---- status line (the only live region) ---- */
-.bookcal__status { min-height: 22px; margin-top: 14px; font-size: 14px; color: var(--bc-soft); }
-.bookcal__status:empty { min-height: 0; margin-top: 0; }
+/* ---- status line (the only live region) ----
+   The height is reserved for two lines and never collapses. say() blanks the
+   region for a moment to force screen readers to re-announce an identical
+   message; with a :empty rule that collapsed it, every date selection made the
+   whole widget lurch up ~37px and back. Reserving the space costs a little
+   whitespace and removes the flicker entirely. */
+.bookcal__status {
+  min-height: 2.9em; margin-top: 14px; font-size: 14px; line-height: 1.45;
+  color: var(--bc-soft);
+}
+@media (max-width: 560px) { .bookcal__status { min-height: 4.35em; } }
 
 /* ---- chip groups ---- */
 .bookcal__group { border: 0; padding: 0; margin: 18px 0 0; min-width: 0; }
@@ -611,8 +619,12 @@ html.js .bookcal__fallback { display: none; }
 .bookcal__chip { position: relative; display: inline-flex; }
 .bookcal__chip-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; appearance: none; cursor: pointer; }
 .bookcal__chip-face {
+  position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
-  min-height: 44px; padding: 6px 15px;
+  min-height: 44px;
+  /* Symmetric side padding permanently reserves room for the checked tick, so
+     selecting a chip can never change its size. */
+  min-width: 76px; padding: 6px 22px;
   background: #fff; border: 1px solid var(--bc-line); border-radius: 10px;
   font-size: 14.5px; color: var(--bc-fg); line-height: 1.25; text-align: center;
   transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
@@ -623,10 +635,25 @@ html.js .bookcal__fallback { display: none; }
    discarded in forced-colors, where the opacity:0 input is invisible. The
    glyph and the border weight are what survive. */
 .bookcal__chip-input:checked ~ .bookcal__chip-face {
-  border-color: var(--ink); border-width: 2px; padding: 5px 14px;
-  background: rgba(73,3,8,.06); font-weight: 600;
+  border-color: var(--ink);
+  /* The heavier ring is an inset shadow, not a wider border. Growing the
+     border and shrinking the padding to match still leaves a sub-pixel shift
+     once the browser scales fractional values; a shadow costs no layout at all.
+     Forced-colors drops shadows, which is why the tick below carries the
+     non-colour signal there. */
+  box-shadow: inset 0 0 0 1px var(--ink);
+  background: rgba(73,3,8,.06);
+  /* Deliberately no font-weight change: bolder text is wider, and a ~1.5px
+     reflow per chip reads as jitter while arrowing through the list. */
 }
-.bookcal__chip-input:checked ~ .bookcal__chip-face::before { content: "✓ "; font-weight: 700; }
+/* Absolutely positioned so it is NOT a flex item. As a flex item in this
+   column container it added an entire row, making the chip 19px taller,
+   stretching every chip on that row and shifting the page below it. */
+.bookcal__chip-input:checked ~ .bookcal__chip-face::before {
+  content: "✓";
+  position: absolute; left: 7px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; font-weight: 700; line-height: 1;
+}
 .bookcal__chip-dow { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--bc-soft); }
 .bookcal__chip-input:checked ~ .bookcal__chip-face .bookcal__chip-dow { color: var(--bc-fg); }
 .bookcal__chip-day { font-weight: 500; }
