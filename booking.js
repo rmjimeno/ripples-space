@@ -443,9 +443,27 @@
       say(count + (count === 1 ? " time available for this date." : " times available for this date."));
     }
 
-    /* Home/End inside a radio group — browsers don't implement these natively. */
-    function wireRadioHomeEnd(container, name) {
+    /* Keys browsers don't give a radio group for free.
+       Home/End: jump to the ends of the list.
+       Enter:    select the focused chip. Tabbing into a group where nothing is
+                 chosen focuses the first radio WITHOUT checking it, and native
+                 radios ignore Enter — so the first date could only be picked by
+                 arrowing away and back. The chips read as buttons, so Enter
+                 selecting them is what people expect. */
+    function wireRadioKeys(container, name) {
       container.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          var focused = e.target;
+          if (!focused || focused.type !== "radio") return;
+          /* Always swallow it: there is no submit control in step 1, and a
+             stray Enter should never reach the form. */
+          e.preventDefault();
+          if (focused.checked) return;
+          focused.checked = true;
+          focused.dispatchEvent(new Event("change", { bubbles: true }));
+          return;
+        }
+
         if (e.key !== "Home" && e.key !== "End") return;
         var radios = container.querySelectorAll('input[name="' + name + '"]');
         if (!radios.length) return;
@@ -456,8 +474,8 @@
         target.focus();
       });
     }
-    wireRadioHomeEnd(dateGroup, id + "-date");
-    wireRadioHomeEnd(timeGroup, id + "-time");
+    wireRadioKeys(dateGroup, id + "-date");
+    wireRadioKeys(timeGroup, id + "-time");
 
     /* ---------- loading ---------- */
 
