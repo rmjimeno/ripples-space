@@ -233,6 +233,105 @@
   window.addEventListener("scroll", onScroll, { passive: true });
 
   /* -------------------------------------------------------
+     2b · NAV drawer (burger menu) — only on pages that have one
+  ------------------------------------------------------- */
+  const burger = document.getElementById("nav-burger");
+  const drawer = document.getElementById("nav-drawer");
+  if (burger && drawer) {
+    const panel = drawer.querySelector(".navdrawer__panel");
+    const drawerOpen = () => drawer.classList.contains("is-open");
+    /* The drawer lives inside <header>, so only main + footer need inert —
+       and the burger stays reachable as the close control. */
+    const behind = () => [document.querySelector("main"), document.querySelector("footer")].filter(Boolean);
+
+    function openDrawer() {
+      drawer.classList.add("is-open");
+      drawer.setAttribute("aria-hidden", "false");
+      burger.setAttribute("aria-expanded", "true");
+      burger.setAttribute("aria-label", "Close menu");
+      nav.classList.add("is-drawer-open");
+      document.body.classList.add("drawer-open");
+      behind().forEach((n) => n.setAttribute("inert", ""));
+      setTimeout(() => { if (panel) panel.focus(); }, 60);
+    }
+
+    /* Focus always returns to the burger, not to whatever held it before the
+       drawer opened: the burger is the drawer's own toggle and is always
+       visible, and Safari doesn't focus a <button> on click — so remembering
+       the previous element would strand focus on <body> for mouse users. */
+    function closeDrawer() {
+      behind().forEach((n) => n.removeAttribute("inert"));
+      drawer.classList.remove("is-open");
+      drawer.setAttribute("aria-hidden", "true");
+      burger.setAttribute("aria-expanded", "false");
+      burger.setAttribute("aria-label", "Open menu");
+      nav.classList.remove("is-drawer-open");
+      document.body.classList.remove("drawer-open");
+      burger.focus();
+    }
+
+    burger.addEventListener("click", () => { drawerOpen() ? closeDrawer() : openDrawer(); });
+    drawer.querySelectorAll("[data-drawer-close]").forEach((el) => {
+      el.addEventListener("click", () => closeDrawer());
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!drawerOpen()) return;
+      if (e.key === "Escape") { closeDrawer(); return; }
+      if (e.key !== "Tab") return;
+
+      // The burger is outside the drawer but is its close control, so it's
+      // part of the loop.
+      const sel = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      const list = [burger].concat(Array.prototype.slice.call(drawer.querySelectorAll(sel)));
+      const first = list[0], last = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+
+  /* -------------------------------------------------------
+     2c · Portrait easter egg — a random line on hover
+  ------------------------------------------------------- */
+  const portrait = document.getElementById("me-portrait");
+  if (portrait) {
+    const bubble = portrait.querySelector(".me__bubble");
+    const lines = [
+      "Please don't poke the designer.",
+      "Achievement unlocked: Hovered the founder.",
+      "✨ You found the secret dialogue.",
+      "That's it, no more! 😡"
+    ];
+    let last = -1, hideTimer;
+
+    // Random, but never the same line twice running — repeats read as a bug.
+    function nextLine() {
+      let i;
+      do { i = Math.floor(Math.random() * lines.length); } while (lines.length > 1 && i === last);
+      last = i;
+      return lines[i];
+    }
+    function show() {
+      bubble.textContent = nextLine();
+      portrait.classList.add("is-talking");
+    }
+    function hide() { portrait.classList.remove("is-talking"); }
+
+    portrait.addEventListener("pointerenter", show);
+    portrait.addEventListener("pointerleave", hide);
+    /* Touch and pen have no hover, so a tap surfaces it — then it times out,
+       since there is no pointerleave coming to clear it. Mouse is excluded:
+       pointerenter already fired and the timer would yank the bubble away
+       while the cursor is still on the photo. */
+    portrait.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse") return;
+      show();
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hide, 2600);
+    });
+  }
+
+  /* -------------------------------------------------------
      3 · GSAP scroll reveals + section animations
   ------------------------------------------------------- */
   if (hasGSAP) {
