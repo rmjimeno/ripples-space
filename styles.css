@@ -15,7 +15,9 @@
   --cream:        #feedc9;
   --cream-dim:    #e9d9b8;
   --taupe:        #c7b49c;
-  --taupe-dim:    #a3917c;
+  /* Was #a3917c (5.3:1 on oxblood) — lifted for the same reason --ink-dim was
+     darkened on the light side: small notes were reading muddy. Now 6.9:1. */
+  --taupe-dim:    #b9a68f;
   --gold:         #e9c48a;
   --gold-soft:    rgba(233, 196, 138, 0.16);
 
@@ -23,8 +25,13 @@
   --paper-alt:  #efe5d3;   /* alternate light surface */
   --paper-card: #fdfaf2;   /* raised card on light */
   --ink:        #3f0a0d;   /* deep oxblood ink (headings) */
-  --ink-soft:   #7c625a;   /* warm body text */
-  --ink-dim:    #a08d81;   /* faint labels */
+  /* Body text is the same ink as the headings. The old #7c625a cleared 4.5:1
+     on paper by a hair but read washed-out against it; small labels at
+     #a08d81 were 2.8:1 and failed outright. --ink-dim is now only a step
+     down from the body colour — enough to rank a label below a sentence,
+     still 6.5:1 on --paper and 7.1:1 on --paper-card. */
+  --ink-soft:   #3f0a0d;   /* body text on light */
+  --ink-dim:    #6b4f45;   /* small labels on light */
   --clay:       #a2472f;   /* terracotta eyebrow */
   --red-accent: #7c1418;   /* accent for italics on light */
 
@@ -88,8 +95,11 @@ a { color: inherit; text-decoration: none; }
 .section.sec--red {
   --surface:   var(--oxblood);
   --fg:        var(--cream);
-  --fg-soft:   var(--taupe);
-  --fg-dim:    var(--taupe-dim);
+  /* Mirrors the light theme: body text is the same cream as the headings
+     (taupe read muddy against oxblood), with the dim tone one step down for
+     small labels rather than for sentences. */
+  --fg-soft:   var(--cream);
+  --fg-dim:    var(--taupe);
   --eyebrow:   var(--gold);
   --accent:    var(--gold);
   --accent-soft: var(--gold-soft);
@@ -146,9 +156,23 @@ a { color: inherit; text-decoration: none; }
 .btn--ink:hover { transform: translateY(-2px); box-shadow: 0 20px 44px -16px rgba(63,10,13,.7); }
 
 /* ============ NAV ============ */
-.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: background .4s ease, backdrop-filter .4s ease, border-color .4s ease; border-bottom: 1px solid transparent; }
-.nav.scrolled { background: rgba(42, 2, 6, 0.82); backdrop-filter: blur(14px) saturate(1.2); border-bottom-color: rgba(254,237,201,.10); }
-.nav__inner { max-width: var(--maxw); margin: 0 auto; padding: 16px clamp(20px, 5vw, 48px); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
+/* The bar's blurred backing is a pseudo-element rather than .nav's own
+   background, because backdrop-filter makes an element the containing block
+   for its position:fixed descendants — which collapsed the full-screen
+   drawer into the height of the bar the moment .scrolled was applied.
+   Sits above the drawer (z-index 2 vs 1) so the bar still reads solid over
+   an open panel; the open drawer gets the same treatment at scrollY 0. */
+.nav::before {
+  content: ""; position: absolute; inset: 0; z-index: 2; box-sizing: border-box; opacity: 0;
+  background: rgba(42, 2, 6, 0.82);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+  border-bottom: 1px solid rgba(254,237,201,.10);
+  transition: opacity .4s ease;
+}
+.nav.scrolled::before,
+.nav.is-drawer-open::before { opacity: 1; }
+.nav__inner { position: relative; z-index: 3; max-width: var(--maxw); margin: 0 auto; padding: 16px clamp(20px, 5vw, 48px); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 11px; font-family: var(--serif); font-size: 20px; font-weight: 500; color: var(--cream); }
 .brand__mark { display: inline-flex; color: var(--gold); }
 .brand__mark svg { width: 30px; height: 30px; overflow: visible; }
@@ -164,9 +188,95 @@ a { color: inherit; text-decoration: none; }
 .nav__links a:hover::after { width: 100%; }
 .nav__cta { padding: 10px 20px; font-size: 14px; }
 
+/* ============ NAV BURGER + DRAWER ============ */
+/* 44px hit area (2.5.8) with a 22px visual icon inside it. */
+.nav__burger {
+  flex: none; width: 44px; height: 44px; display: grid; place-items: center;
+  background: transparent; border: 1px solid rgba(254, 237, 201, 0.22); border-radius: 10px;
+  color: var(--cream); cursor: pointer;
+  transition: border-color .3s ease, background .3s ease;
+}
+.nav__burger:hover { border-color: var(--gold); background: rgba(254, 237, 201, 0.06); }
+.nav__burger-box { position: relative; display: block; width: 22px; height: 14px; }
+.nav__burger-box span {
+  position: absolute; left: 0; width: 100%; height: 1.5px; border-radius: 2px; background: currentColor;
+  transition: transform .4s var(--ease), opacity .25s ease, width .4s var(--ease);
+}
+.nav__burger-box span:nth-child(1) { top: 0; }
+.nav__burger-box span:nth-child(2) { top: 6.25px; width: 74%; }
+.nav__burger-box span:nth-child(3) { top: 12.5px; }
+/* Burger → X */
+.nav__burger[aria-expanded="true"] .nav__burger-box span:nth-child(1) { transform: translateY(6.25px) rotate(45deg); }
+.nav__burger[aria-expanded="true"] .nav__burger-box span:nth-child(2) { opacity: 0; }
+.nav__burger[aria-expanded="true"] .nav__burger-box span:nth-child(3) { transform: translateY(-6.25px) rotate(-45deg); }
+
+.navdrawer {
+  position: fixed; inset: 0; z-index: 1;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .35s var(--ease), visibility 0s linear .35s;
+}
+.navdrawer.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .35s var(--ease); }
+.navdrawer__backdrop {
+  position: absolute; inset: 0; background: rgba(42, 2, 6, 0.55);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1); backdrop-filter: blur(8px) saturate(1.1);
+  cursor: pointer;
+}
+.navdrawer__panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: min(460px, 100%); display: flex; flex-direction: column;
+  /* `safe` matters on short viewports (landscape phones): with plain `center`,
+     content taller than the panel overflows BOTH ends and the top is stranded
+     above scrollTop 0. Older browsers keep the plain `center` above. */
+  justify-content: center;
+  justify-content: safe center;
+  /* Top padding clears the fixed bar so the burger stays reachable as the
+     close control while the drawer is open. */
+  padding: 104px clamp(24px, 5vw, 44px) clamp(28px, 5vh, 48px);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background: var(--oxblood-deep); border-left: 1px solid rgba(254, 237, 201, 0.12);
+  box-shadow: -40px 0 90px -40px rgba(0, 0, 0, .7);
+  transform: translateX(18px); transition: transform .4s var(--ease);
+}
+.navdrawer.is-open .navdrawer__panel { transform: none; }
+.navdrawer__panel:focus { outline: none; }
+.navdrawer__title {
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--taupe-dim); margin-bottom: 18px;
+}
+.navdrawer__paths { display: grid; gap: 14px; }
+.navdrawer__foot { margin-top: 32px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.navdrawer__link { font-size: 14px; color: var(--taupe); border-bottom: 1px solid rgba(199, 180, 156, .35); transition: color .3s ease, border-color .3s ease; }
+.navdrawer__link:hover { color: var(--cream); border-bottom-color: var(--gold); }
+body.drawer-open { overflow: hidden; }
+
+/* Audience path cards — used inside the drawer. */
+.path-link {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  padding: 20px 22px; border-radius: 13px; text-align: left;
+  background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.18);
+  color: var(--cream);
+  transition: transform .5s var(--ease), background .3s ease, border-color .3s ease, box-shadow .5s var(--ease);
+}
+.path-link:hover { background: rgba(254, 237, 201, 0.10); border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 18px 40px -20px rgba(0,0,0,.6); }
+.path-link__label { font-family: var(--serif); font-size: clamp(1.02rem, 2.2vw, 1.16rem); line-height: 1.35; }
+.path-link__meta { display: block; margin-top: 4px; font-family: var(--sans); font-size: 13px; letter-spacing: .02em; color: var(--taupe-dim); }
+.path-link__arrow {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  color: var(--gold); border: 1px solid rgba(233,196,138,.35);
+  transition: transform .45s var(--ease), background .3s ease, color .3s ease, border-color .3s ease;
+}
+.path-link__arrow svg { width: 15px; height: 15px; }
+.path-link:hover .path-link__arrow { background: var(--gold); border-color: var(--gold); color: var(--oxblood-dark); transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .navdrawer, .navdrawer__panel { transition: none; }
+}
+html.motion-reduced .navdrawer,
+html.motion-reduced .navdrawer__panel { transition: none !important; }
+
 /* ============ HERO (red) ============ */
 .hero { position: relative; min-height: 100vh; display: flex; align-items: center; padding: 130px 0 80px; overflow: hidden; background: var(--oxblood); color: var(--cream);
-  --fg: var(--cream); --fg-soft: var(--taupe); --eyebrow: var(--gold); --accent: var(--gold); --card-line: rgba(254,237,201,.10); }
+  --fg: var(--cream); --fg-soft: var(--cream); --eyebrow: var(--gold); --accent: var(--gold); --card-line: rgba(254,237,201,.10); }
 .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
 .hero__veil { position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
@@ -176,7 +286,7 @@ a { color: inherit; text-decoration: none; }
 .hero__inner { position: relative; z-index: 2; max-width: var(--maxw); margin: 0 auto; width: 100%; padding: 0 clamp(20px, 5vw, 48px); display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(30px, 5vw, 70px); align-items: center; }
 .hero__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.08; letter-spacing: -0.015em; color: var(--cream); margin-bottom: 26px; text-wrap: balance; }
 .hero__title em { font-style: italic; color: var(--gold); }
-.hero__sub { font-size: clamp(1.02rem, 1.5vw, 1.2rem); color: var(--taupe); max-width: 52ch; margin-bottom: 34px; text-wrap: pretty; }
+.hero__sub { font-size: clamp(1.02rem, 1.5vw, 1.2rem); color: var(--cream); max-width: 52ch; margin-bottom: 34px; text-wrap: pretty; }
 .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; }
 .hero__trust { margin-top: 22px; font-size: 13.5px; letter-spacing: .04em; color: var(--taupe-dim); }
 
@@ -231,7 +341,10 @@ a { color: inherit; text-decoration: none; }
 .tried__after em { font-style: italic; color: var(--accent); }
 .prose p { color: var(--fg-soft); font-size: clamp(1.02rem, 1.5vw, 1.18rem); max-width: 64ch; }
 .prose p + p { margin-top: 18px; }
-.prose em { color: var(--fg); font-style: italic; }
+/* Body copy now matches --fg in both themes, so an em set to --fg would be
+   italic-only. Accent keeps the emphasis visible (gold on red, deep red on
+   paper), matching how .section__title em already behaves. */
+.prose em { color: var(--accent); font-style: italic; }
 
 /* ============ SYMPTOMS (cost) ============ */
 .symptoms { list-style: none; margin: 46px 0; border-top: 1px solid var(--line); }
@@ -240,7 +353,7 @@ a { color: inherit; text-decoration: none; }
 .symptoms li em { font-style: italic; color: var(--accent); }
 .symptoms li:hover { padding-left: 12px; }
 .closer { font-family: var(--serif); font-weight: 500; font-size: clamp(1.45rem, 3vw, 2rem); line-height: 1.4; color: var(--fg-soft); max-width: none; text-wrap: balance; }
-.closer em { color: var(--fg); font-style: italic; }
+.closer em { color: var(--accent); font-style: italic; }
 
 /* ============ PILLARS ============ */
 .head--narrow { max-width: 42ch; margin-bottom: 56px; }
@@ -346,7 +459,7 @@ a { color: inherit; text-decoration: none; }
 .qa[open] .qa__x::after { transform: rotate(90deg); opacity: 0; }
 .qa__a { overflow: hidden; }
 .qa__a p { color: var(--fg-soft); font-size: 16px; padding-bottom: 26px; max-width: 62ch; }
-.qa__a em { color: var(--fg); font-style: italic; }
+.qa__a em { color: var(--accent); font-style: italic; }
 
 /* ============ CTA (red) ============ */
 .cta { position: relative; overflow: hidden; text-align: center; padding: clamp(110px, 15vw, 180px) 0; background: var(--oxblood-dark); }
@@ -355,7 +468,7 @@ a { color: inherit; text-decoration: none; }
 .cta__canvas { z-index: 0; }
 .cta::after { content:""; position:absolute; inset:0; z-index:0; background: radial-gradient(80% 120% at 50% 120%, transparent, var(--oxblood-dark) 78%); pointer-events:none; }
 .cta__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2.4rem, 5.4vw, 4.2rem); line-height: 1.04; color: var(--cream); margin-bottom: 26px; letter-spacing: -0.02em; text-wrap: balance; }
-.cta__sub { color: var(--taupe); font-size: clamp(1.05rem, 1.7vw, 1.3rem); max-width: 54ch; margin: 0 auto 40px; }
+.cta__sub { color: var(--cream); font-size: clamp(1.05rem, 1.7vw, 1.3rem); max-width: 54ch; margin: 0 auto 40px; }
 .cta__actions { display: flex; justify-content: center; }
 .cta__note { margin-top: 26px; font-size: 13px; letter-spacing: .06em; color: var(--taupe-dim); }
 

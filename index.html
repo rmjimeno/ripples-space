@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ripples Space · Digital Experiences That Drive Business Growth</title>
-  <meta name="description" content="Digital experiences that drive business growth. Combining brand strategy, web design, and AI-powered automation to create seamless customer journeys that build trust, drive conversions, and foster loyalty." />
+  <title>Ripples Space · Your business has grown. Your digital tools… maybe not.</title>
+  <meta name="description" content="I help businesses simplify, automate, and build digital systems that save time, reduce busywork, and make everyday operations a whole lot less chaotic." />
 
   <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
   <script src="analytics.js"></script>
@@ -23,60 +23,114 @@
   <link rel="stylesheet" href="styles.css" />
 
   <style>
-    /* ============ COMING SOON HERO (page-specific) ============ */
-    .wait { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 84px 0 100px; overflow: hidden; background: var(--oxblood); }
-    .wait__inner { position: relative; z-index: 2; width: 100%; max-width: 700px; margin: 0 auto; padding: 0 clamp(22px, 6vw, 40px); text-align: center; }
+    /* ============ HERO (page-specific: centered, no stage) ============ */
+    .hero__inner--center { grid-template-columns: 1fr; max-width: 900px; text-align: center; }
+    .hero__inner--center .hero__sub { margin-left: auto; margin-right: auto; }
+    .hero__inner--center .hero__actions { justify-content: center; }
+
+    .hero__closer { font-family: var(--serif); font-weight: 500; font-size: clamp(1.3rem, 2.6vw, 1.75rem); line-height: 1.35; color: var(--cream); margin-bottom: 34px; text-wrap: balance; }
+    .hero__closer em { font-style: italic; color: var(--gold); }
 
     /* Hero mark: hairline rings + live ripple, matching the Ripples Space brand mark */
-    .wait__mark { display: inline-flex; color: var(--cream); margin-bottom: 16px; }
-    .wait__mark svg { width: clamp(96px, 11vw, 112px); height: clamp(96px, 11vw, 112px); overflow: visible; }
-    .wait__mark svg circle { stroke-width: 1; }
-    .wait__mark .ripples-orbit,
-    .wait__mark .ripples-core,
-    .wait__mark .ripple-ring { transform-box: view-box; transform-origin: 129px 129px; }
-    .wait__mark .ripples-orbit { animation: markOrbit 28s linear infinite; }
-    .wait__mark .ripples-core { animation: markCorePulse 4.5s ease-in-out infinite; }
-    .wait__mark .ripple-ring { opacity: 0; animation: markRipple 6s ease-out infinite; }
-    .wait__mark .ripple-ring.delay-1 { animation-delay: 2s; }
-    .wait__mark .ripple-ring.delay-2 { animation-delay: 4s; }
+    .hero__mark { display: inline-flex; color: var(--cream); margin-bottom: 18px; }
+    .hero__mark svg { width: clamp(84px, 9vw, 104px); height: clamp(84px, 9vw, 104px); overflow: visible; }
+    .hero__mark svg circle { stroke-width: 1; }
+    .hero__mark .ripples-orbit,
+    .hero__mark .ripples-core,
+    .hero__mark .ripple-ring { transform-box: view-box; transform-origin: 129px 129px; }
+    .hero__mark .ripples-orbit { animation: markOrbit 28s linear infinite; }
+    .hero__mark .ripples-core { animation: markCorePulse 4.5s ease-in-out infinite; }
+    .hero__mark .ripple-ring { opacity: 0; animation: markRipple 6s ease-out infinite; }
+    .hero__mark .ripple-ring.delay-1 { animation-delay: 2s; }
+    .hero__mark .ripple-ring.delay-2 { animation-delay: 4s; }
     @keyframes markOrbit { to { transform: rotate(360deg); } }
     @keyframes markCorePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .92; transform: scale(1.08); } }
     @keyframes markRipple { 0% { opacity: .5; transform: scale(.55); } 80% { opacity: 0; } 100% { opacity: 0; transform: scale(1.5); } }
 
-    .wait__title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.9rem, 4.4vw, 3rem); line-height: 1.1; letter-spacing: -0.015em; color: var(--cream); margin-bottom: 24px; text-wrap: balance; }
-    .wait__title em { font-style: italic; color: var(--gold); }
+    /* ============ RHYTHM for the narrow copy sections ============ */
+    .section__title + .prose,
+    .section__title + .closer { margin-top: 34px; }
+    .closer + .prose { margin-top: 28px; }
+    .prose + .closer { margin-top: 40px; }
+    .cta-row { margin-top: 38px; }
 
-    .wait__sub { font-size: clamp(1.02rem, 1.6vw, 1.22rem); line-height: 1.6; color: var(--taupe); max-width: 52ch; margin: 0 auto 28px; }
-
-    /* choose-your-path links */
-    .wait__prompt { font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--taupe-dim); margin-bottom: 18px; }
-
-    .wait-paths { display: grid; gap: 14px; max-width: 560px; margin: 0 auto; }
-    .path-link {
-      display: flex; align-items: center; justify-content: space-between; gap: 18px;
-      padding: 20px 24px; border-radius: 13px; text-align: left;
-      background: rgba(254, 237, 201, 0.06); border: 1px solid rgba(254, 237, 201, 0.18);
-      color: var(--cream);
-      transition: transform .5s var(--ease), background .3s ease, border-color .3s ease, box-shadow .5s var(--ease);
+    /* ============ OFFERS (Ways I can help) ============ */
+    .offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; align-items: stretch; }
+    .offer {
+      display: flex; flex-direction: column;
+      padding: 34px 30px; border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+      transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
     }
-    .path-link:hover { background: rgba(254, 237, 201, 0.10); border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 18px 40px -20px rgba(0,0,0,.6); }
-    .path-link:focus-visible { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(233,196,138,.22); }
-
-    .path-link__label { font-family: var(--serif); font-size: clamp(1.02rem, 2.2vw, 1.16rem); line-height: 1.35; }
-    .path-link__meta { display: block; margin-top: 4px; font-family: var(--sans); font-size: 13px; letter-spacing: .02em; color: var(--taupe-dim); }
-
-    .path-link__arrow {
-      flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
-      color: var(--gold); border: 1px solid rgba(233,196,138,.35);
-      transition: transform .45s var(--ease), background .3s ease, color .3s ease, border-color .3s ease;
+    .offer:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 24px 50px -30px rgba(63,10,13,.35); }
+    /* Every paragraph in the card carries a class, including the body copy:
+       a bare `.offer p` rule (0,1,1) outranks `.offer__for` / `__need` /
+       `__out` (0,1,0) and silently flattened all four into one colour. */
+    .offer__stage { font-family: var(--sans); font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+    .offer h3 { font-family: var(--serif); font-weight: 500; font-size: 1.55rem; line-height: 1.15; color: var(--fg); margin: 9px 0 12px; }
+    /* The audience line closes the card's header block, so the rule sits
+       under it rather than floating between two paragraphs. */
+    .offer__for {
+      font-size: 14.5px; font-style: italic; line-height: 1.45; color: var(--fg-dim);
+      padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--card-line);
     }
-    .path-link__arrow svg { width: 15px; height: 15px; }
-    .path-link:hover .path-link__arrow { background: var(--gold); border-color: var(--gold); color: var(--oxblood-dark); transform: translateX(3px); }
+    .offer__body { color: var(--fg-soft); font-size: 15.5px; line-height: 1.6; }
+    .offer__body + .offer__body { margin-top: 12px; }
+    .offer__need { font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); margin: 26px 0 14px; }
+    /* The list's bottom margin is what guarantees a gap above the outcome
+       rule: .offer__out uses margin-top:auto to bottom-align across cards,
+       and auto collapses to 0 on whichever card is tallest. */
+    .offer__list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+    .offer__list li { position: relative; padding-left: 19px; font-size: 15px; line-height: 1.5; color: var(--fg-soft); }
+    .offer__list li::before { content: ""; position: absolute; left: 1px; top: .58em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+    .offer__out {
+      margin-top: auto; padding-top: 22px; border-top: 1px solid var(--card-line);
+      font-family: var(--serif); font-style: italic; font-size: 1.05rem; line-height: 1.4; color: var(--accent);
+    }
 
-    .wait__foot { position: absolute; left: 0; right: 0; bottom: 26px; z-index: 2; text-align: center; font-size: 12.5px; letter-spacing: .04em; color: var(--taupe-dim); }
+    /* ============ PORTRAIT + HOVER EASTER EGG ============ */
+    /* Capped at the file's intrinsic 182px so it is never upscaled. */
+    .me__portrait { position: relative; display: inline-block; margin: 0 0 24px; }
+    .me__portrait img { display: block; width: clamp(148px, 16vw, 182px); height: auto; border-radius: 14px; }
 
-    @media (max-width: 560px) {
-      .path-link { padding: 18px 20px; }
+    .me__bubble {
+      position: absolute; left: calc(100% + 16px); bottom: 52%;
+      white-space: nowrap; padding: 9px 15px; border-radius: 12px;
+      background: var(--cream); color: var(--oxblood-dark);
+      font-family: var(--sans); font-size: 13.5px; font-weight: 500; line-height: 1.3;
+      box-shadow: 0 16px 34px -16px rgba(0,0,0,.65);
+      opacity: 0; transform: translateY(6px) scale(.96); transform-origin: left bottom;
+      transition: opacity .22s var(--ease), transform .28s var(--ease);
+      pointer-events: none;
+    }
+    /* Tail — a rotated square tucked under the bubble's left edge. */
+    .me__bubble::after {
+      content: ""; position: absolute; left: -4px; bottom: 13px;
+      width: 10px; height: 10px; background: inherit; border-radius: 2px; transform: rotate(45deg);
+    }
+    .me__portrait.is-talking .me__bubble { opacity: 1; transform: none; }
+
+    /* Alongside the photo there is no room for a nowrap bubble on a phone,
+       so it moves above and is allowed to wrap. */
+    @media (max-width: 700px) {
+      /* width:max-content is what lets the bubble outgrow the figure — an
+         absolutely positioned box shrink-to-fits against its containing
+         block (the 148px photo), so max-width alone never applies. */
+      .me__bubble {
+        left: 0; bottom: calc(100% + 12px); white-space: normal;
+        width: max-content; max-width: min(260px, 72vw); transform-origin: bottom left;
+      }
+      .me__bubble::after { left: 24px; bottom: -4px; }
+    }
+
+    /* ============ CTA ============ */
+    /* The shared .cta__title tops out at 4.2rem, which suits a three-word
+       line; this one is a full sentence, so it steps down and takes a
+       display measure instead of the section's full width. */
+    .cta__title--long { font-size: clamp(1.85rem, 3.6vw, 2.9rem); max-width: 22ch; margin-left: auto; margin-right: auto; }
+    .cta__title--long em { font-style: italic; color: var(--gold); }
+
+    @media (max-width: 960px) {
+      .offers { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -84,7 +138,7 @@
   <div class="grain" aria-hidden="true"></div>
   <a class="skip-link" href="#top">Skip to content</a>
 
-  <!-- Nav: brand + Contact CTA (also lets shared main.js run cleanly) -->
+  <!-- ============ NAV: brand + burger (drawer holds the audience paths) ============ -->
   <header class="nav" id="nav">
     <div class="nav__inner">
       <a class="brand" href="#top" aria-label="Ripples Space home">
@@ -116,23 +170,328 @@
         </span>
         <span class="brand__word">Ripples&nbsp;Space</span>
       </a>
-      <a href="/contact/" class="btn btn--cream nav__cta">Contact</a>
+
+      <button class="nav__burger" id="nav-burger" type="button" aria-expanded="false" aria-controls="nav-drawer" aria-label="Open menu">
+        <span class="nav__burger-box" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+
+    <!-- Drawer lives inside <header> so booking.js's inert handling covers it
+         when the booking modal opens on top. -->
+    <div class="navdrawer" id="nav-drawer" aria-hidden="true">
+      <div class="navdrawer__backdrop" data-drawer-close></div>
+      <div class="navdrawer__panel" role="dialog" aria-modal="true" aria-labelledby="navdrawer-title" tabindex="-1">
+        <p class="navdrawer__title" id="navdrawer-title">Which sounds like you?</p>
+
+        <nav class="navdrawer__paths" aria-label="Choose your path">
+          <a class="path-link" href="/changemakers/">
+            <span class="path-link__label">
+              I am a coach/course creator/changemaker
+              <span class="path-link__meta">Let's get your hours back for the work only you can do</span>
+            </span>
+            <span class="path-link__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="path-link" href="/service-businesses/">
+            <span class="path-link__label">
+              I have a service-based business
+              <span class="path-link__meta">Turn more inquiries into booked, paying clients</span>
+            </span>
+            <span class="path-link__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+        </nav>
+
+        <div class="navdrawer__foot">
+          <a href="/contact/" class="navdrawer__link">Contact</a>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- ============ COMING SOON HERO ============ -->
   <main id="top" tabindex="-1">
-    <section class="hero wait" id="hero">
+
+    <!-- ============ HERO (red) ============ -->
+    <section class="hero" id="hero">
       <canvas class="hero__canvas" id="ripple-canvas" data-intensity="0.8" aria-hidden="true"></canvas>
       <div class="hero__veil" aria-hidden="true"></div>
 
-      <div class="wait__inner">
-        <span class="wait__mark reveal" aria-hidden="true">
+      <div class="hero__inner hero__inner--center">
+        <div class="hero__copy">
+          <span class="hero__mark reveal" aria-hidden="true">
+            <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+              <g class="rl-static">
+                <circle cx="129" cy="129" r="44" fill="none" stroke="url(#hg1)"/>
+                <circle cx="129" cy="129" r="63" fill="none" stroke="url(#hg2)"/>
+                <circle cx="129" cy="129" r="91" fill="none" stroke="url(#hg3)"/>
+              </g>
+              <g class="ripples-orbit">
+                <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+                <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+                <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+                <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+              </g>
+              <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+              <g fill="none" stroke="currentColor">
+                <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+                <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+                <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+              </g>
+              <defs>
+                <linearGradient id="hg1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+                <linearGradient id="hg2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+                <linearGradient id="hg3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              </defs>
+            </svg>
+          </span>
+
+          <h1 class="hero__title reveal">Your business has grown.<br/><em>Your digital tools… maybe not.</em></h1>
+
+          <p class="hero__sub reveal">
+            Maybe your website still says "Coming Soon." Maybe your process involves three
+            spreadsheets and a group chat. Maybe that internal tool has been "on the roadmap"
+            for the last two years.
+          </p>
+
+          <p class="hero__closer reveal">Whatever it is, <em>let's build something better.</em></p>
+
+          <div class="hero__actions reveal">
+            <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>Let's Talk</a>
+          </div>
+        </div>
+      </div>
+
+      <a href="#about" class="scroll-cue reveal" aria-label="Scroll to next section">
+        <i></i>
+      </a>
+    </section>
+
+    <!-- ============ ABOUT YOU (light) ============ -->
+    <section class="section" id="about">
+      <div class="wrap wrap--narrow">
+        <p class="eyebrow reveal">About you</p>
+        <h2 class="section__title reveal">Somehow, growing your business <em>made it harder to run.</em></h2>
+
+        <div class="prose">
+          <p class="reveal">
+            The things that got you this far aren't quite getting you where you want to go next.
+            Small workarounds have become permanent processes. Your team spends more time keeping
+            everything moving than moving the business forward.
+          </p>
+          <p class="reveal">
+            This is mostly just what growth looks like from the inside. The tools to fix it already
+            exist but most of them just weren't built with your business in mind.
+          </p>
+        </div>
+
+        <p class="closer reveal">That gap is <em>the thing I work on.</em></p>
+      </div>
+    </section>
+
+    <!-- ============ HI, I'M RHEANNE (red — emphasis) ============ -->
+    <section class="section sec--red" id="me">
+      <div class="wrap wrap--narrow">
+        <figure class="me__portrait reveal" id="me-portrait">
+          <img src="assets/rheanne.png" width="182" height="106" loading="lazy" decoding="async"
+               alt="Rheanne, smiling, resting her chin on her hand." />
+          <span class="me__bubble" id="me-bubble" aria-hidden="true"></span>
+        </figure>
+
+        <p class="eyebrow reveal">The person you'd be working with</p>
+        <h2 class="section__title reveal">Hi, I'm <em>Rheanne</em></h2>
+
+        <p class="closer reveal">
+          If you've ever said, "It's just a <em>temporary workaround</em>," and that workaround is
+          celebrating its <em>fifth birthday</em>… we should probably talk.
+        </p>
+
+        <div class="prose">
+          <p class="reveal">
+            I help businesses simplify, automate, and build digital systems that save time,
+            reduce busywork, and make everyday operations a whole lot less chaotic.
+          </p>
+        </div>
+
+        <div class="cta-row reveal">
+          <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>Yeah… we should probably talk</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WAYS I CAN HELP (light) ============ -->
+    <section class="section" id="offers">
+      <div class="wrap">
+        <p class="eyebrow reveal">Ways I can help</p>
+        <h2 class="section__title reveal">Every business reaches different challenges <em>at different stages.</em></h2>
+        <p class="lede reveal">Here's where I usually come in.</p>
+
+        <div class="offers">
+          <article class="offer reveal">
+            <span class="offer__stage">Launch</span>
+            <h3>Branding &amp; Websites</h3>
+            <p class="offer__for">For businesses ready to look as professional as the service they provide.</p>
+            <p class="offer__body">
+              Every business has a story worth telling—but not every website tells it well. I'll help
+              you turn your experience, values, and expertise into a brand and website that builds
+              trust, communicates your value, and inspires people to take the next step.
+            </p>
+            <p class="offer__need">Perfect if you need</p>
+            <ul class="offer__list">
+              <li>A new brand identity</li>
+              <li>A conversion-focused website</li>
+              <li>Clear messaging &amp; positioning</li>
+              <li>A modern, mobile-friendly website</li>
+              <li>A website that's easy to manage</li>
+            </ul>
+            <p class="offer__out">Build trust. Attract customers. Make a lasting first impression.</p>
+          </article>
+
+          <article class="offer reveal">
+            <span class="offer__stage">Scale</span>
+            <h3>CRM &amp; Automation</h3>
+            <p class="offer__for">For businesses that are growing but spending too much time on repetitive work.</p>
+            <p class="offer__body">
+              As your business grows, so do the manual tasks. I'll help you automate your workflows,
+              organize your sales pipeline, and connect the tools you already use—so your business
+              keeps running, even when you're not.
+            </p>
+            <p class="offer__need">Perfect if you need</p>
+            <ul class="offer__list">
+              <li>CRM implementation</li>
+              <li>Sales pipelines</li>
+              <li>Automated lead follow-up</li>
+              <li>Workflow automations</li>
+              <li>AI-powered assistants</li>
+              <li>Reporting dashboards</li>
+            </ul>
+            <p class="offer__out">Save time. Reduce busy work. Focus on higher-value work.</p>
+          </article>
+
+          <article class="offer reveal">
+            <span class="offer__stage">Evolve</span>
+            <h3>Custom Business Apps</h3>
+            <p class="offer__for">For businesses with unique workflows that off-the-shelf software can't support.</p>
+            <p class="offer__body">
+              When your business outgrows generic software, it's time for software that's built
+              specifically for you. I'll design and develop custom applications that fit your
+              workflow—from internal tools and client portals to fully custom business platforms.
+            </p>
+            <p class="offer__need">Perfect if you need</p>
+            <ul class="offer__list">
+              <li>A custom web application</li>
+              <li>Software unique to your business</li>
+              <li>Internal tools for your team</li>
+              <li>Client &amp; employee portals</li>
+              <li>Workflow-specific business software</li>
+              <li>A platform built from the ground up</li>
+            </ul>
+            <p class="offer__out">Custom software. Built for the way you work.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHO I WORK WITH (light-alt) ============ -->
+    <section class="section sec--alt" id="who">
+      <div class="wrap wrap--narrow">
+        <p class="eyebrow reveal">Who I work with</p>
+        <h2 class="section__title reveal">I do my best work with people who <em>genuinely care about what they're building.</em></h2>
+
+        <div class="prose">
+          <p class="reveal">
+            That includes growing service businesses looking to improve their operations, startups
+            building something new, and mission-driven organizations creating positive impact in
+            their communities.
+          </p>
+          <p class="reveal">
+            Whether you're running a small team or leading a growing organization, if you're looking
+            for someone who understands both design and technology and can translate business
+            problems into practical digital solutions, we'll probably work well together.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOW WE'LL WORK TOGETHER (light) ============ -->
+    <section class="section" id="process">
+      <div class="wrap process__grid">
+        <div class="process__head">
+          <p class="eyebrow reveal">How we'll work together</p>
+          <h2 class="section__title reveal">I like to keep things simple.</h2>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <span class="timeline__line" aria-hidden="true"><span class="timeline__fill"></span></span>
+          <ol class="timeline__steps">
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">1</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">Step one</span>
+                <h3>We talk.</h3>
+                <p>I'll learn about your business, your goals, what's getting in the way, and if I can help you with it.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">2</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">Step two</span>
+                <h3>We find the right solution.</h3>
+                <p>Sometimes it's a website. Sometimes it's automation. Sometimes it's custom software. My job isn't to sell you the biggest project but to recommend what will make the biggest difference for your business.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">3</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">Step three</span>
+                <h3>We build it together.</h3>
+                <p>You'll be in the loop the whole way, with clear updates and regular check-ins.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">4</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">Step four</span>
+                <h3>You get back to running your business.</h3>
+                <p>Once everything's live, you'll have systems that are easier to manage, easier to grow, and built to support where your business is headed next.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA (red — emphasis) ============ -->
+    <section class="section sec--red cta" id="book">
+      <canvas class="cta__canvas" id="ripple-canvas-2" aria-hidden="true"></canvas>
+      <div class="wrap wrap--narrow cta__inner">
+        <p class="eyebrow center reveal">Let's talk</p>
+        <h2 class="cta__title cta__title--long reveal">The best systems start with understanding <em>the people who use them.</em></h2>
+        <p class="cta__sub reveal">
+          Before we talk websites, automations, or software, I want to understand your business—how
+          it works today, where it's slowing you down, and what success looks like for you. From
+          there, we can design a solution that actually fits.
+        </p>
+        <div class="cta__actions reveal">
+          <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>Book a discovery call</a>
+        </div>
+        <p class="cta__note reveal">If we're a good fit, great. If not, you'll still leave with a clearer direction.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <span class="brand__mark" aria-hidden="true">
           <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
             <g class="rl-static">
-              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#hg1)"/>
-              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#hg2)"/>
-              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#hg3)"/>
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#fg1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#fg2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#fg3)"/>
             </g>
             <g class="ripples-orbit">
               <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
@@ -147,52 +506,48 @@
               <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
             </g>
             <defs>
-              <linearGradient id="hg1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-              <linearGradient id="hg2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
-              <linearGradient id="hg3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="fg1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="fg2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="fg3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
             </defs>
           </svg>
         </span>
-
-        <h1 class="wait__title reveal">Digital Experiences That <em>Drive Business Growth</em></h1>
-
-        <p class="wait__sub reveal">
-          Combining brand strategy, web design, and AI-powered automation to create
-          seamless customer journeys that build trust, drive conversions, and foster loyalty.
-        </p>
-
-        <p class="wait__prompt reveal" id="paths-label">Which sounds like you?</p>
-
-        <nav class="wait-paths" aria-labelledby="paths-label">
-          <a class="path-link reveal" href="/changemakers/">
-            <span class="path-link__label">
-              I am a coach/course creator/changemaker
-              <span class="path-link__meta">Let's get your hours back for the work only you can do</span>
-            </span>
-            <span class="path-link__arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-            </span>
-          </a>
-
-          <a class="path-link reveal" href="/service-businesses/">
-            <span class="path-link__label">
-              I have a service-based business
-              <span class="path-link__meta">Turn more inquiries into booked, paying clients</span>
-            </span>
-            <span class="path-link__arrow" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-            </span>
-          </a>
-        </nav>
+        <span class="brand__word">Ripples Space</span>
       </div>
+      <p class="footer__copy">© 2026 Ripples Space. Creating ripples of impact.</p>
+    </div>
+  </footer>
 
-      <p class="wait__foot">© 2026 Ripples Space. Creating ripples of impact.</p>
-    </section>
-  </main>
+  <!-- ============ BOOKING MODAL ============ -->
+  <div class="bookmodal" id="book-modal" aria-hidden="true">
+    <div class="bookmodal__backdrop" data-book-close></div>
+    <div class="bookmodal__dialog" role="dialog" aria-modal="true" aria-labelledby="book-modal-title" tabindex="-1">
+      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close>&times;</button>
+      <div class="bookmodal__head">
+        <span class="bookmodal__eyebrow">Ripples Space</span>
+        <h2 class="bookmodal__title" id="book-modal-title">Book a discovery call</h2>
+        <p class="bookmodal__sub">Pick a time that works. No pressure, just a clear next step.</p>
+      </div>
+      <div class="bookmodal__body">
+        <div data-bookcal data-variant="modal">
+          <div class="bookcal__fallback">
+            <p>
+              Booking needs JavaScript to show live availability. Email me at
+              <a href="mailto:rheannejimeno@gmail.com?subject=Booking%20a%20call">rheannejimeno@gmail.com</a>
+              with a couple of times that suit you and I'll send an invite back.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="main.js"></script>
+
+  <!-- Booking widget + modal controller (shared) -->
+  <script src="booking.js"></script>
 </body>
 </html>
