@@ -469,7 +469,11 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 .cta__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2.4rem, 5.4vw, 4.2rem); line-height: 1.04; color: var(--cream); margin-bottom: 26px; letter-spacing: -0.02em; text-wrap: balance; }
 .cta__sub { color: var(--cream); font-size: clamp(1.05rem, 1.7vw, 1.3rem); max-width: 54ch; margin: 0 auto 40px; }
 .cta__actions { display: flex; justify-content: center; }
-.cta__note { margin-top: 26px; font-size: 13px; letter-spacing: .06em; color: var(--taupe-dim); }
+.cta__note { margin-top: 26px; font-size: 13px; letter-spacing: .06em; color: var(--taupe-dim); line-height: 1.7; }
+/* The WhatsApp escape hatch offered under every call CTA. Gold rather than
+   inheriting --taupe-dim: at 13px a link needs to look like one. */
+.cta__note a { color: var(--gold); border-bottom: 1px solid currentColor; transition: color .3s ease, border-color .3s ease; }
+.cta__note a:hover { color: var(--cream); }
 
 /* ============ FOOTER ============ */
 .footer { background: var(--oxblood-dark); border-top: 1px solid rgba(254,237,201,.10); padding: 50px 0; }
@@ -610,7 +614,10 @@ main[tabindex="-1"]:focus { outline: none; }
   font-family: var(--serif); color: var(--ink); font-size: clamp(21px, 3.4vw, 26px);
   line-height: 1.14; margin: 0; font-weight: 600;
 }
-.bookmodal__sub { margin: 8px 0 0; color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
+.bookmodal__sub { margin: 8px 0 0; color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
+/* Same escape hatch inside the modal, on a light surface. */
+.bookmodal__sub a { color: var(--red-accent); font-weight: 500; border-bottom: 1px solid currentColor; transition: color .3s ease; }
+.bookmodal__sub a:hover { color: var(--oxblood); }
 .bookmodal__close {
   position: absolute; top: 12px; right: 12px; z-index: 3;
   width: 44px; height: 44px; display: grid; place-items: center;
