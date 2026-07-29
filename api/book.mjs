@@ -10,7 +10,8 @@
 
    service and budget are folded into the appointment notes, and additionally
    written to contact custom fields when GHL_FIELD_SERVICE / GHL_FIELD_BUDGET
-   are set.
+   are set. Those accept a field id, a fieldKey (contact.budget_range), the
+   field's name, or the merge-tag form — and must name a CONTACT field.
 
    Creates (or updates) the contact, then books the appointment, so the
    booking shows up in GHL exactly as the old widget's did.
@@ -22,6 +23,8 @@ import {
   fetchFreeSlots,
   fetchCalendarDuration,
   fetchFormFields,
+  fetchCustomFieldIndex,
+  lookupField,
   sendJson,
   CALENDAR_ID,
   DEFAULT_CALL_MINUTES,
@@ -131,13 +134,21 @@ export default async function handler(req, res) {
       return sendJson(res, 422, { error: "That time is outside the booking window.", fields: { start: "Choose a time." } });
     }
 
-    const [avail, cal, formFields] = await Promise.all([
+    /* One custom-field lookup serves both GHL_FORM_FIELDS and the optional
+       service/budget mapping below, so configuring them costs no extra call. */
+    const wantsFieldIndex = Boolean(
+      process.env.GHL_FORM_FIELDS || process.env.GHL_FIELD_SERVICE || process.env.GHL_FIELD_BUDGET
+    );
+
+    const [avail, cal, fieldIndex] = await Promise.all([
       fetchFreeSlots({ token, timezone: timezone || undefined, days: Math.max(daysAhead, 1) }),
       fetchCalendarDuration(token),
-      /* Re-resolved here rather than trusted from the client — otherwise a
-         caller could simply drop the required fields from their payload. */
-      fetchFormFields({ token, locationId })
+      wantsFieldIndex ? fetchCustomFieldIndex({ token, locationId }) : null
     ]);
+
+    /* Re-resolved here rather than trusted from the client — otherwise a
+       caller could simply drop the required fields from their payload. */
+    const formFields = await fetchFormFields({ token, locationId, index: fieldIndex });
     const { slots } = avail;
     const endIso = new Date(startMs + (cal.minutes || DEFAULT_CALL_MINUTES) * 60 * 1000).toISOString();
 
@@ -192,11 +203,18 @@ export default async function handler(req, res) {
       ...(message ? ["", message] : [])
     ].join("\n");
 
-    if (process.env.GHL_FIELD_SERVICE) {
-      customFieldValues.push({ id: process.env.GHL_FIELD_SERVICE, field_value: service });
-    }
-    if (process.env.GHL_FIELD_BUDGET) {
-      customFieldValues.push({ id: process.env.GHL_FIELD_BUDGET, field_value: budget });
+    for (const [envVar, value] of [["GHL_FIELD_SERVICE", service], ["GHL_FIELD_BUDGET", budget]]) {
+      const ref = process.env[envVar];
+      if (!ref) continue;
+      const f = lookupField(fieldIndex, ref);
+      if (!f) {
+        /* Loud, but not fatal — the answer is still in the appointment notes.
+           Almost always a typo, or an opportunity field (those live on a
+           different model and can't be written via /contacts/upsert). */
+        console.warn(`[ghl] ${envVar}="${ref}" matches no contact custom field; skipping`);
+        continue;
+      }
+      customFieldValues.push({ id: f.id, field_value: value });
     }
 
     /* ---- contact ---- */
