@@ -225,13 +225,14 @@ export function parseFieldSpec(raw) {
 }
 
 /**
- * Resolve GHL_FORM_FIELDS against the location's contact custom fields.
- * Returns [] when unset, so the form stays exactly as it is by default.
+ * Every CONTACT custom field on the location, keyed by fieldKey, name and id
+ * (all lowercased) so config can name whichever one is to hand. Returns null
+ * if the lookup fails, so callers degrade instead of breaking.
+ *
+ * Contact fields only — opportunity fields are a different model and are not
+ * writable through /contacts/upsert.
  */
-export async function fetchFormFields({ token, locationId }) {
-  const spec = parseFieldSpec(process.env.GHL_FORM_FIELDS);
-  if (!spec.length) return [];
-
+export async function fetchCustomFieldIndex({ token, locationId }) {
   let data;
   try {
     data = await ghlFetch(`/locations/${locationId}/customFields?model=contact`, {
@@ -242,7 +243,7 @@ export async function fetchFormFields({ token, locationId }) {
     /* Never let this take the booking form down — worst case the visitor
        books without the extra questions. */
     console.warn("[ghl] custom field lookup failed:", err.message);
-    return [];
+    return null;
   }
 
   const all = (data && (data.customFields || data.fields)) || [];
@@ -252,10 +253,35 @@ export async function fetchFormFields({ token, locationId }) {
     if (f.name) byRef.set(String(f.name).toLowerCase(), f);
     if (f.id) byRef.set(String(f.id).toLowerCase(), f);
   }
+  return byRef;
+}
+
+/**
+ * Resolve one configured reference against the index. Accepts the field id,
+ * its fieldKey (`contact.budget_range`), its name, or the merge-tag form
+ * (`{{contact.budget_range}}`) — whichever got copied out of GHL.
+ */
+export function lookupField(index, ref) {
+  if (!index || !ref) return null;
+  const clean = String(ref).trim().replace(/^\{\{/, "").replace(/\}\}$/, "").trim().toLowerCase();
+  return index.get(clean) || null;
+}
+
+/**
+ * Resolve GHL_FORM_FIELDS against the location's contact custom fields.
+ * Returns [] when unset, so the form stays exactly as it is by default.
+ * Pass `index` to reuse a lookup the caller already made.
+ */
+export async function fetchFormFields({ token, locationId, index }) {
+  const spec = parseFieldSpec(process.env.GHL_FORM_FIELDS);
+  if (!spec.length) return [];
+
+  const byRef = index !== undefined ? index : await fetchCustomFieldIndex({ token, locationId });
+  if (!byRef) return [];
 
   const out = [];
   for (const { ref, required } of spec) {
-    const f = byRef.get(ref);
+    const f = lookupField(byRef, ref);
     if (!f) {
       console.warn(`[ghl] GHL_FORM_FIELDS names "${ref}" but no such custom field exists`);
       continue;

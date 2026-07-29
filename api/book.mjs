@@ -1,9 +1,17 @@
 /* ============================================================
    POST /api/book
 
-   Body: { start, name, email, phone?, notes?, timezone?, company? }
+   Body: { start, name, email, service, budget, phone?, notes?, timezone?, company? }
      start    UTC ISO instant, must match one of the open slots
+     service  must be one of SERVICES
+     budget   must be one of BUDGETS
+     notes    the visitor's free-text message
      company  honeypot — real people never fill this in
+
+   service and budget are folded into the appointment notes, and additionally
+   written to contact custom fields when GHL_FIELD_SERVICE / GHL_FIELD_BUDGET
+   are set. Those accept a field id, a fieldKey (contact.budget_range), the
+   field's name, or the merge-tag form — and must name a CONTACT field.
 
    Creates (or updates) the contact, then books the appointment, so the
    booking shows up in GHL exactly as the old widget's did.
@@ -15,6 +23,8 @@ import {
   fetchFreeSlots,
   fetchCalendarDuration,
   fetchFormFields,
+  fetchCustomFieldIndex,
+  lookupField,
   sendJson,
   CALENDAR_ID,
   DEFAULT_CALL_MINUTES,
@@ -26,6 +36,23 @@ import {
 /* Deliberately permissive. Server-side email regexes that try to be clever
    reject valid addresses; the real validation is that the invite arrives. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* Kept in sync with SERVICES / BUDGETS in booking.js. Re-checked here so a
+   caller can't post an arbitrary string into the calendar. */
+const SERVICES = [
+  "Branding & Website",
+  "CRM & Automation",
+  "Custom Business App",
+  "Not sure yet, I'd like your recommendation",
+  "Something else"
+];
+const BUDGETS = [
+  "Under $2,000",
+  "$2,000 - $5,000",
+  "$5,000 - $10,000",
+  "$10,000+",
+  "I'd like to discuss this further."
+];
 
 function readBody(req) {
   if (req.body && typeof req.body === "object") return req.body;
@@ -72,12 +99,18 @@ export default async function handler(req, res) {
     const name = String(body.name ?? "").trim();
     const email = String(body.email ?? "").trim();
     const phone = String(body.phone ?? "").trim();
-    const notes = String(body.notes ?? "").trim().slice(0, 1000);
+    const service = String(body.service ?? "").trim();
+    const budget = String(body.budget ?? "").trim();
+    const message = String(body.notes ?? "").trim().slice(0, 1000);
     const timezone = String(body.timezone ?? "").trim();
 
-    if (!name) errors.name = "Enter your name.";
+    if (!name) errors.name = "Enter your first name.";
     if (!email) errors.email = "Enter your email address.";
     else if (!EMAIL_RE.test(email)) errors.email = "Enter an email address in the format name@example.com.";
+    if (!service) errors.service = "Choose what I can help you with.";
+    else if (!SERVICES.includes(service)) errors.service = "Choose one of the listed options.";
+    if (!budget) errors.budget = "Choose your planned investment.";
+    else if (!BUDGETS.includes(budget)) errors.budget = "Choose one of the listed options.";
 
     const startMs = Date.parse(body.start);
     if (!body.start || Number.isNaN(startMs)) errors.start = "Choose a time.";
@@ -101,13 +134,21 @@ export default async function handler(req, res) {
       return sendJson(res, 422, { error: "That time is outside the booking window.", fields: { start: "Choose a time." } });
     }
 
-    const [avail, cal, formFields] = await Promise.all([
+    /* One custom-field lookup serves both GHL_FORM_FIELDS and the optional
+       service/budget mapping below, so configuring them costs no extra call. */
+    const wantsFieldIndex = Boolean(
+      process.env.GHL_FORM_FIELDS || process.env.GHL_FIELD_SERVICE || process.env.GHL_FIELD_BUDGET
+    );
+
+    const [avail, cal, fieldIndex] = await Promise.all([
       fetchFreeSlots({ token, timezone: timezone || undefined, days: Math.max(daysAhead, 1) }),
       fetchCalendarDuration(token),
-      /* Re-resolved here rather than trusted from the client — otherwise a
-         caller could simply drop the required fields from their payload. */
-      fetchFormFields({ token, locationId })
+      wantsFieldIndex ? fetchCustomFieldIndex({ token, locationId }) : null
     ]);
+
+    /* Re-resolved here rather than trusted from the client — otherwise a
+       caller could simply drop the required fields from their payload. */
+    const formFields = await fetchFormFields({ token, locationId, index: fieldIndex });
     const { slots } = avail;
     const endIso = new Date(startMs + (cal.minutes || DEFAULT_CALL_MINUTES) * 60 * 1000).toISOString();
 
@@ -148,6 +189,47 @@ export default async function handler(req, res) {
     }
     if (!slots.includes(startIso)) {
       return sendJson(res, 409, { error: "That time is no longer available." });
+    }
+
+    /* ---- what gets written where ----
+       The dropdown answers always go into the appointment notes, so they are
+       visible on the booking itself with no GHL setup at all. Set
+       GHL_FIELD_SERVICE / GHL_FIELD_BUDGET to a contact custom-field id to
+       ALSO store them on the contact, where they can be filtered and used in
+       workflows. */
+    const notes = [
+      `What can I help you with: ${service}`,
+      `Planned investment: ${budget}`,
+      ...(message ? ["", message] : [])
+    ].join("\n");
+
+    for (const [envVar, value] of [["GHL_FIELD_SERVICE", service], ["GHL_FIELD_BUDGET", budget]]) {
+      const ref = process.env[envVar];
+      if (!ref) continue;
+      const f = lookupField(fieldIndex, ref);
+      if (!f) {
+        /* Loud, but not fatal — the answer is still in the appointment notes.
+           Almost always a typo, or an opportunity field (those live on a
+           different model and can't be written via /contacts/upsert). */
+        console.warn(`[ghl] ${envVar}="${ref}" matches no contact custom field; skipping`);
+        continue;
+      }
+
+      /* A picklist must contain one of its own options, exactly as GHL spells
+         them. Without this a mismatch fails the whole upsert with a 400, which
+         the catch below reports to the visitor as "that time is no longer
+         available" — an unbookable calendar caused by a config typo. Skipping
+         costs one field; the answer is still in the appointment notes. */
+      const options = Array.isArray(f.picklistOptions) ? f.picklistOptions.filter(Boolean).map(String) : [];
+      if (options.length && !options.includes(value)) {
+        console.warn(
+          `[ghl] ${envVar}: "${value}" is not an option on "${f.name}" ` +
+          `(has: ${options.join(" | ")}); skipping so the booking still completes`
+        );
+        continue;
+      }
+
+      customFieldValues.push({ id: f.id, field_value: value });
     }
 
     /* ---- contact ---- */
