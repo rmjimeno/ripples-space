@@ -146,10 +146,10 @@
 
     var progress = el("ol", { class: "bookcal__progress", "aria-label": "Booking steps" }, [
       el("li", { class: "bookcal__progress-item", "aria-current": "step" }, [
-        el("span", { class: "bookcal__progress-num", "aria-hidden": "true", text: "1" }), "Choose a time"
+        el("span", { class: "bookcal__progress-num", "aria-hidden": "true", text: "1" }), "Your details"
       ]),
       el("li", { class: "bookcal__progress-item" }, [
-        el("span", { class: "bookcal__progress-num", "aria-hidden": "true", text: "2" }), "Your details"
+        el("span", { class: "bookcal__progress-num", "aria-hidden": "true", text: "2" }), "Choose a time"
       ])
     ]);
     var progressItems = progress.querySelectorAll(".bookcal__progress-item");
@@ -181,21 +181,22 @@
 
     var panel = el("div", { class: "bookcal__panel", "aria-busy": "false" }, [dateGroup, timeGroup]);
 
-    var nextBtn = el("button", { type: "button", class: "btn btn--ink bookcal__next", "aria-disabled": "true", text: "Continue" });
+    /* Continue lives on the details step now and is always enabled — it
+       validates on click rather than sitting disabled with no explanation. */
+    var nextBtn = el("button", { type: "button", class: "btn btn--ink bookcal__next", text: "Continue" });
 
     /* Text is set from the calendar's real duration once slots load. */
     var stepNote = el("p", { class: "bookcal__step-note", text: "Video call." });
 
-    var step1 = el("div", { class: "bookcal__step bookcal__step--when" }, [
-      el("h3", { class: "bookcal__step-title", id: id + "-s1-title", tabindex: "-1", text: "Choose a time" }),
+    var stepWhen = el("div", { class: "bookcal__step bookcal__step--when" }, [
+      el("h3", { class: "bookcal__step-title", id: id + "-when-title", tabindex: "-1", text: "Choose a time" }),
       stepNote,
       tzBlock,
       status,
-      panel,
-      el("div", { class: "bookcal__actions" }, [nextBtn])
+      panel
     ]);
 
-    /* --- step 2 --- */
+    /* --- details step --- */
     var errorBox = el("div", { class: "bookcal__errors", id: id + "-errors", tabindex: "-1" });
     var errorList = el("ul", { class: "bookcal__errors-list" });
     errorBox.appendChild(el("h4", { class: "bookcal__errors-title", text: "There is a problem" }));
@@ -231,11 +232,13 @@
       describedBy.push(fid + "-error");
       wrap.appendChild(errNode);
 
-      var input = el(opts.multiline ? "textarea" : "input", {
-        class: opts.multiline ? "bookcal__textarea" : "bookcal__input",
+      var tag = opts.options ? "select" : (opts.multiline ? "textarea" : "input");
+      var input = el(tag, {
+        class: opts.options ? "bookcal__select" : (opts.multiline ? "bookcal__textarea" : "bookcal__input"),
         id: fid, name: name,
-        type: opts.multiline ? null : (opts.type || "text"),
-        rows: opts.multiline ? "4" : null,
+        type: (opts.options || opts.multiline) ? null : (opts.type || "text"),
+        rows: opts.multiline ? "5" : null,
+        placeholder: opts.placeholder || null,
         maxlength: opts.maxlength || null,
         inputmode: opts.inputmode || null,
         autocomplete: opts.autocomplete || null,
@@ -243,6 +246,15 @@
         required: opts.required ? true : null,
         "aria-describedby": describedBy.join(" ")
       });
+
+      /* An empty-valued first option is what makes "nothing chosen yet" a real
+         state — without it a select silently reports the first real answer. */
+      if (opts.options) {
+        input.appendChild(el("option", { value: "", text: opts.placeholder || "Select an option" }));
+        opts.options.forEach(function (o) {
+          input.appendChild(el("option", { value: o, text: o }));
+        });
+      }
       wrap.appendChild(input);
 
       fields[name] = { input: input, error: errNode, label: label, wrap: wrap };
@@ -253,35 +265,65 @@
     var customHost = el("div", { class: "bookcal__custom" });
     var customFields = [];
 
-    var backBtn = el("button", { type: "button", class: "btn btn--ghost bookcal__back", text: "Back to times" });
-    var submitBtn = el("button", { type: "submit", class: "btn btn--ink bookcal__submit", text: "Confirm booking" });
+    var backBtn = el("button", { type: "button", class: "btn btn--ghost bookcal__back", text: "Back to your details" });
+    var submitBtn = el("button", {
+      type: "submit", class: "btn btn--ink bookcal__submit", "aria-disabled": "true", text: "Confirm booking"
+    });
 
-    var step2 = el("div", { class: "bookcal__step bookcal__step--details" }, [
-      el("h3", { class: "bookcal__step-title", id: id + "-s2-title", tabindex: "-1", text: "Your details" }),
-      errorBox,
-      summary,
-      field("name", "Your name", { required: true, autocomplete: "name" }),
+    /* Kept in sync with SERVICES / BUDGETS in api/book.mjs — the server
+       re-checks the answer against the same list. */
+    var SERVICES = [
+      "Branding & Website",
+      "CRM & Automation",
+      "Custom Business App",
+      "Not sure yet, I'd like your recommendation",
+      "Something else"
+    ];
+    var BUDGETS = [
+      "Under $2,000",
+      "$2,000–$5,000",
+      "$5,000–$10,000",
+      "$10,000+",
+      "I'd like to discuss this further."
+    ];
+
+    var stepDetails = el("div", { class: "bookcal__step bookcal__step--details" }, [
+      el("h3", { class: "bookcal__step-title", id: id + "-details-title", tabindex: "-1", text: "Your details" }),
+      field("name", "First name", { required: true, autocomplete: "given-name", placeholder: "Alex" }),
       field("email", "Email address", {
         required: true, type: "email", inputmode: "email", autocomplete: "email",
-        spellcheck: "false", hint: "I'll send the calendar invite here."
+        spellcheck: "false", placeholder: "alex@company.com", hint: "I'll send the calendar invite here."
       }),
-      field("phone", "Phone number", { optional: true, type: "tel", inputmode: "tel", autocomplete: "tel" }),
-      field("notes", "What would you like help with?", {
+      field("service", "What can I help you with?", { required: true, options: SERVICES, placeholder: "Select an option" }),
+      field("budget", "What's your planned investment?", {
+        required: true, options: BUDGETS, placeholder: "Select an option",
+        hint: "This helps me recommend the right approach—it's not a commitment."
+      }),
+      field("notes", "Tell me a bit about your business and what you're looking for", {
         optional: true, multiline: true, maxlength: "1000",
-        hint: "A sentence or two is plenty. 1000 characters max."
+        placeholder: "What does your business do? What are you hoping to achieve? Are there any challenges you're trying to solve? Feel free to include links or any context that would help me prepare for our conversation."
       }),
-      /* Custom fields from the GHL calendar land here, between the built-in
-         questions and the actions. */
+      /* Custom fields from the GHL calendar land here, after the built-in
+         questions and before the actions. */
       customHost,
       el("div", { class: "bookcal__hp", "aria-hidden": "true" }, [
         el("label", { for: id + "-company", text: "Company" }),
         el("input", { id: id + "-company", name: "company", type: "text", tabindex: "-1", autocomplete: "off" })
       ]),
-      el("div", { class: "bookcal__actions" }, [backBtn, submitBtn])
+      el("div", { class: "bookcal__actions" }, [nextBtn])
     ]);
-    show(step2, false);
 
-    var form = el("form", { class: "bookcal__form", novalidate: true }, [step1, step2]);
+    /* The time step now closes the flow, so it carries the summary of what is
+       about to be booked and the submit button. */
+    stepWhen.appendChild(summary);
+    stepWhen.appendChild(el("div", { class: "bookcal__actions" }, [backBtn, submitBtn]));
+    show(summary, false);
+    show(stepWhen, false);
+
+    /* One error summary for both steps, so it is never hidden inside the step
+       the visitor just left (the 409 "time taken" error lands on the time
+       step, the field errors on the details step). */
+    var form = el("form", { class: "bookcal__form", novalidate: true }, [errorBox, stepDetails, stepWhen]);
 
     /* --- terminal states --- */
     var doneTitle = el("h3", { class: "bookcal__done-title", tabindex: "-1", text: "You're booked" });
@@ -420,7 +462,8 @@
         });
         input.addEventListener("change", function () {
           state.instant = d;
-          nextBtn.setAttribute("aria-disabled", "false");
+          submitBtn.setAttribute("aria-disabled", "false");
+          renderSummary();
           /* No announcement — the radio's own state change is the announcement,
              and Continue was already present. */
         });
@@ -436,7 +479,8 @@
     function onDatePicked(key) {
       state.dayKey = key;
       state.instant = null;
-      nextBtn.setAttribute("aria-disabled", "true");
+      submitBtn.setAttribute("aria-disabled", "true");
+      renderSummary();
       renderTimes();
       /* Deliberately silent. This fires on every arrow-key press through the
          date list, and rewriting the status line on each one made the widget
@@ -543,7 +587,7 @@
           var dayCount = groupByDay().order.length;
           say(dayCount + " available dates loaded. Times are shown in " + f.zoneLong(state.slots[0], state.tz) + ".");
           /* On retry the focused button is being removed, so focus must move. */
-          if (isRetry) focus(step1.querySelector(".bookcal__step-title"));
+          if (isRetry) focus(stepWhen.querySelector(".bookcal__step-title"));
         })
         .catch(function () {
           clearTimeout(timer);
@@ -558,37 +602,32 @@
 
     /* ---------- steps ---------- */
 
+    /* Step 1 is the details form, step 2 is the calendar. */
     function goToStep(n) {
       state.step = n;
-      show(step1, n === 1);
-      show(step2, n === 2);
+      show(stepDetails, n === 1);
+      show(stepWhen, n === 2);
       Array.prototype.forEach.call(progressItems, function (item, i) {
         if (i === n - 1) item.setAttribute("aria-current", "step");
         else item.removeAttribute("aria-current");
       });
+      focus((n === 1 ? stepDetails : stepWhen).querySelector(".bookcal__step-title"));
+    }
 
-      if (n === 2) {
-        var end = new Date(state.instant.getTime() + state.duration * 60000);
-        summaryWhen.textContent = f.full(state.instant, state.tz) + ", " +
-          f.time(state.instant, state.tz) + " – " + f.time(end, state.tz);
-        summaryZone.textContent = zoneLabel();
-        focus(step2.querySelector(".bookcal__step-title"));
-      } else {
-        focus(step1.querySelector(".bookcal__step-title"));
-      }
+    /** Refreshes the "what you're about to book" line on the time step. */
+    function renderSummary() {
+      if (!state.instant) { show(summary, false); return; }
+      var end = new Date(state.instant.getTime() + state.duration * 60000);
+      summaryWhen.textContent = f.full(state.instant, state.tz) + ", " +
+        f.time(state.instant, state.tz) + " – " + f.time(end, state.tz);
+      summaryZone.textContent = zoneLabel();
+      show(summary, true);
     }
 
     nextBtn.addEventListener("click", function () {
-      if (nextBtn.getAttribute("aria-disabled") === "true") {
-        if (!state.dayKey) {
-          say("Choose a date before continuing.");
-          focus(dateGroup.querySelector("input"));
-        } else {
-          say("Choose a time before continuing.");
-          focus(timeGroup.querySelector("input"));
-        }
-        return;
-      }
+      var problems = validateDetails();
+      if (problems.length) { showErrorSummary(problems); return; }
+      show(errorBox, false);
       goToStep(2);
     });
 
@@ -745,27 +784,49 @@
 
     function validateField(name) {
       var v = fields[name].input.value.trim();
-      if (name === "name") return v ? null : "Enter your name.";
+      if (name === "name") return v ? null : "Enter your first name.";
       if (name === "email") {
         if (!v) return "Enter your email address.";
         return EMAIL_RE.test(v) ? null : "Enter an email address in the format name@example.com.";
       }
-      if (name === "phone") {
-        if (!v) return null;
-        return /^[+()\d\s-]{6,}$/.test(v) ? null : "Enter a phone number, like +63 917 123 4567.";
-      }
+      if (name === "service") return v ? null : "Choose what I can help you with.";
+      if (name === "budget") return v ? null : "Choose your planned investment.";
       if (name === "notes") {
-        return v.length > 1000 ? "Shorten what you'd like help with to 1000 characters or fewer." : null;
+        return v.length > 1000 ? "Shorten your message to 1000 characters or fewer." : null;
       }
       return null;
     }
 
-    /* Reward early, punish late: only re-validate a field once it has errored. */
+    /* Summary order follows DOM order of the fields, not detection order. */
+    var FIELD_ORDER = ["name", "email", "service", "budget", "notes"];
+
+    /** Validates the whole details step; returns error-summary items. */
+    function validateDetails() {
+      var problems = [];
+      FIELD_ORDER.forEach(function (name) {
+        var msg = validateField(name);
+        setFieldError(name, msg);
+        if (msg) problems.push({ id: id + "-" + name, msg: msg });
+      });
+      /* Custom fields sit after the built-ins in the DOM, so they come after
+         them in the summary too. */
+      customFields.forEach(function (entry) {
+        var msg = validateCustom(entry);
+        setCustomError(entry, msg);
+        if (msg) problems.push({ id: entry.anchorId, msg: msg });
+      });
+      return problems;
+    }
+
+    /* Reward early, punish late: only re-validate a field once it has errored.
+       `change` matters for the selects, which don't fire `input` everywhere. */
     Object.keys(fields).forEach(function (name) {
-      fields[name].input.addEventListener("input", function () {
+      var clear = function () {
         if (!fields[name].error.textContent) return;
         if (!validateField(name)) setFieldError(name, null);
-      });
+      };
+      fields[name].input.addEventListener("input", clear);
+      fields[name].input.addEventListener("change", clear);
     });
 
     function showErrorSummary(items) {
@@ -787,23 +848,20 @@
 
       if (state.sending) { say("Still sending your booking."); return; }
 
-      /* Summary order follows DOM order of the fields, not detection order. */
-      var order = ["name", "email", "phone", "notes"];
-      var problems = [];
-      order.forEach(function (name) {
-        var msg = validateField(name);
-        setFieldError(name, msg);
-        if (msg) problems.push({ id: id + "-" + name, msg: msg });
-      });
-      /* Custom fields sit after the built-ins in the DOM, so they come after
-         them in the summary too. */
-      customFields.forEach(function (entry) {
-        var msg = validateCustom(entry);
-        setCustomError(entry, msg);
-        if (msg) problems.push({ id: entry.anchorId, msg: msg });
-      });
+      if (!state.instant) {
+        say("Choose a time before confirming.");
+        focus((timeGroup.querySelector("input") || dateGroup.querySelector("input")));
+        return;
+      }
 
-      if (problems.length) { showErrorSummary(problems); return; }
+      /* Re-checked here, not just on Continue: the visitor can go back and
+         empty a field after passing step 1. */
+      var problems = validateDetails();
+      if (problems.length) {
+        goToStep(1);
+        showErrorSummary(problems);
+        return;
+      }
       show(errorBox, false);
 
       state.sending = true;
@@ -819,7 +877,8 @@
           timezone: state.tz,
           name: fields.name.input.value.trim(),
           email: fields.email.input.value.trim(),
-          phone: fields.phone.input.value.trim(),
+          service: fields.service.input.value,
+          budget: fields.budget.input.value,
           notes: fields.notes.input.value.trim(),
           custom: customFields.reduce(function (acc, entry) {
             var v = entry.read();
@@ -846,10 +905,11 @@
             var taken = state.instant.toISOString();
             state.slots = state.slots.filter(function (d) { return d.toISOString() !== taken; });
             state.instant = null;
-            nextBtn.setAttribute("aria-disabled", "true");
+            submitBtn.setAttribute("aria-disabled", "true");
+            renderSummary();
             renderDates();
             renderTimes();
-            showErrorSummary([{ id: id + "-s1-title", msg: "That time was just taken. Choose another time." }]);
+            showErrorSummary([{ id: id + "-when-title", msg: "That time was just taken. Choose another time." }]);
             return;
           }
 
@@ -866,11 +926,17 @@
               setCustomError(entry, res.body.custom[fieldId]);
               problems2.push({ id: entry.anchorId, msg: res.body.custom[fieldId] });
             });
-            if (problems2.length) return showErrorSummary(problems2);
+            /* These all belong to the details step, which is no longer the
+               one on screen — go back to it or the messages point at hidden
+               fields and the anchor links go nowhere. */
+            if (problems2.length) {
+              goToStep(1);
+              return showErrorSummary(problems2);
+            }
           }
 
           showErrorSummary([{
-            id: id + "-s2-title",
+            id: id + "-when-title",
             msg: "We couldn't complete your booking. Try again, or email " + FALLBACK_EMAIL + " and I'll book it manually."
           }]);
         })
@@ -879,7 +945,7 @@
           submitBtn.setAttribute("aria-disabled", "false");
           form.removeAttribute("aria-busy");
           showErrorSummary([{
-            id: id + "-s2-title",
+            id: id + "-when-title",
             msg: "We couldn't complete your booking. Try again, or email " + FALLBACK_EMAIL + " and I'll book it manually."
           }]);
         });

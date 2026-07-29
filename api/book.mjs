@@ -1,9 +1,16 @@
 /* ============================================================
    POST /api/book
 
-   Body: { start, name, email, phone?, notes?, timezone?, company? }
+   Body: { start, name, email, service, budget, phone?, notes?, timezone?, company? }
      start    UTC ISO instant, must match one of the open slots
+     service  must be one of SERVICES
+     budget   must be one of BUDGETS
+     notes    the visitor's free-text message
      company  honeypot — real people never fill this in
+
+   service and budget are folded into the appointment notes, and additionally
+   written to contact custom fields when GHL_FIELD_SERVICE / GHL_FIELD_BUDGET
+   are set.
 
    Creates (or updates) the contact, then books the appointment, so the
    booking shows up in GHL exactly as the old widget's did.
@@ -26,6 +33,23 @@ import {
 /* Deliberately permissive. Server-side email regexes that try to be clever
    reject valid addresses; the real validation is that the invite arrives. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* Kept in sync with SERVICES / BUDGETS in booking.js. Re-checked here so a
+   caller can't post an arbitrary string into the calendar. */
+const SERVICES = [
+  "Branding & Website",
+  "CRM & Automation",
+  "Custom Business App",
+  "Not sure yet, I'd like your recommendation",
+  "Something else"
+];
+const BUDGETS = [
+  "Under $2,000",
+  "$2,000–$5,000",
+  "$5,000–$10,000",
+  "$10,000+",
+  "I'd like to discuss this further."
+];
 
 function readBody(req) {
   if (req.body && typeof req.body === "object") return req.body;
@@ -72,12 +96,18 @@ export default async function handler(req, res) {
     const name = String(body.name ?? "").trim();
     const email = String(body.email ?? "").trim();
     const phone = String(body.phone ?? "").trim();
-    const notes = String(body.notes ?? "").trim().slice(0, 1000);
+    const service = String(body.service ?? "").trim();
+    const budget = String(body.budget ?? "").trim();
+    const message = String(body.notes ?? "").trim().slice(0, 1000);
     const timezone = String(body.timezone ?? "").trim();
 
-    if (!name) errors.name = "Enter your name.";
+    if (!name) errors.name = "Enter your first name.";
     if (!email) errors.email = "Enter your email address.";
     else if (!EMAIL_RE.test(email)) errors.email = "Enter an email address in the format name@example.com.";
+    if (!service) errors.service = "Choose what I can help you with.";
+    else if (!SERVICES.includes(service)) errors.service = "Choose one of the listed options.";
+    if (!budget) errors.budget = "Choose your planned investment.";
+    else if (!BUDGETS.includes(budget)) errors.budget = "Choose one of the listed options.";
 
     const startMs = Date.parse(body.start);
     if (!body.start || Number.isNaN(startMs)) errors.start = "Choose a time.";
@@ -148,6 +178,25 @@ export default async function handler(req, res) {
     }
     if (!slots.includes(startIso)) {
       return sendJson(res, 409, { error: "That time is no longer available." });
+    }
+
+    /* ---- what gets written where ----
+       The dropdown answers always go into the appointment notes, so they are
+       visible on the booking itself with no GHL setup at all. Set
+       GHL_FIELD_SERVICE / GHL_FIELD_BUDGET to a contact custom-field id to
+       ALSO store them on the contact, where they can be filtered and used in
+       workflows. */
+    const notes = [
+      `What can I help you with: ${service}`,
+      `Planned investment: ${budget}`,
+      ...(message ? ["", message] : [])
+    ].join("\n");
+
+    if (process.env.GHL_FIELD_SERVICE) {
+      customFieldValues.push({ id: process.env.GHL_FIELD_SERVICE, field_value: service });
+    }
+    if (process.env.GHL_FIELD_BUDGET) {
+      customFieldValues.push({ id: process.env.GHL_FIELD_BUDGET, field_value: budget });
     }
 
     /* ---- contact ---- */

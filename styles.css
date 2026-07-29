@@ -157,16 +157,15 @@ a { color: inherit; text-decoration: none; }
 
 /* ============ NAV ============ */
 .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
-/* The bar's blurred backing is a pseudo-element rather than .nav's own
-   background, because backdrop-filter makes an element the containing block
-   for its position:fixed descendants — which collapsed the full-screen
-   drawer into the height of the bar the moment .scrolled was applied.
-   Sits above the drawer (z-index 2 vs 1) so the bar still reads solid over
-   an open panel; the open drawer gets the same treatment at scrollY 0. */
+/* Solid, not glass: a translucent blur over the light sections turned the
+   bar into a washed-out pink band. Opaque oxblood matches the footer and
+   reads cleanly against both the paper and oxblood surfaces.
+   Still a pseudo-element rather than .nav's own background so it can paint
+   ABOVE the drawer (z-index 2 vs 1) — .nav's background would sit under its
+   own children and the open panel would cover the bar. */
 .nav::before {
   content: ""; position: absolute; inset: 0; z-index: 2; box-sizing: border-box; opacity: 0;
-  background: rgba(42, 2, 6, 0.82);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+  background: var(--oxblood-dark);
   border-bottom: 1px solid rgba(254,237,201,.10);
   transition: opacity .4s ease;
 }

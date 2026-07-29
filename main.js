@@ -300,16 +300,20 @@
       "Please don't poke the designer.",
       "Achievement unlocked: Hovered the founder.",
       "✨ You found the secret dialogue.",
+      "why are you still hovering?",
+      "you are persistent",
+      "screenshot this to get $100 discount when you avail my services. Ssshhh. 🤫",
+      "yes that's true",
       "That's it, no more! 😡"
     ];
-    let last = -1, hideTimer;
+    let step = -1, hideTimer;
 
-    // Random, but never the same line twice running — repeats read as a bug.
+    /* Escalating rather than random: the lines are a running joke that builds
+       on the last one, so order carries the gag. The final line is a sign-off
+       — once it lands it stays put instead of looping back to the start. */
     function nextLine() {
-      let i;
-      do { i = Math.floor(Math.random() * lines.length); } while (lines.length > 1 && i === last);
-      last = i;
-      return lines[i];
+      if (step < lines.length - 1) step++;
+      return lines[step];
     }
     function show() {
       bubble.textContent = nextLine();
