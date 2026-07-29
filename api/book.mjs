@@ -48,8 +48,8 @@ const SERVICES = [
 ];
 const BUDGETS = [
   "Under $2,000",
-  "$2,000–$5,000",
-  "$5,000–$10,000",
+  "$2,000 - $5,000",
+  "$5,000 - $10,000",
   "$10,000+",
   "I'd like to discuss this further."
 ];
