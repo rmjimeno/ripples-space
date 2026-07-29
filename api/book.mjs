@@ -214,6 +214,21 @@ export default async function handler(req, res) {
         console.warn(`[ghl] ${envVar}="${ref}" matches no contact custom field; skipping`);
         continue;
       }
+
+      /* A picklist must contain one of its own options, exactly as GHL spells
+         them. Without this a mismatch fails the whole upsert with a 400, which
+         the catch below reports to the visitor as "that time is no longer
+         available" — an unbookable calendar caused by a config typo. Skipping
+         costs one field; the answer is still in the appointment notes. */
+      const options = Array.isArray(f.picklistOptions) ? f.picklistOptions.filter(Boolean).map(String) : [];
+      if (options.length && !options.includes(value)) {
+        console.warn(
+          `[ghl] ${envVar}: "${value}" is not an option on "${f.name}" ` +
+          `(has: ${options.join(" | ")}); skipping so the booking still completes`
+        );
+        continue;
+      }
+
       customFieldValues.push({ id: f.id, field_value: value });
     }
 
