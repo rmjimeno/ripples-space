@@ -35,14 +35,17 @@
     .hero__mark .ripples-orbit,
     .hero__mark .ripples-core,
     .hero__mark .ripple-ring { transform-box: view-box; transform-origin: 129px 129px; }
-    .hero__mark .ripples-orbit { animation: markOrbit 28s linear infinite; }
-    .hero__mark .ripples-core { animation: markCorePulse 4.5s ease-in-out infinite; }
-    .hero__mark .ripple-ring { opacity: 0; animation: markRipple 6s ease-out infinite; }
-    .hero__mark .ripple-ring.delay-1 { animation-delay: 2s; }
-    .hero__mark .ripple-ring.delay-2 { animation-delay: 4s; }
+    /* Slowed well down from the original 28s / 4.5s / 6s. The mark still
+       breathes and still ripples; at the old timings it was the fastest
+       thing on the page by a wide margin and read as a tick. */
+    .hero__mark .ripples-orbit { animation: markOrbit 90s linear infinite; }
+    .hero__mark .ripples-core { animation: markCorePulse 16s ease-in-out infinite; }
+    .hero__mark .ripple-ring { opacity: 0; animation: markRipple 24s ease-out infinite; }
+    .hero__mark .ripple-ring.delay-1 { animation-delay: 8s; }
+    .hero__mark .ripple-ring.delay-2 { animation-delay: 16s; }
     @keyframes markOrbit { to { transform: rotate(360deg); } }
-    @keyframes markCorePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .92; transform: scale(1.08); } }
-    @keyframes markRipple { 0% { opacity: .5; transform: scale(.55); } 80% { opacity: 0; } 100% { opacity: 0; transform: scale(1.5); } }
+    @keyframes markCorePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .96; transform: scale(1.04); } }
+    @keyframes markRipple { 0% { opacity: .32; transform: scale(.55); } 80% { opacity: 0; } 100% { opacity: 0; transform: scale(1.5); } }
 
     /* ============ RHYTHM for the narrow copy sections ============ */
     .section__title + .prose,
@@ -237,7 +240,7 @@
 
     <!-- ============ HERO (light) ============ -->
     <section class="hero hero--light" id="hero">
-      <canvas class="hero__canvas" id="ripple-canvas" data-intensity="0.9" data-theme="light" aria-hidden="true"></canvas>
+      <canvas class="hero__canvas" id="ripple-canvas" data-theme="light" aria-hidden="true"></canvas>
       <div class="hero__veil" aria-hidden="true"></div>
 
       <div class="hero__inner hero__inner--center">
@@ -594,7 +597,6 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="main.js"></script>

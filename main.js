@@ -1,6 +1,6 @@
 /* ============================================================
    Ripples Space — interactions
-   three.js ripple shader · GSAP scroll motion · animated mockups
+   2D ripple contours · GSAP scroll motion · animated mockups
    ============================================================ */
 (function () {
   "use strict";
@@ -15,7 +15,6 @@
   document.documentElement.classList.toggle("motion-reduced", REDUCED);
 
   const hasGSAP = typeof gsap !== "undefined";
-  const hasTHREE = typeof THREE !== "undefined";
 
   // Infinite/decorative GSAP loops, collected so they can be paused on demand.
   const infiniteTweens = [];
@@ -25,102 +24,198 @@
   const onMotionChange = (fn) => motionHandlers.push(fn);
 
   /* -------------------------------------------------------
-     1 · THREE.JS RIPPLE FIELD (hero + cta backgrounds)
+     1 · RIPPLE FIELD (hero + cta backgrounds)
+
+     Contour rings spreading from the bottom centre, traced with
+     marching squares over a height field. Replaces a WebGL shader
+     that painted a full-bleed gradient wash: this is 2D canvas,
+     hairline-only, and costs about 0.2ms a frame — which is what
+     let three.js come off every page.
+
+     The field is `sin(d · rings · 2π)` where d is the distance from
+     the origin normalised so the FARTHEST corner is 1.0 (measuring
+     to the nearest one would push most of the surface past the
+     outermost ring once the origin moves off centre). Before the
+     band is read, d is bent by harmonics of the angle, which is
+     what turns concentric circles into rings that wander. Only
+     EVEN multiples of the angle are used — atan2 wraps at ±π and
+     sin(k·a) is only continuous across that seam for even k.
   ------------------------------------------------------- */
-  const VERT = `
-    void main(){ gl_Position = vec4(position, 1.0); }
-  `;
-  const FRAG = `
-    precision highp float;
-    uniform float u_time;
-    uniform vec2  u_res;
-    uniform vec2  u_mouse;
-    uniform float u_intensity;
-    uniform vec3  u_base;
-    uniform vec3  u_deep;
-    uniform vec3  u_glow;
-    uniform float u_light;
-
-    float ripple(vec2 uv, vec2 c, float t, float speed, float freq){
-      float d = distance(uv, c);
-      return sin(d * freq - t * speed) * exp(-d * 2.6);
-    }
-    void main(){
-      vec2 uv = gl_FragCoord.xy / u_res.xy;
-      float ar = u_res.x / u_res.y;
-      vec2 p = vec2(uv.x * ar, uv.y);
-      float t = u_time;
-
-      float h = 0.0;
-      h += ripple(p, vec2(0.22 * ar, 0.72), t * 0.6,  1.0, 15.0);
-      h += ripple(p, vec2(0.82 * ar, 0.30), t * 0.5,  0.8, 13.0) * 0.8;
-      h += ripple(p, vec2(0.55 * ar, 0.05), t * 0.42, 0.7, 11.0) * 0.6;
-      vec2 m = vec2(u_mouse.x * ar, u_mouse.y);
-      h += ripple(p, m, t * 0.75, 1.2, 16.0) * 0.45;
-      h *= 0.5;
-
-      float vign = smoothstep(1.25, 0.15, distance(uv, vec2(0.5)));
-      vec3 col = mix(u_deep, u_base, uv.y);
-      // On paper the crests have to darken to read; on oxblood they add light.
-      col = mix(col + u_glow * max(h, 0.0) * 0.17 * u_intensity * vign,
-                mix(col, u_glow, max(h, 0.0) * 0.30 * u_intensity * vign),
-                u_light);
-      col = mix(col, u_deep, (1.0 - vign) * mix(0.45, 0.16, u_light));
-      gl_FragColor = vec4(col, 1.0);
-    }
-  `;
-
   const RIPPLE_THEMES = {
-    dark:  { base: [0.286, 0.012, 0.031], deep: [0.150, 0.008, 0.022], glow: [0.914, 0.769, 0.541], light: 0 },
-    // Maroon (#7c1418), not terracotta — the crests tint the paper toward the
-    // brand red. A lower mix than the dark field's because a saturated maroon
-    // reads far heavier on paper than gold does on oxblood.
-    light: { base: [0.980, 0.957, 0.910], deep: [0.937, 0.886, 0.788], glow: [0.486, 0.078, 0.094], light: 1 },
+    // Gold on oxblood, maroon on paper. The dark field carries more weight
+    // because a hairline loses far more against oxblood than against paper.
+    dark:  { accent: [233, 196, 138], strength: 0.13 },
+    light: { accent: [124, 20, 24],  strength: 0.06 },
   };
+
+  const RIPPLE = {
+    cell: 15,        // sampling grid, px
+    rings: 5,        // bands from the origin to the farthest corner
+    lines: 2,        // contour lines within each band
+    organic: 0.7,    // how far the rings wander off true circles
+    drift: 0.006,    // bands per second — one takes ~2.8 min to travel out
+    amp: 0.25,       // how far the ground lifts under the pointer
+    sigma: 240,      // and how broadly
+    originX: 0.5,
+    originY: 1,
+  };
+  const TAU = Math.PI * 2;
 
   const ripples = [];
   function createRipple(canvas, intensity) {
-    if (!hasTHREE || !canvas) return null;
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "high-performance" });
-    } catch (e) { return null; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    if (!canvas) return null;
+    const ctx = canvas.getContext && canvas.getContext("2d");
+    if (!ctx) return null;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.Camera();
     const theme = RIPPLE_THEMES[canvas.getAttribute("data-theme")] || RIPPLE_THEMES.dark;
-    const uniforms = {
-      u_time: { value: 0 },
-      u_res: { value: new THREE.Vector2(1, 1) },
-      u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-      u_intensity: { value: intensity },
-      u_base: { value: new THREE.Vector3(...theme.base) },
-      u_deep: { value: new THREE.Vector3(...theme.deep) },
-      u_glow: { value: new THREE.Vector3(...theme.glow) },
-      u_light: { value: theme.light },
-    };
-    const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms });
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
-    scene.add(mesh);
+    const stroke = "rgba(" + theme.accent.join(",") + ",";
+    const alpha = theme.strength * intensity;
 
-    const target = { mx: 0.5, my: 0.5 };
+    const CELL = RIPPLE.cell;
+    const PS2 = 2 * RIPPLE.sigma * RIPPLE.sigma;
+    const PCUT = (RIPPLE.sigma * 3) * (RIPPLE.sigma * 3);
+
+    let W = 0, H = 0, cols = 0, rows = 0, base = null, work = null;
+    const target = { x: -9999, y: -9999, on: 0 };
+    const eased = { x: -9999, y: -9999, on: 0 };
+
+    function buildField() {
+      cols = Math.ceil(W / CELL);
+      rows = Math.ceil(H / CELL);
+      base = new Float32Array((cols + 1) * (rows + 1));
+      work = new Float32Array(base.length);
+
+      const fw = cols * CELL, fh = rows * CELL;
+      const ox = fw * RIPPLE.originX, oy = fh * RIPPLE.originY;
+      const maxD = Math.max(
+        Math.hypot(ox, oy), Math.hypot(fw - ox, oy),
+        Math.hypot(ox, fh - oy), Math.hypot(fw - ox, fh - oy)
+      ) || 1;
+
+      for (let j = 0; j <= rows; j++) {
+        const py = j * CELL - oy;
+        for (let i = 0; i <= cols; i++) {
+          const px = i * CELL - ox;
+          const d = Math.sqrt(px * px + py * py) / maxD;
+          const a = Math.atan2(py, px);
+          const wob = Math.sin(a * 2 + d * 7.0) * 0.50
+                    + Math.sin(a * 4 - d * 5.0 + 1.1) * 0.34
+                    + Math.sin(a * 6 + d * 3.4 + 2.3) * 0.20
+                    + Math.sin(a * 8 - d * 2.2 + 0.7) * 0.10;
+          // Undamped, the wander collapses the origin into a pinch.
+          const damp = Math.min(1, d * 2.6);
+          const dd = d + wob * RIPPLE.organic * 0.075 * damp;
+          base[j * (cols + 1) + i] = Math.sin(dd * RIPPLE.rings * TAU);
+        }
+      }
+    }
+
     function resize() {
       const r = canvas.getBoundingClientRect();
-      const w = Math.max(1, r.width), h = Math.max(1, r.height);
-      renderer.setSize(w, h, false);
-      uniforms.u_res.value.set(w * renderer.getPixelRatio(), h * renderer.getPixelRatio());
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = Math.max(1, Math.round(r.width));
+      H = Math.max(1, Math.round(r.height));
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildField();
     }
-    const inst = {
-      renderer, uniforms, target, resize,
-      render(time) {
-        // ease mouse (gentle, so the pointer nudges rather than chases)
-        uniforms.u_mouse.value.x += (target.mx - uniforms.u_mouse.value.x) * 0.03;
-        uniforms.u_mouse.value.y += (target.my - uniforms.u_mouse.value.y) * 0.03;
-        uniforms.u_time.value = time;
-        renderer.render(scene, camera);
+
+    // The swell is added once per grid point per frame. Doing it inside the
+    // contour-level loop instead repeats every exp() once per level.
+    function fieldWithSwell(amp) {
+      if (amp <= 0.001) return base;
+      work.set(base);
+      const stride = cols + 1;
+      const reach = RIPPLE.sigma * 3;
+      const i0 = Math.max(0, Math.floor((eased.x - reach) / CELL));
+      const i1 = Math.min(cols, Math.ceil((eased.x + reach) / CELL));
+      const j0 = Math.max(0, Math.floor((eased.y - reach) / CELL));
+      const j1 = Math.min(rows, Math.ceil((eased.y + reach) / CELL));
+      for (let j = j0; j <= j1; j++) {
+        const dy = j * CELL - eased.y, dy2 = dy * dy;
+        for (let i = i0; i <= i1; i++) {
+          const dx = i * CELL - eased.x;
+          const d2 = dx * dx + dy2;
+          if (d2 > PCUT) continue;
+          work[j * stride + i] += amp * Math.exp(-d2 / PS2);
+        }
       }
-    };
+      return work;
+    }
+
+    // Clamped: where the gradient across an edge is ~0 the ratio explodes
+    // and throws stray dashes far outside the cell.
+    function lerpT(v0, v1, lv) {
+      const g = v1 - v0;
+      if (g > -1e-6 && g < 1e-6) return 0.5;
+      const t = (lv - v0) / g;
+      return t < 0 ? 0 : (t > 1 ? 1 : t);
+    }
+
+    function render(time) {
+      if (!base) return;
+      // Deliberately lagging: the swell trails the cursor and takes over a
+      // second to rise or fall, so it reads as the ground settling.
+      eased.x += (target.x - eased.x) * 0.03;
+      eased.y += (target.y - eased.y) * 0.03;
+      eased.on += (target.on - eased.on) * 0.012;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const f = fieldWithSwell(RIPPLE.amp * eased.on);
+      const stride = cols + 1;
+      const gap = 2 / RIPPLE.lines;
+      // Scaled by `gap` so the rate stays the same if the line count changes.
+      const shift = (time * RIPPLE.drift * gap) % gap;
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = stroke + alpha + ")";
+      ctx.beginPath();
+
+      for (let lv = -1 + shift; lv <= 1; lv += gap) {
+        for (let j = 0; j < rows; j++) {
+          const y0 = j * CELL, y1 = y0 + CELL;
+          for (let i = 0; i < cols; i++) {
+            const x0 = i * CELL, x1 = x0 + CELL;
+            const k = j * stride + i;
+            const a = f[k], b = f[k + 1], c = f[k + stride + 1], d = f[k + stride];
+
+            const idx = (a > lv ? 8 : 0) | (b > lv ? 4 : 0) | (c > lv ? 2 : 0) | (d > lv ? 1 : 0);
+            if (idx === 0 || idx === 15) continue;
+
+            const top    = x0 + CELL * lerpT(a, b, lv);
+            const right  = y0 + CELL * lerpT(b, c, lv);
+            const bottom = x0 + CELL * lerpT(d, c, lv);
+            const left   = y0 + CELL * lerpT(a, d, lv);
+
+            switch (idx) {
+              case 1: case 14: ctx.moveTo(x0, left);   ctx.lineTo(bottom, y1); break;
+              case 2: case 13: ctx.moveTo(bottom, y1); ctx.lineTo(x1, right);  break;
+              case 3: case 12: ctx.moveTo(x0, left);   ctx.lineTo(x1, right);  break;
+              case 4: case 11: ctx.moveTo(top, y0);    ctx.lineTo(x1, right);  break;
+              case 6: case  9: ctx.moveTo(top, y0);    ctx.lineTo(bottom, y1); break;
+              case 7: case  8: ctx.moveTo(x0, left);   ctx.lineTo(top, y0);    break;
+              case 5:
+                ctx.moveTo(top, y0);    ctx.lineTo(x1, right);
+                ctx.moveTo(x0, left);   ctx.lineTo(bottom, y1);
+                break;
+              case 10:
+                ctx.moveTo(top, y0);    ctx.lineTo(x0, left);
+                ctx.moveTo(bottom, y1); ctx.lineTo(x1, right);
+                break;
+            }
+          }
+        }
+      }
+      ctx.stroke();
+    }
+
+    function snapPointer() {
+      if (eased.x < -1000) { eased.x = target.x; eased.y = target.y; }
+    }
+
+    const inst = { target, resize, render, snapPointer };
     resize();
     ripples.push(inst);
     return inst;
@@ -133,17 +228,22 @@
   }
   const heroCanvas = document.getElementById("ripple-canvas");
   const ctaCanvas = document.getElementById("ripple-canvas-2");
-  const heroRipple = createRipple(heroCanvas, intensityFor(heroCanvas, 0.85));
-  createRipple(ctaCanvas, intensityFor(ctaCanvas, 0.7));
+  const heroRipple = createRipple(heroCanvas, intensityFor(heroCanvas, 1));
+  createRipple(ctaCanvas, intensityFor(ctaCanvas, 1));
 
   // pointer → hero ripple
   if (heroRipple) {
     const hero = document.getElementById("hero");
     hero.addEventListener("pointermove", (e) => {
       const r = hero.getBoundingClientRect();
-      heroRipple.target.mx = (e.clientX - r.left) / r.width;
-      heroRipple.target.my = 1.0 - (e.clientY - r.top) / r.height;
+      heroRipple.target.x = e.clientX - r.left;
+      heroRipple.target.y = e.clientY - r.top;
+      // Start the swell where the pointer entered rather than easing it in
+      // from the off-canvas sentinel.
+      heroRipple.snapPointer();
+      heroRipple.target.on = 1;
     });
+    hero.addEventListener("pointerleave", () => { heroRipple.target.on = 0; });
   }
 
   let start = performance.now();

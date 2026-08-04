@@ -277,11 +277,12 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 .hero { position: relative; min-height: 100vh; display: flex; align-items: center; padding: 130px 0 80px; overflow: hidden; background: var(--oxblood); color: var(--cream);
   --fg: var(--cream); --fg-soft: var(--cream); --eyebrow: var(--gold); --accent: var(--gold); --card-line: rgba(254,237,201,.10); }
 .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+/* Thin. The field behind it is hairlines now, not a full-bleed wash, and the
+   ripples originate at the BOTTOM centre — the old near-opaque bottom stop
+   erased them exactly where they start. This only softens the top under the
+   nav and lands the bottom edge on the section colour. */
 .hero__veil { position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background:
-    radial-gradient(120% 90% at 15% 0%, rgba(233,196,138,.10), transparent 55%),
-    radial-gradient(100% 100% at 100% 100%, rgba(42,2,6,.65), transparent 60%),
-    linear-gradient(to bottom, rgba(42,2,6,.35), rgba(73,3,8,.15) 40%, rgba(54,2,6,.9)); }
+  background: linear-gradient(to bottom, rgba(42,2,6,.55), transparent 22%, transparent 78%, rgba(54,2,6,.72)); }
 .hero__inner { position: relative; z-index: 2; max-width: var(--maxw); margin: 0 auto; width: 100%; padding: 0 clamp(20px, 5vw, 48px); display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(30px, 5vw, 70px); align-items: center; }
 .hero__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.08; letter-spacing: -0.015em; color: var(--cream); margin-bottom: 26px; text-wrap: balance; }
 .hero__title em { font-style: italic; color: var(--gold); }
@@ -297,11 +298,13 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
   --fg: var(--ink); --fg-soft: var(--ink-soft); --fg-dim: var(--ink-dim);
   --eyebrow: var(--clay); --accent: var(--red-accent); --card-line: rgba(63,10,13,.12);
 }
-/* Kept deliberately thin — ink on the tinted crests still clears 8:1, so the
-   veil only has to soften the top under the nav and land the bottom edge on
-   --paper so the join to the next section is seamless. */
+/* No clearing behind the copy. The lines run straight under the type and are
+   simply faint enough not to matter — a 1px hairline at 6% alpha costs the
+   headline nothing measurable, and ink on paper stays at 12.6:1. All this
+   does is soften the top under the nav and land the bottom on --paper so the
+   join to the next section is seamless. */
 .hero--light .hero__veil {
-  background: linear-gradient(to bottom, rgba(253,250,242,.62), transparent 26%, transparent 68%, var(--paper));
+  background: linear-gradient(to bottom, rgba(253,250,242,.42), transparent 20%, transparent 76%, var(--paper));
 }
 .hero--light .hero__title { color: var(--ink); }
 .hero--light .hero__title em { color: var(--red-accent); }
@@ -356,7 +359,9 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 
 .scroll-cue { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--taupe-dim); }
 .scroll-cue i { width: 1px; height: 40px; background: linear-gradient(var(--gold), transparent); position: relative; overflow: hidden; }
-.scroll-cue i::after { content:""; position:absolute; top:-40%; left:0; width:1px; height:40%; background:var(--cream); animation: cue 2.2s var(--ease) infinite; }
+/* Was 2.2s, which read as a blinking cursor next to a field that now barely
+   moves. At 7s it is a slow fall. */
+.scroll-cue i::after { content:""; position:absolute; top:-40%; left:0; width:1px; height:40%; background:var(--cream); animation: cue 7s var(--ease) infinite; }
 @keyframes cue { 0%{transform:translateY(0);} 100%{transform:translateY(240%);} }
 
 /* red-section ambient glow */
@@ -499,7 +504,9 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 .cta__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .9; }
 .cta .cta__inner { position: relative; z-index: 2; }
 .cta__canvas { z-index: 0; }
-.cta::after { content:""; position:absolute; inset:0; z-index:0; background: radial-gradient(80% 120% at 50% 120%, transparent, var(--oxblood-dark) 78%); pointer-events:none; }
+/* Softened alongside .hero__veil: the old stop reached full --oxblood-dark by
+   78% and swallowed the outer rings. */
+.cta::after { content:""; position:absolute; inset:0; z-index:0; background: radial-gradient(90% 130% at 50% 120%, transparent 45%, rgba(42,2,6,.7) 92%); pointer-events:none; }
 .cta__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2.4rem, 5.4vw, 4.2rem); line-height: 1.04; color: var(--cream); margin-bottom: 26px; letter-spacing: -0.02em; text-wrap: balance; }
 .cta__sub { color: var(--cream); font-size: clamp(1.05rem, 1.7vw, 1.3rem); max-width: 54ch; margin: 0 auto 40px; }
 .cta__actions { display: flex; justify-content: center; }
