@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ripples Space · Your business has grown. Your digital tools… maybe not.</title>
-  <meta name="description" content="I help businesses simplify, automate, and build digital systems that save time, reduce busywork, and make everyday operations a whole lot less chaotic." />
+  <title>Ripples Space · Your business grew. Your systems… did not.</title>
+  <meta name="description" content="I build websites, booking systems, and custom apps for owner-run businesses that outgrew their set-up." />
 
   <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
   <script src="analytics.js"></script>
@@ -28,24 +28,29 @@
     .hero__inner--center .hero__sub { margin-left: auto; margin-right: auto; }
     .hero__inner--center .hero__actions { justify-content: center; }
 
-    .hero__closer { font-family: var(--serif); font-weight: 500; font-size: clamp(1.3rem, 2.6vw, 1.75rem); line-height: 1.35; color: var(--cream); margin-bottom: 34px; text-wrap: balance; }
-    .hero__closer em { font-style: italic; color: var(--gold); }
+    /* The cue keeps the shared 2.2s cadence everywhere else; here it sits
+       next to a field that barely moves, and at 2.2s it read as a blinking
+       cursor. Scoped to this hero rather than changed in styles.css. */
+    .hero--light .scroll-cue i::after { animation-duration: 7s; }
 
     /* Hero mark: hairline rings + live ripple, matching the Ripples Space brand mark */
-    .hero__mark { display: inline-flex; color: var(--cream); margin-bottom: 18px; }
+    .hero__mark { display: inline-flex; color: var(--red-accent); margin-bottom: 18px; }
     .hero__mark svg { width: clamp(84px, 9vw, 104px); height: clamp(84px, 9vw, 104px); overflow: visible; }
     .hero__mark svg circle { stroke-width: 1; }
     .hero__mark .ripples-orbit,
     .hero__mark .ripples-core,
     .hero__mark .ripple-ring { transform-box: view-box; transform-origin: 129px 129px; }
-    .hero__mark .ripples-orbit { animation: markOrbit 28s linear infinite; }
-    .hero__mark .ripples-core { animation: markCorePulse 4.5s ease-in-out infinite; }
-    .hero__mark .ripple-ring { opacity: 0; animation: markRipple 6s ease-out infinite; }
-    .hero__mark .ripple-ring.delay-1 { animation-delay: 2s; }
-    .hero__mark .ripple-ring.delay-2 { animation-delay: 4s; }
+    /* Slowed well down from the original 28s / 4.5s / 6s. The mark still
+       breathes and still ripples; at the old timings it was the fastest
+       thing on the page by a wide margin and read as a tick. */
+    .hero__mark .ripples-orbit { animation: markOrbit 90s linear infinite; }
+    .hero__mark .ripples-core { animation: markCorePulse 16s ease-in-out infinite; }
+    .hero__mark .ripple-ring { opacity: 0; animation: markRipple 24s ease-out infinite; }
+    .hero__mark .ripple-ring.delay-1 { animation-delay: 8s; }
+    .hero__mark .ripple-ring.delay-2 { animation-delay: 16s; }
     @keyframes markOrbit { to { transform: rotate(360deg); } }
-    @keyframes markCorePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .92; transform: scale(1.08); } }
-    @keyframes markRipple { 0% { opacity: .5; transform: scale(.55); } 80% { opacity: 0; } 100% { opacity: 0; transform: scale(1.5); } }
+    @keyframes markCorePulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .96; transform: scale(1.04); } }
+    @keyframes markRipple { 0% { opacity: .32; transform: scale(.55); } 80% { opacity: 0; } 100% { opacity: 0; transform: scale(1.5); } }
 
     /* ============ RHYTHM for the narrow copy sections ============ */
     .section__title + .prose,
@@ -163,7 +168,7 @@
   <a class="skip-link" href="#top">Skip to content</a>
 
   <!-- ============ NAV: brand + burger (drawer holds the audience paths) ============ -->
-  <header class="nav" id="nav">
+  <header class="nav nav--on-light" id="nav">
     <div class="nav__inner">
       <a class="brand" href="#top" aria-label="Ripples Space home">
         <span class="brand__mark" aria-hidden="true">
@@ -238,9 +243,9 @@
 
   <main id="top" tabindex="-1">
 
-    <!-- ============ HERO (red) ============ -->
-    <section class="hero" id="hero">
-      <canvas class="hero__canvas" id="ripple-canvas" data-intensity="0.8" aria-hidden="true"></canvas>
+    <!-- ============ HERO (light) ============ -->
+    <section class="hero hero--light" id="hero">
+      <canvas class="hero__canvas" id="ripple-canvas" data-theme="light" aria-hidden="true"></canvas>
       <div class="hero__veil" aria-hidden="true"></div>
 
       <div class="hero__inner hero__inner--center">
@@ -272,18 +277,16 @@
             </svg>
           </span>
 
-          <h1 class="hero__title reveal">Your business has grown.<br/><em>Your digital tools… maybe not.</em></h1>
+          <h1 class="hero__title reveal">Your business grew.<br/><em>Your systems… did not.</em></h1>
 
           <p class="hero__sub reveal">
-            Maybe your website still says "Coming Soon." Maybe your process involves three
-            spreadsheets and a group chat. Maybe that internal tool has been "on the roadmap"
-            for the last two years.
+            I build websites, booking systems, and custom apps for owner-run businesses
+            that outgrew their set-up.
           </p>
 
-          <p class="hero__closer reveal">Whatever it is, <em>let's build something better.</em></p>
-
           <div class="hero__actions reveal">
-            <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>Let's Talk</a>
+            <a href="/contact/#book" class="btn btn--ink btn--lg magnetic" data-book-open>Work with me</a>
+            <a href="#offers" class="btn btn--ghost btn--lg">See how I can help</a>
           </div>
         </div>
       </div>
@@ -599,7 +602,6 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="main.js"></script>
