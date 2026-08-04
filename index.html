@@ -28,6 +28,11 @@
     .hero__inner--center .hero__sub { margin-left: auto; margin-right: auto; }
     .hero__inner--center .hero__actions { justify-content: center; }
 
+    /* The cue keeps the shared 2.2s cadence everywhere else; here it sits
+       next to a field that barely moves, and at 2.2s it read as a blinking
+       cursor. Scoped to this hero rather than changed in styles.css. */
+    .hero--light .scroll-cue i::after { animation-duration: 7s; }
+
     /* Hero mark: hairline rings + live ripple, matching the Ripples Space brand mark */
     .hero__mark { display: inline-flex; color: var(--red-accent); margin-bottom: 18px; }
     .hero__mark svg { width: clamp(84px, 9vw, 104px); height: clamp(84px, 9vw, 104px); overflow: visible; }
