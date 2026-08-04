@@ -16,6 +16,16 @@
 
   const hasGSAP = typeof gsap !== "undefined";
 
+  // Phones run a pared-back build. Everything switched off below is
+  // decorative, and all of it competes with scrolling on exactly the
+  // hardware least able to afford it: the ripple field is a full-viewport
+  // canvas redrawn every frame, and the rest are loops that never stop.
+  // Matched on width rather than touch — a touch laptop is not a phone —
+  // and read once at load, so it stays in step with the CSS breakpoint
+  // without re-initialising the page on every rotation.
+  const LITE = window.matchMedia("(max-width: 760px)").matches;
+  document.documentElement.classList.toggle("motion-lite", LITE);
+
   // Infinite/decorative GSAP loops, collected so they can be paused on demand.
   const infiniteTweens = [];
   // Sections register here so the in-page toggle can settle them mid-session,
@@ -226,8 +236,8 @@
     const v = parseFloat(canvas.getAttribute("data-intensity"));
     return isNaN(v) ? fallback : v;
   }
-  const heroCanvas = document.getElementById("ripple-canvas");
-  const ctaCanvas = document.getElementById("ripple-canvas-2");
+  const heroCanvas = LITE ? null : document.getElementById("ripple-canvas");
+  const ctaCanvas = LITE ? null : document.getElementById("ripple-canvas-2");
   const heroRipple = createRipple(heroCanvas, intensityFor(heroCanvas, 1));
   createRipple(ctaCanvas, intensityFor(ctaCanvas, 1));
 
@@ -308,7 +318,10 @@
   }
 
   /* --- inject an accessible reduce-motion toggle (both pages) --- */
-  if (ripples.length && !document.querySelector(".motion-toggle")) {
+  // Gated on "this page moves at all", not on the ripple field specifically:
+  // the two landing pages dropped their canvases but still reveal, scrub the
+  // process line, and loop the flow diagram, so they still need the control.
+  if ((ripples.length || hasGSAP) && !document.querySelector(".motion-toggle")) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "motion-toggle";
@@ -465,7 +478,13 @@
       gsap.set(".reveal", { opacity: 1, y: 0 });
       settle(".reveal");
     } else {
-      gsap.set(".reveal", { opacity: 0, y: 26 });
+      // Shorter and closer on phones: the reveal itself is cheap, but a 0.9s
+      // tween on every section means something is nearly always animating
+      // while you scroll.
+      const RV = LITE
+        ? { y: 14, duration: 0.45, stagger: 0.05 }
+        : { y: 26, duration: 0.9, stagger: 0.08 };
+      gsap.set(".reveal", { opacity: 0, y: RV.y });
 
       // Staggered reveal, grouped by nearest section. The hero is excluded:
       // it sits in view at load, so a ScrollTrigger would fire a second tween
@@ -482,7 +501,7 @@
           start: "top 78%",
           once: true,
           onEnter: () => gsap.to(items, {
-            opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08,
+            opacity: 1, y: 0, duration: RV.duration, ease: "power3.out", stagger: RV.stagger,
             onComplete: () => settle(items)
           })
         });
@@ -492,7 +511,8 @@
       const heroItems = gsap.utils.toArray(".hero .reveal");
       if (heroItems.length) {
         gsap.to(heroItems, {
-          opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.09, delay: 0.15,
+          opacity: 1, y: 0, duration: RV.duration, ease: "power3.out",
+          stagger: RV.stagger, delay: LITE ? 0.05 : 0.15,
           onComplete: () => settle(heroItems)
         });
       }
@@ -540,7 +560,7 @@
     }
 
     /* --- floating hero cards --- */
-    if (!REDUCED) {
+    if (!REDUCED && !LITE) {
       if (document.querySelector(".fc1")) infiniteTweens.push(gsap.to(".fc1", { y: -14, duration: 3.2, ease: "sine.inOut", yoyo: true, repeat: -1 }));
       if (document.querySelector(".fc2")) infiniteTweens.push(gsap.to(".fc2", { y: 12, duration: 3.8, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 0.4 }));
       if (document.querySelector(".dash")) infiniteTweens.push(gsap.to(".dash", { y: -8, duration: 4.5, ease: "sine.inOut", yoyo: true, repeat: -1 }));
@@ -548,7 +568,12 @@
 
     /* --- automation flow: pulse + node activation loop --- */
     const flow = document.getElementById("flow");
-    if (flow && !REDUCED) {
+    if (flow && LITE) {
+      // Show the diagram in its finished state instead of looping it forever.
+      flow.querySelectorAll(".node").forEach((n) => n.classList.add("is-active"));
+      const p = flow.querySelector(".pulse");
+      if (p) p.style.opacity = 0;
+    } else if (flow && !REDUCED) {
       const nodes = flow.querySelectorAll(".node");
       const pulse = flow.querySelector(".pulse");
       const stops = [30, 118, 206, 294]; // viewBox y centers
@@ -631,18 +656,36 @@
       } else {
         measure();
         ScrollTrigger.addEventListener("refresh", () => { measure(); draw(lastP); });
-        ScrollTrigger.create({
-          trigger: timeline,
-          start: "top 70%",
-          end: "bottom 82%",
-          // 0.6 smoothed the line so far behind the scroll that it read as the
-          // section lagging. 0.3 still eases out the wheel's coarse steps.
-          scrub: 0.3,
-          onUpdate: (self) => {
-            if (isReduced()) return; // toggled off mid-scroll — leave it settled
-            draw(self.progress);
-          }
-        });
+        if (LITE) {
+          // A scrub runs the draw on every frame of every scroll. On a phone
+          // the line grows to each step as that step arrives instead — one
+          // tween per step, nothing between them.
+          steps.forEach((step, i) => {
+            ScrollTrigger.create({
+              trigger: step,
+              start: "top 78%",
+              once: true,
+              onEnter: () => {
+                if (isReduced()) return;
+                const to = i === steps.length - 1 ? 1 : stops[i];
+                gsap.to({ p: lastP }, { p: to, duration: 0.5, ease: "power2.out", onUpdate: function () { draw(this.targets()[0].p); } });
+              }
+            });
+          });
+        } else {
+          ScrollTrigger.create({
+            trigger: timeline,
+            start: "top 70%",
+            end: "bottom 82%",
+            // 0.6 smoothed the line so far behind the scroll that it read as
+            // the section lagging. 0.3 still eases out the wheel's coarse steps.
+            scrub: 0.3,
+            onUpdate: (self) => {
+              if (isReduced()) return; // toggled off mid-scroll — leave it settled
+              draw(self.progress);
+            }
+          });
+        }
 
         // Each step fades up as it arrives, just ahead of the line reaching it.
         steps.forEach((step) => {
@@ -651,7 +694,7 @@
             start: "top 88%",
             once: true,
             onEnter: () => gsap.to(step, {
-              opacity: 1, y: 0, duration: 0.7, ease: "power3.out",
+              opacity: 1, y: 0, duration: LITE ? 0.45 : 0.7, ease: "power3.out",
               onComplete: () => step.classList.add("is-revealed")
             })
           });

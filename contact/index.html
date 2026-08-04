@@ -29,9 +29,18 @@
     .hero__inner--center{grid-template-columns:1fr;max-width:840px;text-align:center;}
     .hero__inner--center .hero__sub{margin-left:auto;margin-right:auto;}
 
-    /* Two-column: message copy on the left, booking widget on the right. */
+    /* Two-column: message copy on the left, booking widget on the right.
+       The WhatsApp block is the second row of the left column, so it sits
+       beside the widget instead of below it. */
     .contact__grid{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(28px,5vw,64px);align-items:start;}
-    @media (max-width:860px){.contact__grid{grid-template-columns:1fr;gap:32px;}}
+    .contact__aside{grid-column:1;grid-row:1;}
+    .contact__form-card{grid-column:2;grid-row:1 / span 2;}
+    .alt-contact{grid-column:1;grid-row:2;}
+    /* Stacked: the booking widget keeps the lead, WhatsApp follows it. */
+    @media (max-width:860px){
+      .contact__grid{grid-template-columns:1fr;gap:32px;}
+      .contact__aside,.contact__form-card,.alt-contact{grid-column:1;grid-row:auto;}
+    }
 
     .contact__aside .lede{margin-bottom:28px;}
     .contact__ways{list-style:none;margin:0;padding:0;display:grid;gap:18px;}
@@ -53,28 +62,21 @@
     .contact__form-card{scroll-margin-top:96px;}
 
     /* ============ WHATSAPP ALTERNATIVE ============ */
-    /* Sits below both columns so it reads as "or, if you'd rather not" —
-       after the call offer rather than competing with it.
-
-       Centred stack, not copy-left / button-right: at this width the row
-       layout stranded the button in whitespace and squeezed the copy into a
-       ragged half-column. Mirrors the .cta section's composition. */
+    /* Reads as "or, if you'd rather not" — a quieter card under the call
+       offer, not a competing one. Left-aligned now that it lives in a
+       column: centred text in a half-width panel read as a second hero. */
     .alt-contact{
-      margin-top:clamp(40px,6vw,64px);
-      padding:clamp(30px,5vw,46px) clamp(24px,4vw,40px);
+      align-self:start;
+      padding:clamp(24px,3vw,30px);
       border:1px solid var(--card-line);border-radius:var(--radius);background:var(--card);
-      text-align:center;
     }
     .alt-contact__title{
       font-family:var(--serif);font-weight:500;line-height:1.2;
-      font-size:clamp(1.35rem,2.6vw,1.75rem);color:var(--fg);margin-bottom:12px;
+      font-size:clamp(1.2rem,2.1vw,1.45rem);color:var(--fg);margin-bottom:10px;
     }
-    .alt-contact__copy p{
-      color:var(--fg-soft);font-size:15.5px;line-height:1.6;
-      max-width:56ch;margin-left:auto;margin-right:auto;
-    }
-    .alt-contact__copy p + p{margin-top:10px;}
-    .alt-contact__btn{margin-top:28px;}
+    .alt-contact__copy p{color:var(--fg-soft);font-size:15px;line-height:1.6;}
+    .alt-contact__copy p + p{margin-top:8px;}
+    .alt-contact__btn{margin-top:22px;}
     .alt-contact__btn svg{width:19px;height:19px;flex:none;}
     @media (max-width:560px){
       /* Full-width already gives the button presence, so the generous
@@ -193,23 +195,26 @@
             </div>
           </div>
 
-        </div>
-
-        <!-- ============ WHATSAPP ALTERNATIVE ============ -->
-        <div class="alt-contact reveal">
-          <div class="alt-contact__copy">
-            <h3 class="alt-contact__title">Not a fan of calls?</h3>
-            <p>I get it. Some conversations are easier over a few messages anyway.</p>
-            <p>Send me a message on WhatsApp. Screenshots, voice notes, long paragraphs… they're all welcome.</p>
-          </div>
-          <a class="btn btn--ink btn--lg magnetic alt-contact__btn"
-             href="https://wa.me/639272345247" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+          <!-- ============ WHATSAPP ALTERNATIVE ============ -->
+          <!-- Under the left column, alongside the booking widget rather than
+               below it: as a full-width band under both columns it sat past
+               the fold and most visitors never scrolled to it. -->
+          <div class="alt-contact reveal">
+            <div class="alt-contact__copy">
+              <h3 class="alt-contact__title">Not a fan of calls?</h3>
+              <p>I get it. Some conversations are easier over a few messages anyway.</p>
+              <p>Send me a message on WhatsApp. Screenshots, voice notes, long paragraphs… they're all welcome.</p>
+            </div>
+            <a class="btn btn--ink btn--lg magnetic alt-contact__btn"
+               href="https://wa.me/639272345247" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
               <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.13h-.01c-1.52 0-3.01-.41-4.31-1.18l-.31-.18-3.2.84.85-3.12-.2-.32a8.22 8.22 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.69 8.23-8.23 8.23z"/>
               <path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.23 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/>
-            </svg>
-            Message me on WhatsApp
-          </a>
+              </svg>
+              Message me on WhatsApp
+            </a>
+          </div>
+
         </div>
       </div>
     </section>
