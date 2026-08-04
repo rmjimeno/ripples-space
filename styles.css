@@ -304,12 +304,12 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
   background: linear-gradient(to bottom, rgba(253,250,242,.62), transparent 26%, transparent 68%, var(--paper));
 }
 .hero--light .hero__title { color: var(--ink); }
-.hero--light .hero__title em { color: var(--clay); }
+.hero--light .hero__title em { color: var(--red-accent); }
 .hero--light .hero__sub { color: var(--ink-soft); }
 .hero--light .btn--ghost { border-color: rgba(63,10,13,.22); }
 .hero--light .btn--ghost:hover { background: rgba(63,10,13,.05); border-color: var(--ink); }
-.hero--light .scroll-cue { color: var(--ink-dim); }
-.hero--light .scroll-cue i { background: linear-gradient(var(--clay), transparent); }
+.hero--light .scroll-cue { color: var(--red-accent); }
+.hero--light .scroll-cue i { background: linear-gradient(var(--red-accent), transparent); }
 .hero--light .scroll-cue i::after { background: var(--ink); }
 .hero--light :focus-visible { outline-color: var(--red-accent); }
 
@@ -317,11 +317,11 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
    brand and burger have nothing to sit on. Swap to ink for that window only;
    .scrolled brings the oxblood bar back and the cream with it. */
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .brand { color: var(--ink); }
-.nav--on-light:not(.scrolled):not(.is-drawer-open) .brand__mark { color: var(--clay); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .brand__mark { color: var(--red-accent); }
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__links { color: var(--ink-dim); }
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__links a:hover { color: var(--ink); }
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger { color: var(--ink); border-color: rgba(63,10,13,.22); }
-.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger:hover { border-color: var(--clay); background: rgba(63,10,13,.05); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger:hover { border-color: var(--red-accent); background: rgba(63,10,13,.05); }
 
 /* Hero dashboard mockup (white / light-mode app on red) */
 .hero__stage { position: relative; }

@@ -63,7 +63,7 @@
       vec3 col = mix(u_deep, u_base, uv.y);
       // On paper the crests have to darken to read; on oxblood they add light.
       col = mix(col + u_glow * max(h, 0.0) * 0.17 * u_intensity * vign,
-                mix(col, u_glow, max(h, 0.0) * 0.85 * u_intensity * vign),
+                mix(col, u_glow, max(h, 0.0) * 0.30 * u_intensity * vign),
                 u_light);
       col = mix(col, u_deep, (1.0 - vign) * mix(0.45, 0.16, u_light));
       gl_FragColor = vec4(col, 1.0);
@@ -72,7 +72,10 @@
 
   const RIPPLE_THEMES = {
     dark:  { base: [0.286, 0.012, 0.031], deep: [0.150, 0.008, 0.022], glow: [0.914, 0.769, 0.541], light: 0 },
-    light: { base: [0.980, 0.957, 0.910], deep: [0.937, 0.886, 0.788], glow: [0.851, 0.631, 0.475], light: 1 },
+    // Maroon (#7c1418), not terracotta — the crests tint the paper toward the
+    // brand red. A lower mix than the dark field's because a saturated maroon
+    // reads far heavier on paper than gold does on oxblood.
+    light: { base: [0.980, 0.957, 0.910], deep: [0.937, 0.886, 0.788], glow: [0.486, 0.078, 0.094], light: 1 },
   };
 
   const ripples = [];
