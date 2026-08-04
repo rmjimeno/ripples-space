@@ -896,6 +896,29 @@ html.js .bookcal__fallback { display: none; }
   .bookcal__actions .btn { flex: 1 1 100%; }
 }
 
+/* ============ PHONES: PARED-BACK MOTION ============ */
+/* Keep this breakpoint in step with LITE in main.js (760px). Everything
+   switched off here is decoration that costs real frames on a phone; the
+   JS side skips the matching work rather than just hiding the result. */
+@media (max-width: 760px) {
+  /* A fixed, full-viewport multiply layer forces the compositor to re-blend
+     the whole screen on every scrolled frame. At .045 opacity the texture is
+     effectively invisible at this size anyway. */
+  .grain { display: none; }
+
+  /* main.js never builds these on a phone; hide them so nothing reserves
+     space for an empty canvas. */
+  .hero__canvas, .cta__canvas { display: none; }
+
+  /* Loops that never end: a rotating logo mark, a pulsing "live" dot and the
+     scroll cue's travelling hairline. All three keep a layer awake for the
+     whole visit. The cue's own gradient bar stays — only the runner goes,
+     which is dropped rather than paused because it parks out of frame. */
+  .brand__mark .ripples-orbit { animation: none; }
+  .dash__live i { animation: none; }
+  .scroll-cue i::after { display: none; }
+}
+
 /* ============ REDUCED MOTION ============ */
 /* System preference OR the in-page toggle (html.motion-reduced) */
 @media (prefers-reduced-motion: reduce) {
