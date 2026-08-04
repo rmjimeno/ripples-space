@@ -289,6 +289,40 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; }
 .hero__trust { margin-top: 22px; font-size: 13.5px; letter-spacing: .04em; color: var(--taupe-dim); }
 
+/* ============ HERO (light variant) ============
+   Same structure, paper surface. The ripple field is re-tinted in main.js
+   from the canvas's data-theme, so only the overlay + type need retoning. */
+.hero--light {
+  background: var(--paper); color: var(--ink);
+  --fg: var(--ink); --fg-soft: var(--ink-soft); --fg-dim: var(--ink-dim);
+  --eyebrow: var(--clay); --accent: var(--red-accent); --card-line: rgba(63,10,13,.12);
+}
+/* Kept deliberately thin — ink on the tinted crests still clears 8:1, so the
+   veil only has to soften the top under the nav and land the bottom edge on
+   --paper so the join to the next section is seamless. */
+.hero--light .hero__veil {
+  background: linear-gradient(to bottom, rgba(253,250,242,.62), transparent 26%, transparent 68%, var(--paper));
+}
+.hero--light .hero__title { color: var(--ink); }
+.hero--light .hero__title em { color: var(--clay); }
+.hero--light .hero__sub { color: var(--ink-soft); }
+.hero--light .btn--ghost { border-color: rgba(63,10,13,.22); }
+.hero--light .btn--ghost:hover { background: rgba(63,10,13,.05); border-color: var(--ink); }
+.hero--light .scroll-cue { color: var(--ink-dim); }
+.hero--light .scroll-cue i { background: linear-gradient(var(--clay), transparent); }
+.hero--light .scroll-cue i::after { background: var(--ink); }
+.hero--light :focus-visible { outline-color: var(--red-accent); }
+
+/* The bar is transparent until scrolled, so over a light hero its cream
+   brand and burger have nothing to sit on. Swap to ink for that window only;
+   .scrolled brings the oxblood bar back and the cream with it. */
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .brand { color: var(--ink); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .brand__mark { color: var(--clay); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__links { color: var(--ink-dim); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__links a:hover { color: var(--ink); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger { color: var(--ink); border-color: rgba(63,10,13,.22); }
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger:hover { border-color: var(--clay); background: rgba(63,10,13,.05); }
+
 /* Hero dashboard mockup (white / light-mode app on red) */
 .hero__stage { position: relative; }
 .panel { background: var(--card); border: 1px solid var(--card-line); border-radius: var(--radius); box-shadow: 0 30px 70px -34px rgba(63,10,13,.4); }

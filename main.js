@@ -36,6 +36,10 @@
     uniform vec2  u_res;
     uniform vec2  u_mouse;
     uniform float u_intensity;
+    uniform vec3  u_base;
+    uniform vec3  u_deep;
+    uniform vec3  u_glow;
+    uniform float u_light;
 
     float ripple(vec2 uv, vec2 c, float t, float speed, float freq){
       float d = distance(uv, c);
@@ -55,17 +59,21 @@
       h += ripple(p, m, t * 0.75, 1.2, 16.0) * 0.45;
       h *= 0.5;
 
-      vec3 base = vec3(0.286, 0.012, 0.031); // #490308
-      vec3 deep = vec3(0.150, 0.008, 0.022);
-      vec3 gold = vec3(0.914, 0.769, 0.541); // #e9c48a
-
       float vign = smoothstep(1.25, 0.15, distance(uv, vec2(0.5)));
-      vec3 col = mix(deep, base, uv.y);
-      col += gold * max(h, 0.0) * 0.17 * u_intensity * vign;
-      col = mix(col, deep, (1.0 - vign) * 0.45);
+      vec3 col = mix(u_deep, u_base, uv.y);
+      // On paper the crests have to darken to read; on oxblood they add light.
+      col = mix(col + u_glow * max(h, 0.0) * 0.17 * u_intensity * vign,
+                mix(col, u_glow, max(h, 0.0) * 0.85 * u_intensity * vign),
+                u_light);
+      col = mix(col, u_deep, (1.0 - vign) * mix(0.45, 0.16, u_light));
       gl_FragColor = vec4(col, 1.0);
     }
   `;
+
+  const RIPPLE_THEMES = {
+    dark:  { base: [0.286, 0.012, 0.031], deep: [0.150, 0.008, 0.022], glow: [0.914, 0.769, 0.541], light: 0 },
+    light: { base: [0.980, 0.957, 0.910], deep: [0.937, 0.886, 0.788], glow: [0.851, 0.631, 0.475], light: 1 },
+  };
 
   const ripples = [];
   function createRipple(canvas, intensity) {
@@ -78,11 +86,16 @@
 
     const scene = new THREE.Scene();
     const camera = new THREE.Camera();
+    const theme = RIPPLE_THEMES[canvas.getAttribute("data-theme")] || RIPPLE_THEMES.dark;
     const uniforms = {
       u_time: { value: 0 },
       u_res: { value: new THREE.Vector2(1, 1) },
       u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
       u_intensity: { value: intensity },
+      u_base: { value: new THREE.Vector3(...theme.base) },
+      u_deep: { value: new THREE.Vector3(...theme.deep) },
+      u_glow: { value: new THREE.Vector3(...theme.glow) },
+      u_light: { value: theme.light },
     };
     const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms });
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
