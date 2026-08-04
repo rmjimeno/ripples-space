@@ -469,9 +469,13 @@
 
       // Staggered reveal, grouped by nearest section. The hero is excluded:
       // it sits in view at load, so a ScrollTrigger would fire a second tween
-      // competing with the entrance below.
+      // competing with the entrance below. Timeline steps are excluded too —
+      // the section is tall enough that a single batch revealed all four
+      // while only the first was on screen, so the lower steps were already
+      // sitting there by the time the line reached them. They get their own
+      // triggers further down.
       gsap.utils.toArray("section:not(.hero)").forEach((section) => {
-        const items = section.querySelectorAll(".reveal");
+        const items = section.querySelectorAll(".reveal:not(.tstep)");
         if (!items.length) return;
         ScrollTrigger.create({
           trigger: section,
@@ -578,29 +582,81 @@
     /* --- how it works: scroll-driven timeline --- */
     const timeline = document.getElementById("timeline");
     if (timeline) {
+      const line = timeline.querySelector(".timeline__line");
       const fill = timeline.querySelector(".timeline__fill");
-      const markers = timeline.querySelectorAll(".tstep__marker");
-      const completeTimeline = () => {
-        gsap.set(fill, { height: "100%" });
-        markers.forEach((m) => m.classList.add("is-on"));
+      const dot = timeline.querySelector(".timeline__dot");
+      const steps = gsap.utils.toArray(timeline.querySelectorAll(".tstep"));
+      const markers = steps.map((s) => s.querySelector(".tstep__marker"));
+
+      // Line length and the markers' positions along it, measured once per
+      // refresh instead of per frame — reading them during a scroll tick is
+      // what forces a synchronous layout. Offsets, not client rects: the
+      // steps carry a translateY until they've revealed, and layout offsets
+      // ignore it where a bounding box wouldn't.
+      let lineH = 0;
+      let lastP = 0;
+      let stops = markers.map(() => 0);
+      const measure = () => {
+        lineH = line.offsetHeight;
+        stops = markers.map((m, i) => {
+          if (!m || !lineH) return 0;
+          return (steps[i].offsetTop + m.offsetTop + m.offsetHeight / 2 - line.offsetTop) / lineH;
+        });
       };
+
+      // Track the lit state so a class is only touched when it actually
+      // changes; toggling all four every frame kept re-running style recalc.
+      const lit = markers.map(() => false);
+      const setLit = (i, on) => {
+        if (lit[i] === on || !markers[i]) return;
+        lit[i] = on;
+        markers[i].classList.toggle("is-on", on);
+      };
+      gsap.set(fill, { transformOrigin: "50% 0" });
+      const draw = (p) => {
+        lastP = p;
+        gsap.set(fill, { scaleY: p });
+        gsap.set(dot, { y: p * lineH, opacity: p > 0.001 ? 0.95 : 0 });
+        // `p > 0` keeps the first marker dark until the line actually starts:
+        // it sits a hair above the line's top, so its stop is slightly negative.
+        for (let i = 0; i < markers.length; i++) setLit(i, p > 0 && p >= stops[i]);
+      };
+      const completeTimeline = () => {
+        measure();
+        draw(1);
+      };
+
       if (REDUCED) {
         completeTimeline();
       } else {
+        measure();
+        ScrollTrigger.addEventListener("refresh", () => { measure(); draw(lastP); });
         ScrollTrigger.create({
           trigger: timeline,
           start: "top 70%",
           end: "bottom 82%",
-          scrub: 0.6,
+          // 0.6 smoothed the line so far behind the scroll that it read as the
+          // section lagging. 0.3 still eases out the wheel's coarse steps.
+          scrub: 0.3,
           onUpdate: (self) => {
             if (isReduced()) return; // toggled off mid-scroll — leave it settled
-            const p = self.progress;
-            gsap.set(fill, { height: (p * 100) + "%" });
-            markers.forEach((m, i) => {
-              m.classList.toggle("is-on", p >= i / markers.length + 0.08);
-            });
+            draw(self.progress);
           }
         });
+
+        // Each step fades up as it arrives, just ahead of the line reaching it.
+        steps.forEach((step) => {
+          ScrollTrigger.create({
+            trigger: step,
+            start: "top 88%",
+            once: true,
+            onEnter: () => gsap.to(step, {
+              opacity: 1, y: 0, duration: 0.7, ease: "power3.out",
+              onComplete: () => step.classList.add("is-revealed")
+            })
+          });
+        });
+
         onMotionChange((reduce) => { if (reduce) completeTimeline(); });
       }
     }
@@ -632,6 +688,9 @@
       el.classList.add("is-revealed");
     });
     document.querySelectorAll("#tasks .task").forEach((t) => t.classList.add("done"));
+    // The line is pre-emptied for html.js, so settle it here too.
+    document.querySelectorAll(".timeline__fill").forEach((f) => { f.style.transform = "scaleY(1)"; });
+    document.querySelectorAll(".tstep__marker").forEach((m) => m.classList.add("is-on"));
   }
 
   /* -------------------------------------------------------

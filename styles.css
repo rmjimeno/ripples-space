@@ -437,12 +437,19 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 .process__note { margin-top: 20px; color: var(--fg-soft); font-size: 16px; max-width: 32ch; }
 .timeline { position: relative; }
 .timeline__line { position: absolute; left: 27px; top: 12px; bottom: 12px; width: 2px; background: var(--card-line); border-radius: 2px; overflow: visible; }
-.timeline__fill { position: absolute; left: 0; top: 0; width: 100%; height: 0%; border-radius: 2px; background: linear-gradient(180deg, var(--accent), #c96a3a); }
-.timeline__fill::after { content: ""; position: absolute; left: 50%; bottom: 0; transform: translate(-50%, 50%); width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px 3px var(--accent-soft), 0 0 6px 1px var(--accent); opacity: .95; }
+/* The fill is scaled, not resized: growing it by `height` relaid out and
+   repainted the gradient (and the glow below it) on every scroll frame,
+   which is what made this section stutter. scaleY stays on the compositor.
+   The dot rides separately so the scale can't squash it into an ellipse. */
+.timeline__fill { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 2px; background: linear-gradient(180deg, var(--accent), #c96a3a); transform-origin: 50% 0; will-change: transform; }
+.timeline__dot { position: absolute; left: 50%; top: 0; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px 3px var(--accent-soft), 0 0 6px 1px var(--accent); opacity: 0; will-change: transform, opacity; }
+/* Without JS the line just reads as complete; main.js empties it before the
+   first scroll, the same way .reveal is pre-hidden only for html.js. */
+html.js .timeline__fill { transform: scaleY(0); }
 .timeline__steps { list-style: none; display: flex; flex-direction: column; gap: clamp(30px, 4.5vw, 48px); }
 .tstep { position: relative; padding-left: 76px; }
-.tstep__marker { position: absolute; left: 16px; top: -2px; z-index: 1; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--card-line); display: grid; place-items: center; transition: transform .45s var(--ease), border-color .45s ease, background .45s ease, box-shadow .45s ease; }
-.tstep__num { font-family: var(--serif); font-size: 13px; line-height: 1; color: var(--fg-dim); transition: color .45s ease; }
+.tstep__marker { position: absolute; left: 16px; top: -2px; z-index: 1; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--card-line); display: grid; place-items: center; transition: transform .3s var(--ease), border-color .3s ease, background .3s ease, box-shadow .3s ease; }
+.tstep__num { font-family: var(--serif); font-size: 13px; line-height: 1; color: var(--fg-dim); transition: color .3s ease; }
 .tstep__marker.is-on { border-color: var(--accent); background: var(--accent); transform: scale(1.14); box-shadow: 0 0 0 6px var(--accent-soft), 0 0 22px -4px var(--accent); }
 .tstep__marker.is-on .tstep__num { color: var(--paper); }
 .tstep__eyebrow { display: block; font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
