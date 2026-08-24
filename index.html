@@ -119,8 +119,41 @@
       display: grid; place-items: center; background: transparent;
       border-bottom: 1px dashed var(--card-line); color: var(--fg-dim);
     }
-    .offer__proof--soon .offer__proof-media svg { width: 30px; height: 30px; opacity: .5; }
     .offer__proof--soon .offer__proof-label { color: var(--fg-dim); }
+
+    /* Stand-in until the real write-up exists: a little editor window stuck at
+       90%, which is the joke. */
+    .soon-art { width: min(76%, 236px); border-radius: 9px; overflow: hidden;
+      border: 1px solid var(--card-line); background: var(--paper);
+      box-shadow: 0 14px 30px -20px rgba(63,10,13,.45); }
+    .soon-art__bar { display: flex; gap: 4px; padding: 7px 9px; background: var(--paper-alt); border-bottom: 1px solid var(--card-line); }
+    .soon-art__bar i { width: 6px; height: 6px; border-radius: 50%; background: var(--card-line); }
+    .soon-art__body { padding: 13px 14px 15px; }
+    .soon-art__file { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 10.5px; color: var(--fg-dim); }
+    .soon-art__file::after { content: "▌"; margin-left: 1px; color: var(--accent); animation: soonCaret 1.4s step-end infinite; }
+    @keyframes soonCaret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .soon-art__prog { display: block; height: 5px; margin: 11px 0 7px; border-radius: 100px; background: var(--card-line); overflow: hidden; }
+    .soon-art__prog i { display: block; height: 100%; width: 90%; border-radius: 100px; background: var(--accent); }
+    .soon-art__pct { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 10px; letter-spacing: .04em; color: var(--accent); }
+
+    /* ============ AUDIENCE SPLIT (who I work with) ============ */
+    /* Named .audience, not .path — .path-link is the drawer's component and is
+       toned for the dark panel; these sit on paper. */
+    .audiences { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 22px); margin-top: clamp(36px, 4.5vw, 48px); }
+    .audience {
+      display: flex; flex-direction: column; padding: clamp(24px, 2.8vw, 30px);
+      border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+      transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+    }
+    .audience:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 24px 50px -30px rgba(63,10,13,.35); }
+    .audience__label { font-family: var(--serif); font-weight: 500; font-size: clamp(1.12rem, 1.9vw, 1.32rem); line-height: 1.25; color: var(--fg); }
+    .audience__meta { margin-top: 9px; font-size: 14.5px; line-height: 1.55; color: var(--fg-soft); }
+    /* auto keeps the link on the baseline when one card's label wraps and the
+       other's does not. */
+    .audience__more { display: inline-flex; align-items: center; gap: 7px; margin-top: auto; padding-top: 18px; font-size: 13px; font-weight: 500; color: var(--accent); }
+    .audience__more svg { width: 14px; height: 14px; flex: none; transition: transform .35s var(--ease); }
+    .audience:hover .audience__more svg { transform: translateX(3px); }
+    @media (max-width: 640px) { .audiences { grid-template-columns: 1fr; } }
 
     /* ============ PORTRAIT + HOVER EASTER EGG ============ */
     /* The file is a 2x export (364x212), so capping the display at 182px
@@ -485,12 +518,19 @@
 
             <div class="offer__proof offer__proof--soon">
               <span class="offer__proof-media" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
+                <span class="soon-art">
+                  <span class="soon-art__bar"><i></i><i></i><i></i></span>
+                  <span class="soon-art__body">
+                    <span class="soon-art__file">case-study.md</span>
+                    <span class="soon-art__prog"><i></i></span>
+                    <span class="soon-art__pct">90% complete</span>
+                  </span>
+                </span>
               </span>
               <span class="offer__proof-body">
                 <span class="offer__proof-label">Case study</span>
                 <span class="offer__proof-title">Coming soon</span>
-                <span class="offer__proof-desc">A custom application build is being written up now.</span>
+                <span class="offer__proof-desc">The app shipped months ago. The write-up is 90% done, and the last 10% is taking 90% of the time.</span>
               </span>
             </div>
           </article>
@@ -515,6 +555,25 @@
             If you're looking for a long-term partner who can combine strategy, design, and
             technology, I think we'll work well together.
           </p>
+        </div>
+
+        <!-- The two audiences, each with its own page. Same split the nav
+             drawer offers, surfaced in the section that talks about fit. -->
+        <div class="audiences">
+          <a class="audience reveal" href="/changemakers/">
+            <span class="audience__label">Coaches, creators &amp; changemakers</span>
+            <span class="audience__meta">Let's get your hours back for the work only you can do.</span>
+            <span class="audience__more">See how I help
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+          <a class="audience reveal" href="/service-businesses/">
+            <span class="audience__label">Service-based businesses</span>
+            <span class="audience__meta">Turn more inquiries into booked, paying clients.</span>
+            <span class="audience__more">See how I help
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
         </div>
 
         <div class="fit__grid">
