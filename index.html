@@ -91,6 +91,18 @@
       margin-top: auto; padding-top: 22px; border-top: 1px solid var(--card-line);
       font-family: var(--serif); font-style: italic; font-size: 1.05rem; line-height: 1.4; color: var(--accent);
     }
+    /* Proof for the offer above it. Sits after .offer__out so the pair stays
+       pinned to the bottom of the card. */
+    .offer__case {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+      font-family: var(--sans); font-size: 13.5px; font-weight: 500; color: var(--accent);
+    }
+    .offer__case svg { width: 15px; height: 15px; flex: none; transition: transform .35s var(--ease); }
+    .offer:hover .offer__case svg { transform: translateX(3px); }
+    .offer__case span { border-bottom: 1px solid transparent; transition: border-color .3s ease; }
+    .offer__case:hover span { border-bottom-color: currentColor; }
+    /* No page to link to yet, so it must not look or behave like a link. */
+    .offer__case--soon { color: var(--fg-dim); font-style: italic; }
 
     /* ============ PORTRAIT + HOVER EASTER EGG ============ */
     /* The file is a 2x export (364x212), so capping the display at 182px
@@ -375,6 +387,10 @@
               <li>A website that's easy to manage</li>
             </ul>
             <p class="offer__out">Build trust. Attract customers. Make a lasting first impression.</p>
+            <a class="offer__case" href="/case-studies/namu-travel-group/">
+              <span>See the Namu Travel Group case study</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </a>
           </article>
 
           <article class="offer reveal">
@@ -396,6 +412,10 @@
               <li>Reporting dashboards</li>
             </ul>
             <p class="offer__out">Save time. Reduce busy work. Focus on higher-value work.</p>
+            <a class="offer__case" href="/case-studies/cafe-training-center-crm/">
+              <span>See the Café Training Center case study</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+            </a>
           </article>
 
           <article class="offer reveal">
@@ -417,6 +437,7 @@
               <li>A platform built from the ground up</li>
             </ul>
             <p class="offer__out">Custom software. Built for the way you work.</p>
+            <span class="offer__case offer__case--soon">Case study coming soon</span>
           </article>
         </div>
       </div>
