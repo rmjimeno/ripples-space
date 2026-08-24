@@ -122,6 +122,12 @@ a { color: inherit; text-decoration: none; }
   font-size: clamp(1.75rem, 4vw, 2.8rem);
   line-height: 1.12; letter-spacing: -0.01em; color: var(--fg);
   text-wrap: balance;
+  /* Scales with the heading, so a 2.8rem display line gets more air beneath it
+     than a 1.75rem one. This is a MARGIN, not padding, so it collapses with
+     whatever the next block already sets (.lede's 22px, the landing pages'
+     34px) — those stay exactly as they were, and only the cases that set
+     nothing pick up a gap. */
+  margin-bottom: clamp(1rem, 1.4vw, 1.35rem);
 }
 .section__title.center { text-align: center; }
 .section__title em { font-style: italic; color: var(--accent); }
