@@ -45,6 +45,8 @@
     /* The two systems are the spine of this study, so each gets a numbered
        label above its heading. */
     .cs-sysnum { font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    /* Some sprint days carry more than one paragraph of detail. */
+    .tstep__card p + p { margin-top: 12px; }
   </style>
 </head>
 <body>
@@ -113,20 +115,11 @@
           <p class="cs-hero__dek reveal">
             How we launched Café Training Center's first masterclass—from idea to live event.
           </p>
-          <p class="cs-hero__dek reveal">
-            Café Training Center was preparing to launch its first live masterclass on August 7.
-            Within one week, I built the core digital infrastructure supporting the launch—from the
-            brand and landing page to the CRM, registration flow, and email communications.
-          </p>
-          <p class="cs-hero__dek reveal">
-            The project continued after the live event, expanding into replay lead capture and a
-            registration and onboarding system for Café Training Center's Pioneer Membership.
-          </p>
 
           <div class="cs-meta reveal">
             <div class="cs-meta__item">
               <span class="cs-meta__label">Role</span>
-              <span class="cs-meta__value">Branding · Web Design &amp; Development · CRM &amp; Automation Implementation</span>
+              <span class="cs-meta__value">Web Design &amp; Development · CRM &amp; Automation Implementation</span>
             </div>
             <div class="cs-meta__item">
               <span class="cs-meta__label">Tools</span>
@@ -141,21 +134,51 @@
       </div>
     </section>
 
-    <!-- ============ THE CHALLENGE (light-alt) ============ -->
-    <section class="section sec--alt" id="challenge">
+    <!-- ============ PROJECT OVERVIEW (light-alt) ============ -->
+    <section class="section sec--alt" id="overview">
       <div class="wrap">
-        <div class="cs-lead">
-          <p class="eyebrow reveal">The challenge</p>
-          <h2 class="section__title reveal">Café Training Center was a new education business preparing for its <em>first public launch.</em></h2>
-          <div class="prose">
-            <p class="reveal">The first masterclass was scheduled for August 7. The business needed a brand, landing page, registration flow, CRM connection, and an email system to communicate with registrants before the event.</p>
-            <p class="reveal">The Pioneer Membership was also part of the launch plan, with registration opening around the masterclass and onboarding following after payment verification.</p>
+        <div class="cs-split cs-split--sticky">
+          <div class="cs-split__text">
+            <p class="eyebrow reveal">Project overview</p>
+            <h2 class="section__title reveal">One week to build what the launch <em>ran on.</em></h2>
+            <div class="prose">
+              <p class="reveal">Café Training Center was preparing to launch its first live masterclass on August 7. Within one week, I built the core digital infrastructure supporting the launch—from the brand and landing page to the CRM, registration flow, and email communications.</p>
+              <p class="reveal">The project continued after the live event, expanding into replay lead capture and a registration and onboarding system for Café Training Center's Pioneer Membership.</p>
+            </div>
+          </div>
+
+          <div class="cs-split__visual">
+            <figure class="cs-figure reveal">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
+                      data-title="The Café Training Center landing page" data-full="images/landing-page.png">
+                <img src="images/landing-page.png" alt="The Café Training Center landing page in full: the hero, curriculum breakdown, hands-on class photography, membership pricing, and footer." width="1921" height="16310" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The landing page, built and deployed inside the launch week.</figcaption>
+            </figure>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="cs-goal reveal">
-          <p class="cs-goal__label">The priority</p>
-          <p class="cs-goal__text">The timeline was tight, so the first priority was getting the infrastructure needed for <em>the live event</em> up and running.</p>
+    <!-- ============ THE CHALLENGE (light) ============ -->
+    <section class="section" id="challenge">
+      <div class="wrap">
+        <div class="cs-split">
+          <div class="cs-split__text">
+            <p class="eyebrow reveal">The challenge</p>
+            <h2 class="section__title reveal">Café Training Center was a new education business preparing for its <em>first public launch.</em></h2>
+            <div class="prose">
+              <p class="reveal">The first masterclass was scheduled in a week. The business needed a brand, landing page, registration flow, CRM connection, and an email system to communicate with registrants before the event.</p>
+              <p class="reveal">The Pioneer Membership was also part of the launch plan, with registration opening around the masterclass and onboarding following after payment verification.</p>
+            </div>
+          </div>
+
+          <div class="cs-split__visual">
+            <div class="cs-goal reveal" style="margin-top:0;">
+              <p class="cs-goal__label">The priority</p>
+              <p class="cs-goal__text">The timeline was tight, so the first priority was getting the infrastructure needed for <em>the live event</em> up and running.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -177,7 +200,7 @@
               <div class="tstep__card">
                 <span class="tstep__eyebrow">July 31</span>
                 <h3>Initial planning</h3>
-                <p>The team met to align on the founder's vision, the launch timeline, and how the customer journey would work.</p>
+                <p>A group chat was created to coordinate the launch. The initial timeline and plans for Café Training Center's first masterclass were shared, giving the team a starting point for the week ahead.</p>
               </div>
             </li>
             <li class="tstep reveal">
@@ -185,7 +208,7 @@
               <div class="tstep__card">
                 <span class="tstep__eyebrow">August 3</span>
                 <h3>Project inputs</h3>
-                <p>I received the landing page copy, registration materials, and project timeline.</p>
+                <p>I received the landing page copy, Airtable registration form, and additional details needed to begin building.</p>
               </div>
             </li>
             <li class="tstep reveal">
@@ -193,15 +216,18 @@
               <div class="tstep__card">
                 <span class="tstep__eyebrow">August 4</span>
                 <h3>Brand and landing page</h3>
-                <p>I developed the initial brand identity, built the landing page, and deployed it on Vercel.</p>
+                <p>I developed the initial brand identity and built the landing page.</p>
+                <p>At this point, I still didn't have access to GoHighLevel, and the masterclass launch was approaching quickly. I built the landing page outside of GHL so development could move forward immediately instead of waiting for platform access.</p>
+                <p>Building it externally also gave me more flexibility over the interface, without being constrained by GoHighLevel's front-end editor.</p>
               </div>
             </li>
             <li class="tstep reveal">
               <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">4</span></span>
               <div class="tstep__card">
                 <span class="tstep__eyebrow">August 5</span>
-                <h3>CRM setup</h3>
-                <p>I received access to GoHighLevel and connected the landing page backend to the CRM. The custom domain also went live.</p>
+                <h3>CRM setup and launch</h3>
+                <p>I received access to GoHighLevel and connected the landing page backend to the CRM.</p>
+                <p>By the end of the day, I had configured the domain and connected the landing page to GoHighLevel, allowing the site to go live.</p>
               </div>
             </li>
             <li class="tstep reveal">
@@ -209,7 +235,7 @@
               <div class="tstep__card">
                 <span class="tstep__eyebrow">August 6</span>
                 <h3>Event communications</h3>
-                <p>I configured email sending in GoHighLevel, imported the masterclass registrants, and set up the communication flow for the live event.</p>
+                <p>I configured email sending in GoHighLevel, imported the masterclass registrants, and set up the reminder campaign for the live event.</p>
               </div>
             </li>
             <li class="tstep reveal">
@@ -217,38 +243,31 @@
               <div class="tstep__card">
                 <span class="tstep__eyebrow">August 7</span>
                 <h3>Masterclass day</h3>
-                <p>Café Training Center's first masterclass went live.</p>
+                <p>Café Training Center's first masterclass went live. By then, the core infrastructure—from the landing page and CRM connection to the event communications—was in place.</p>
               </div>
             </li>
           </ol>
         </div>
       </div>
 
-      <div class="wrap" style="margin-top:clamp(48px,6vw,76px);">
-        <figure class="cs-figure reveal">
-          <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
-                  data-title="The Café Training Center landing page" data-full="images/landing-page.png">
-            <img src="images/landing-page.png" alt="The Café Training Center landing page in full: the hero, curriculum breakdown, hands-on class photography, membership pricing, and footer." width="1921" height="16310" loading="lazy" />
-          </button>
-          <figcaption class="cs-figure__cap">The brand and landing page, built and deployed on August 4.</figcaption>
-        </figure>
-      </div>
     </section>
 
     <!-- ============ SYSTEM 01 — MASTERCLASS COMMUNICATIONS (red) ============ -->
     <section class="section sec--red" id="system-01">
       <div class="wrap">
-        <div class="cs-lead">
-          <p class="cs-sysnum reveal">System 01</p>
-          <h2 class="section__title reveal">Masterclass communications</h2>
-          <div class="prose">
-            <p class="reveal">Registrations for the masterclass were collected through Zoom. With the launch approaching, I imported the registrants into GoHighLevel and set up the email campaign for the live event.</p>
-            <p class="reveal">The campaign focused on keeping the masterclass top of mind as the event approached and making sure registrants had clear reminders to join.</p>
+        <div class="cs-split">
+          <div class="cs-split__text">
+            <p class="cs-sysnum reveal">System 01</p>
+            <h2 class="section__title reveal">Masterclass communications</h2>
+            <div class="prose">
+              <p class="reveal">Registrations for the masterclass were collected through Zoom. With the launch approaching, I imported the registrants into GoHighLevel and set up the email campaign for the live event.</p>
+              <p class="reveal">The campaign focused on keeping the masterclass top of mind as the event approached and making sure registrants had clear reminders to join.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="cs-lead">
-          <ol class="cs-seq reveal">
+          <div class="cs-split__visual">
+            <p class="cs-sysnum reveal">The reminder sequence</p>
+            <ol class="cs-seq reveal" style="margin-top:0;">
             <li class="cs-seq__item">
               <span class="cs-seq__time">10:00 AM</span>
               <p class="cs-seq__what">Masterclass-day reminder.</p>
@@ -265,7 +284,8 @@
               <span class="cs-seq__time">7:00 PM</span>
               <p class="cs-seq__what">The masterclass is live.</p>
             </li>
-          </ol>
+            </ol>
+          </div>
         </div>
 
         <div class="cs-outcomes">
@@ -291,91 +311,99 @@
     <!-- ============ AFTER THE LIVE EVENT (light-alt) ============ -->
     <section class="section sec--alt" id="replay">
       <div class="wrap">
-        <div class="cs-lead">
-          <p class="eyebrow reveal">After the live event</p>
-          <h2 class="section__title reveal">The masterclass continued to be useful after the live session <em>ended.</em></h2>
-          <div class="prose">
-            <p class="reveal">Existing registrants received the replay through the post-event email campaign.</p>
-            <p class="reveal">I also built a separate path for people who discovered the masterclass after registration had closed.</p>
+        <div class="cs-split">
+          <div class="cs-split__text">
+            <p class="eyebrow reveal">After the live event</p>
+            <h2 class="section__title reveal">The masterclass continued to be useful after the live session <em>ended.</em></h2>
+            <div class="prose">
+              <p class="reveal">Existing registrants received the replay through the post-event email campaign.</p>
+              <p class="reveal">I also built a separate path for people who discovered the masterclass after registration had closed.</p>
+              <p class="reveal">The replay landing page created an additional entry point into Café Training Center's email ecosystem, allowing new contacts to receive future updates and nurturing toward future offers.</p>
+            </div>
+
+            <h3 class="cs-sysnum reveal" style="margin-top:clamp(34px,4vw,44px);">Replay lead capture</h3>
+            <ol class="cs-flow reveal" style="margin-top:0;">
+              <li class="cs-flow__step"><p class="cs-flow__label">Replay link</p></li>
+              <li class="cs-flow__step"><p class="cs-flow__label">Replay landing page</p></li>
+              <li class="cs-flow__step"><p class="cs-flow__label">Email opt-in</p></li>
+              <li class="cs-flow__step"><p class="cs-flow__label">Replay delivered by email</p></li>
+              <li class="cs-flow__step"><p class="cs-flow__label">Added to the Café Training Center email list</p></li>
+            </ol>
           </div>
 
-          <h3 class="cs-sysnum reveal" style="margin-top:clamp(34px,4vw,44px);">Replay lead capture</h3>
-          <ol class="cs-flow reveal">
-            <li class="cs-flow__step"><p class="cs-flow__label">Replay link</p></li>
-            <li class="cs-flow__step"><p class="cs-flow__label">Replay landing page</p></li>
-            <li class="cs-flow__step"><p class="cs-flow__label">Email opt-in</p></li>
-            <li class="cs-flow__step"><p class="cs-flow__label">Replay delivered by email</p></li>
-            <li class="cs-flow__step"><p class="cs-flow__label">Added to the Café Training Center email list</p></li>
-          </ol>
-
-          <div class="prose" style="margin-top:clamp(30px,4vw,40px);">
-            <p class="reveal">The replay landing page created an additional entry point into Café Training Center's email ecosystem, allowing new contacts to receive future updates and nurturing toward future offers.</p>
+          <div class="cs-split__visual">
+            <figure class="cs-figure reveal">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
+                      data-title="The replay landing page" data-full="images/replay-landing-page.png">
+                <img src="images/replay-landing-page.png" alt="The replay landing page: a Don't Open a Café Yet headline beside an email opt-in form offering instant access to the full 60-minute masterclass." width="1921" height="922" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The replay landing page — a second entry point into the email list.</figcaption>
+            </figure>
           </div>
         </div>
-
-        <figure class="cs-figure reveal" style="margin-top:clamp(44px,5vw,64px);">
-          <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
-                  data-title="The replay landing page" data-full="images/replay-landing-page.png">
-            <img src="images/replay-landing-page.png" alt="The replay landing page: a Don't Open a Café Yet headline beside an email opt-in form offering instant access to the full 60-minute masterclass." width="1921" height="922" loading="lazy" />
-          </button>
-          <figcaption class="cs-figure__cap">The replay landing page — a second entry point into the email list.</figcaption>
-        </figure>
       </div>
     </section>
 
     <!-- ============ SYSTEM 02 — PIONEER MEMBERSHIP (light) ============ -->
     <section class="section" id="system-02">
       <div class="wrap">
-        <div class="cs-lead">
-          <p class="cs-sysnum reveal">System 02</p>
-          <h2 class="section__title reveal">Pioneer Membership registration</h2>
-          <div class="prose">
-            <p class="reveal">The masterclass also introduced the Pioneer Membership. Interested members completed a registration form that collected their details and proof of payment.</p>
-            <p class="reveal">The submission entered the GoHighLevel pipeline under <code class="cs-stage">For Payment Verification</code>. The founder received a notification to review the payment.</p>
-            <p class="reveal">Once the payment was confirmed, the opportunity could be moved to <code class="cs-stage">Payment Confirmed</code>. That stage change triggered the next part of the workflow.</p>
+        <div class="cs-split cs-split--sticky">
+          <div class="cs-split__text">
+            <p class="cs-sysnum reveal">System 02</p>
+            <h2 class="section__title reveal">Pioneer Membership registration</h2>
+            <div class="prose">
+              <p class="reveal">The masterclass also introduced the Pioneer Membership. Interested members completed a registration form that collected their details and proof of payment.</p>
+              <p class="reveal">The submission entered the GoHighLevel pipeline under <code class="cs-stage">For Payment Verification</code>. The founder received a notification to review the payment.</p>
+              <p class="reveal">Once the payment was confirmed, the opportunity could be moved to <code class="cs-stage">Payment Confirmed</code>. That stage change triggered the next part of the workflow.</p>
+            </div>
+          </div>
+
+          <div class="cs-split__visual">
+            <figure class="cs-figure reveal">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
+                      data-title="The Pioneer Membership page" data-full="images/pioneer-membership-page.png">
+                <img src="images/pioneer-membership-page.png" alt="The Pioneer Membership page in full: the founding offer, what the membership includes, who it suits, pricing for the first 300 members, and an FAQ." width="1921" height="12557" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The Pioneer Membership page, introduced during the masterclass.</figcaption>
+            </figure>
           </div>
         </div>
-
-        <figure class="cs-figure reveal" style="margin-top:clamp(44px,5vw,64px);">
-          <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
-                  data-title="The Pioneer Membership page" data-full="images/pioneer-membership-page.png">
-            <img src="images/pioneer-membership-page.png" alt="The Pioneer Membership page in full: the founding offer, what the membership includes, who it suits, pricing for the first 300 members, and an FAQ." width="1921" height="12557" loading="lazy" />
-          </button>
-          <figcaption class="cs-figure__cap">The Pioneer Membership page, introduced during the masterclass.</figcaption>
-        </figure>
       </div>
     </section>
 
     <!-- ============ PIONEER ONBOARDING (light-alt) ============ -->
     <section class="section sec--alt" id="onboarding">
       <div class="wrap">
-        <div class="cs-lead">
-          <p class="eyebrow reveal">Pioneer onboarding</p>
-          <h2 class="section__title reveal">Payment confirmed, <em>onboarding begins.</em></h2>
-          <div class="prose">
-            <p class="reveal">After payment confirmation, the new member automatically received:</p>
-          </div>
-          <ul class="cs-flow__sub reveal" style="margin-top:16px;">
-            <li>Confirmation of their Pioneer Membership</li>
-            <li>A welcome message from the founder</li>
-            <li>Instructions for the onboarding process</li>
-            <li>A link to the onboarding form</li>
-          </ul>
-          <div class="prose" style="margin-top:22px;">
-            <p class="reveal">The contact was also tagged as <span class="cs-tagchip">Pioneer</span></p>
-            <p class="reveal">The onboarding form collected additional information needed to support the membership experience. This included:</p>
-          </div>
-          <ul class="cs-flow__sub reveal" style="margin-top:16px;">
-            <li>Mailing address for exclusive Pioneer merchandise</li>
-            <li>Partner information for the enrollment discount</li>
-            <li>Preferred affiliate code for the future referral system</li>
-          </ul>
-          <div class="prose" style="margin-top:22px;">
-            <p class="reveal">Once the onboarding form was submitted, the contact was automatically tagged <span class="cs-tagchip">Onboarded</span></p>
+        <div class="cs-split">
+          <div class="cs-split__text">
+            <p class="eyebrow reveal">Pioneer onboarding</p>
+            <h2 class="section__title reveal">Payment confirmed, <em>onboarding begins.</em></h2>
+            <div class="prose">
+              <p class="reveal">After payment confirmation, the new member automatically received:</p>
+            </div>
+            <ul class="cs-flow__sub reveal" style="margin-top:16px;">
+              <li>Confirmation of their Pioneer Membership</li>
+              <li>A welcome message from the founder</li>
+              <li>Instructions for the onboarding process</li>
+              <li>A link to the onboarding form</li>
+            </ul>
+            <div class="prose" style="margin-top:22px;">
+              <p class="reveal">The contact was also tagged as <span class="cs-tagchip">Pioneer</span></p>
+              <p class="reveal">The onboarding form collected additional information needed to support the membership experience. This included:</p>
+            </div>
+            <ul class="cs-flow__sub reveal" style="margin-top:16px;">
+              <li>Mailing address for exclusive Pioneer merchandise</li>
+              <li>Partner information for the enrollment discount</li>
+              <li>Preferred affiliate code for the future referral system</li>
+            </ul>
+            <div class="prose" style="margin-top:22px;">
+              <p class="reveal">Once the onboarding form was submitted, the contact was automatically tagged <span class="cs-tagchip">Onboarded</span></p>
+            </div>
           </div>
 
-          <h3 class="cs-sysnum reveal" style="margin-top:clamp(40px,5vw,56px);">The membership workflow</h3>
-          <ol class="cs-flow reveal">
+          <div class="cs-split__visual">
+            <p class="cs-sysnum reveal">The membership workflow</p>
+            <ol class="cs-flow reveal" style="margin-top:0;">
             <li class="cs-flow__step"><p class="cs-flow__label">Pioneer Registration + Proof of Payment</p></li>
             <li class="cs-flow__step cs-flow__step--stage"><code class="cs-stage">For Payment Verification</code></li>
             <li class="cs-flow__step"><p class="cs-flow__label">Founder reviews payment</p></li>
@@ -388,12 +416,13 @@
                 <li>Onboarding instructions</li>
               </ul>
             </li>
-            <li class="cs-flow__step"><p class="cs-flow__label">Onboarding form completed</p></li>
-            <li class="cs-flow__step cs-flow__step--stage"><code class="cs-stage">Onboarded</code></li>
-          </ol>
+              <li class="cs-flow__step"><p class="cs-flow__label">Onboarding form completed</p></li>
+              <li class="cs-flow__step cs-flow__step--stage"><code class="cs-stage">Onboarded</code></li>
+            </ol>
 
-          <div class="prose" style="margin-top:clamp(30px,4vw,40px);">
-            <p class="reveal">The pipeline gave the team a clear view of each member's progress, while the workflows handled the communications and next steps after payment confirmation.</p>
+            <div class="prose" style="margin-top:clamp(28px,3.5vw,36px);">
+              <p class="reveal">The pipeline gave the team a clear view of each member's progress, while the workflows handled the communications and next steps after payment confirmation.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -462,15 +491,19 @@
     <!-- ============ THE RESULT (light) ============ -->
     <section class="section" id="result">
       <div class="wrap">
-        <div class="cs-lead">
-          <p class="eyebrow reveal">The result</p>
-          <h2 class="section__title reveal">Within one week, the core digital infrastructure supporting Café Training Center's first masterclass was <em>live.</em></h2>
-          <div class="prose">
-            <p class="reveal">By the time of the event, the masterclass had 140+ registrations and reached a peak of 72 live attendees, with an approximate 50% show-up rate.</p>
-            <p class="reveal">The project also established the systems supporting the next stages of the customer journey:</p>
+        <div class="cs-split">
+          <div class="cs-split__text">
+            <p class="eyebrow reveal">The result</p>
+            <h2 class="section__title reveal">Within one week, the core digital infrastructure supporting Café Training Center's first masterclass was <em>live.</em></h2>
+            <div class="prose">
+              <p class="reveal">By the time of the event, the masterclass had 140+ registrations and reached a peak of 72 live attendees, with an approximate 50% show-up rate.</p>
+              <p class="reveal">The result was a connected set of systems that supported the launch and created a foundation for Café Training Center's future offers and member operations.</p>
+            </div>
           </div>
 
-          <ol class="cs-flow reveal">
+          <div class="cs-split__visual">
+            <p class="cs-sysnum reveal">The customer journey it now supports</p>
+            <ol class="cs-flow reveal" style="margin-top:0;">
             <li class="cs-flow__step"><p class="cs-flow__label">Masterclass registration</p></li>
             <li class="cs-flow__step"><p class="cs-flow__label">CRM campaign</p></li>
             <li class="cs-flow__step"><p class="cs-flow__label">Event reminders</p></li>
@@ -478,11 +511,8 @@
             <li class="cs-flow__step"><p class="cs-flow__label">Replay lead capture</p></li>
             <li class="cs-flow__step"><p class="cs-flow__label">Pioneer registration</p></li>
             <li class="cs-flow__step"><p class="cs-flow__label">Payment verification</p></li>
-            <li class="cs-flow__step"><p class="cs-flow__label">Member onboarding</p></li>
-          </ol>
-
-          <div class="prose" style="margin-top:clamp(30px,4vw,40px);">
-            <p class="reveal">The result was a connected set of systems that supported the launch and created a foundation for Café Training Center's future offers and member operations.</p>
+              <li class="cs-flow__step"><p class="cs-flow__label">Member onboarding</p></li>
+            </ol>
           </div>
         </div>
       </div>

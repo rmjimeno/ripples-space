@@ -1214,6 +1214,23 @@ html.js .bookcal__fallback { display: none; }
 /* The moment the sequence was building toward. */
 .cs-seq__item--live .cs-seq__what { color: var(--fg); font-weight: 500; }
 
+/* ---- two-column section: copy on one side, the visual on the other ----
+   A single narrow measure of prose leaves half the section empty; this pairs
+   it with whatever that section is actually showing. Also halves the rendered
+   height of the full-page screenshots, which run several thousand pixels at
+   full width. */
+.cs-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(30px, 4.5vw, 68px); align-items: start; }
+.cs-split__text, .cs-split__visual { min-width: 0; }
+.cs-split__text .prose p { max-width: none; }
+.cs-split--wide { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); }
+@media (min-width: 901px) {
+  /* The copy holds its place while a tall screenshot scrolls past it. */
+  .cs-split--sticky .cs-split__text { position: sticky; top: clamp(96px, 12vh, 130px); }
+}
+@media (max-width: 900px) {
+  .cs-split, .cs-split--wide { grid-template-columns: 1fr; }
+}
+
 /* ---- phase cards ---- */
 .cs-phases { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px, 2.6vw, 28px); margin-top: clamp(36px, 4.5vw, 48px); }
 .cs-phase {
