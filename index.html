@@ -60,13 +60,17 @@
     .cta-row { margin-top: 38px; }
 
     /* ============ OFFERS (Ways I can help) ============ */
-    .offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; align-items: stretch; }
+    /* Stacked, so each offer can sit beside the work that proves it. */
+    .offers { display: grid; grid-template-columns: 1fr; gap: clamp(20px, 2.4vw, 28px); margin-top: 56px; }
     .offer {
-      display: flex; flex-direction: column;
-      padding: 34px 30px; border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
-      transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(28px, 4vw, 58px); align-items: start;
+      padding: clamp(28px, 3.2vw, 40px); border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+      transition: border-color .4s ease, box-shadow .4s ease;
     }
-    .offer:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 24px 50px -30px rgba(63,10,13,.35); }
+    /* No lift: a -6px hop reads fine on a narrow card but looks unsettled on a
+       full-width row. The border and shadow carry the hover instead. */
+    .offer:hover { border-color: var(--accent); box-shadow: 0 24px 50px -30px rgba(63,10,13,.35); }
+    .offer__main { display: flex; flex-direction: column; min-width: 0; }
     /* Every paragraph in the card carries a class, including the body copy:
        a bare `.offer p` rule (0,1,1) outranks `.offer__for` / `__need` /
        `__out` (0,1,0) and silently flattened all four into one colour. */
@@ -91,6 +95,30 @@
       margin-top: auto; padding-top: 22px; border-top: 1px solid var(--card-line);
       font-family: var(--serif); font-style: italic; font-size: 1.05rem; line-height: 1.4; color: var(--accent);
     }
+    /* ============ CASE STUDY PROOF CARD (beside each offer) ============ */
+    .offer__proof {
+      display: block; min-width: 0; overflow: hidden;
+      border: 1px solid var(--card-line); border-radius: 12px; background: var(--paper);
+      transition: border-color .35s ease, box-shadow .4s ease, transform .5s var(--ease);
+    }
+    a.offer__proof:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 26px 54px -30px rgba(63,10,13,.42); }
+    .offer__proof-media { display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--paper-alt); }
+    .offer__proof-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .6s var(--ease); }
+    a.offer__proof:hover .offer__proof-media img { transform: scale(1.04); }
+    .offer__proof-body { display: block; padding: 20px clamp(18px, 1.8vw, 24px) 24px; }
+    .offer__proof-label { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+    .offer__proof-title { display: block; font-family: var(--serif); font-weight: 500; font-size: clamp(1.15rem, 1.7vw, 1.35rem); color: var(--fg); margin: 9px 0 8px; }
+    .offer__proof-desc { display: block; font-size: 14.5px; line-height: 1.55; color: var(--fg-soft); }
+    .offer__proof-more { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; font-size: 13px; font-weight: 500; color: var(--accent); }
+    .offer__proof-more svg { width: 14px; height: 14px; flex: none; transition: transform .35s var(--ease); }
+    a.offer__proof:hover .offer__proof-more svg { transform: translateX(3px); }
+    /* Nothing to link to yet, so this variant is a <div>: not focusable, not
+       clickable, and visibly a note rather than a card you can open. */
+    .offer__proof--soon { border-style: dashed; background: transparent; }
+    /* No image, so the body carries the whole card and takes more padding to
+       hold its own beside the offer. */
+    .offer__proof--soon .offer__proof-body { padding: clamp(26px, 3vw, 34px) clamp(22px, 2.4vw, 28px); }
+    .offer__proof--soon .offer__proof-label { color: var(--fg-dim); }
 
     /* ============ PORTRAIT + HOVER EASTER EGG ============ */
     /* The file is a 2x export (364x212), so capping the display at 182px
@@ -158,8 +186,9 @@
     .cta__title--long { font-size: clamp(1.85rem, 3.6vw, 2.9rem); max-width: 22ch; margin-left: auto; margin-right: auto; }
     .cta__title--long em { font-style: italic; color: var(--gold); }
 
-    @media (max-width: 960px) {
-      .offers { grid-template-columns: 1fr; }
+    @media (max-width: 860px) {
+      /* The proof card drops below its offer rather than beside it. */
+      .offer { grid-template-columns: 1fr; gap: 30px; }
     }
   </style>
 </head>
@@ -358,6 +387,7 @@
 
         <div class="offers">
           <article class="offer reveal">
+            <div class="offer__main">
             <span class="offer__stage">Launch</span>
             <h3>Branding &amp; Websites</h3>
             <p class="offer__for">For businesses ready to look as professional as the service they provide.</p>
@@ -375,9 +405,25 @@
               <li>A website that's easy to manage</li>
             </ul>
             <p class="offer__out">Build trust. Attract customers. Make a lasting first impression.</p>
+            </div>
+
+            <a class="offer__proof" href="/case-studies/namu-travel-group/">
+              <span class="offer__proof-media">
+                <img src="case-studies/namu-travel-group/images/thumb.jpg" alt="The redesigned Namu Travel Group homepage." loading="lazy" width="1000" height="625" />
+              </span>
+              <span class="offer__proof-body">
+                <span class="offer__proof-label">Case study</span>
+                <span class="offer__proof-title">Namu Travel Group</span>
+                <span class="offer__proof-desc">A corporate travel website rebuilt as a destination-led experience, with an interactive map at its centre.</span>
+                <span class="offer__proof-more">View case study
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                </span>
+              </span>
+            </a>
           </article>
 
           <article class="offer reveal">
+            <div class="offer__main">
             <span class="offer__stage">Scale</span>
             <h3>CRM &amp; Automation</h3>
             <p class="offer__for">For businesses that are growing but spending too much time on repetitive work.</p>
@@ -396,9 +442,25 @@
               <li>Reporting dashboards</li>
             </ul>
             <p class="offer__out">Save time. Reduce busy work. Focus on higher-value work.</p>
+            </div>
+
+            <a class="offer__proof" href="/case-studies/cafe-training-center-crm/">
+              <span class="offer__proof-media">
+                <img src="case-studies/cafe-training-center-crm/images/thumb.jpg" alt="The Café Training Center landing page." loading="lazy" width="1000" height="625" />
+              </span>
+              <span class="offer__proof-body">
+                <span class="offer__proof-label">Case study</span>
+                <span class="offer__proof-title">Café Training Center</span>
+                <span class="offer__proof-desc">A masterclass launch built in one week — landing page, CRM, registration flow, and member onboarding.</span>
+                <span class="offer__proof-more">View case study
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                </span>
+              </span>
+            </a>
           </article>
 
           <article class="offer reveal">
+            <div class="offer__main">
             <span class="offer__stage">Evolve</span>
             <h3>Custom Business Apps</h3>
             <p class="offer__for">For businesses with unique workflows that off-the-shelf software can't support.</p>
@@ -417,6 +479,15 @@
               <li>A platform built from the ground up</li>
             </ul>
             <p class="offer__out">Custom software. Built for the way you work.</p>
+            </div>
+
+            <div class="offer__proof offer__proof--soon">
+              <span class="offer__proof-body">
+                <span class="offer__proof-label">Case study</span>
+                <span class="offer__proof-title">Coming Soon</span>
+                <span class="offer__proof-desc">A closer look at how strategy, design, and technology come together to build better experiences and solve meaningful business challenges.</span>
+              </span>
+            </div>
           </article>
         </div>
       </div>

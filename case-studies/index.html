@@ -30,6 +30,10 @@
     .hero__inner--center .hero__sub { margin-left: auto; margin-right: auto; }
     .hero__inner--center .hero__actions { justify-content: center; }
 
+    /* The grid leads its section now that the filter bar is gone — its top
+       margin was the gap below those pills. */
+    #cs-grid { margin-top: 0; }
+
     /* The CTA label is a full sentence. On a phone the generous btn--lg side
        padding buys nothing and only forces an extra line. */
     @media (max-width: 560px) {
@@ -42,7 +46,9 @@
   <a class="skip-link" href="#top">Skip to content</a>
 
   <!-- ============ NAV ============ -->
-  <header class="nav" id="nav">
+  <!-- nav--on-light: this hero is paper, so the bar's cream brand, links and
+       CTA have nothing to sit on until .scrolled brings the oxblood back. -->
+  <header class="nav nav--on-light" id="nav">
     <div class="nav__inner">
       <a class="brand" href="/" aria-label="Ripples Space home">
         <span class="brand__mark" aria-hidden="true">
@@ -99,25 +105,37 @@
       </div>
     </section>
 
-    <!-- ============ CASE STUDY GRID + FILTERS (light) ============ -->
+    <!-- ============ CASE STUDY GRID (light) ============ -->
+    <!-- Filtering is off while there are only two case studies. The cards keep
+         their data-tags so the filter bar can be switched back on by restoring
+         the markup and script; the .cs-filter styles are still in styles.css. -->
     <section class="section" id="work">
       <div class="wrap">
-        <p class="eyebrow reveal">Browse by type</p>
-        <h2 class="section__title reveal">Explore my works</h2>
-        <p class="lede reveal">
-          From shaping brands to building websites, custom tools, and the systems behind
-          growing businesses.
-        </p>
-
-        <div class="cs-filters reveal" id="cs-filters" role="group" aria-label="Filter case studies by type">
-          <!-- Populated by script below from each card's data-tags, "All" first. -->
-        </div>
-
         <div class="cs-grid" id="cs-grid">
+          <!-- ============ CASE STUDY: Café Training Center ============ -->
+          <article class="cs-card reveal" data-tags="Web Design,CRM &amp; Automation,Funnel Building">
+            <div class="cs-card__media">
+              <img src="cafe-training-center-crm/images/thumb.jpg" alt="The Café Training Center landing page." loading="lazy" />
+            </div>
+            <div class="cs-card__body">
+              <div class="cs-card__tags">
+                <span class="cs-tag">Web Design</span>
+                <span class="cs-tag">CRM &amp; Automation</span>
+                <span class="cs-tag">Funnel Building</span>
+              </div>
+              <h3 class="cs-card__title">Café Training Center</h3>
+              <p class="cs-card__desc">Building the digital infrastructure for a masterclass launch in one week — landing page, CRM, registration flow, event communications, and member onboarding.</p>
+              <span class="cs-card__more">View case study
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+            <a class="cs-card__link" href="/case-studies/cafe-training-center-crm/" aria-label="View the Café Training Center case study"></a>
+          </article>
+
           <!-- ============ CASE STUDY: Namu Travel Group ============ -->
           <article class="cs-card reveal" data-tags="Branding,Web Design,UI/UX Design">
             <div class="cs-card__media">
-              <img src="namu-travel-group/images/after-homepage-hero.jpeg" alt="The redesigned Namu Travel Group homepage." loading="lazy" />
+              <img src="namu-travel-group/images/thumb.jpg" alt="The redesigned Namu Travel Group homepage." loading="lazy" />
             </div>
             <div class="cs-card__body">
               <div class="cs-card__tags">
@@ -134,8 +152,6 @@
             <a class="cs-card__link" href="/case-studies/namu-travel-group/" aria-label="View the Namu Travel Group case study"></a>
           </article>
         </div>
-
-        <p class="cs-empty" id="cs-empty">No case studies match that filter yet — check back soon.</p>
       </div>
     </section>
 
@@ -229,59 +245,5 @@
   <!-- Booking widget + modal controller (shared) -->
   <script src="../booking.js"></script>
 
-  <!-- ============ TAG FILTERING ============
-       Builds the filter pills from each card's data-tags so new case
-       studies only need to be added to the grid below — no filter-bar
-       edits required. -->
-  <script>
-    (function () {
-      var grid = document.getElementById("cs-grid");
-      var filters = document.getElementById("cs-filters");
-      var empty = document.getElementById("cs-empty");
-      if (!grid || !filters) return;
-
-      var cards = Array.prototype.slice.call(grid.querySelectorAll(".cs-card"));
-      var tags = [];
-      cards.forEach(function (card) {
-        (card.dataset.tags || "").split(",").forEach(function (t) {
-          t = t.trim();
-          if (t && tags.indexOf(t) === -1) tags.push(t);
-        });
-      });
-
-      function makeButton(label, isActive) {
-        var btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "cs-filter" + (isActive ? " is-active" : "");
-        btn.textContent = label;
-        btn.dataset.filter = label;
-        return btn;
-      }
-
-      var allBtn = makeButton("All", true);
-      filters.appendChild(allBtn);
-      tags.forEach(function (t) { filters.appendChild(makeButton(t, false)); });
-
-      function applyFilter(tag) {
-        var visible = 0;
-        cards.forEach(function (card) {
-          var cardTags = (card.dataset.tags || "").split(",").map(function (t) { return t.trim(); });
-          var show = tag === "All" || cardTags.indexOf(tag) !== -1;
-          card.classList.toggle("is-hidden", !show);
-          if (show) visible++;
-        });
-        empty.classList.toggle("is-visible", visible === 0);
-      }
-
-      filters.addEventListener("click", function (e) {
-        var btn = e.target.closest(".cs-filter");
-        if (!btn) return;
-        Array.prototype.forEach.call(filters.querySelectorAll(".cs-filter"), function (b) {
-          b.classList.toggle("is-active", b === btn);
-        });
-        applyFilter(btn.dataset.filter);
-      });
-    })();
-  </script>
 </body>
 </html>

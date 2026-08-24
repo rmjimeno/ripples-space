@@ -122,6 +122,12 @@ a { color: inherit; text-decoration: none; }
   font-size: clamp(1.75rem, 4vw, 2.8rem);
   line-height: 1.12; letter-spacing: -0.01em; color: var(--fg);
   text-wrap: balance;
+  /* Scales with the heading, so a 2.8rem display line gets more air beneath it
+     than a 1.75rem one. This is a MARGIN, not padding, so it collapses with
+     whatever the next block already sets (.lede's 22px, the landing pages'
+     34px) — those stay exactly as they were, and only the cases that set
+     nothing pick up a gap. */
+  margin-bottom: clamp(1rem, 1.4vw, 1.35rem);
 }
 .section__title.center { text-align: center; }
 .section__title em { font-style: italic; color: var(--accent); }
@@ -1161,6 +1167,88 @@ html.js .bookcal__fallback { display: none; }
 .cs-shipped li { position: relative; padding: 15px 0 15px 28px; border-top: 1px solid var(--line); color: var(--fg-soft); font-size: 15px; line-height: 1.5; }
 .cs-shipped li::before { content: "✓"; position: absolute; left: 0; top: 15px; color: var(--accent); font-size: 13px; }
 
+/* ---- CRM pipeline stage chip ---- */
+/* Monospaced because these are literal stage names in the CRM, not prose. */
+.cs-stage {
+  display: inline-flex; align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px; letter-spacing: .01em; line-height: 1.3;
+  padding: 7px 13px; border-radius: 7px;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid currentColor;
+}
+.cs-tagchip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px; padding: 5px 11px; border-radius: 100px;
+  background: var(--accent-soft); color: var(--accent);
+}
+
+/* ---- vertical flow diagram (a system's steps, in order) ---- */
+.cs-flow { list-style: none; position: relative; margin: clamp(30px, 4vw, 42px) 0 0; padding: 0; }
+/* The spine runs between the first and last marker, not the full list height. */
+.cs-flow::before {
+  content: ""; position: absolute; left: 7px; top: 14px; bottom: 14px; width: 1px;
+  background: linear-gradient(var(--accent), var(--card-line));
+  opacity: .5;
+}
+.cs-flow__step { position: relative; padding: 0 0 26px 34px; }
+.cs-flow__step:last-child { padding-bottom: 0; }
+.cs-flow__step::before {
+  content: ""; position: absolute; left: 3px; top: 8px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--accent);
+}
+.cs-flow__label { font-size: clamp(15px, 1.6vw, 16.5px); line-height: 1.5; color: var(--fg); }
+.cs-flow__note { margin-top: 5px; font-size: 14px; line-height: 1.55; color: var(--fg-soft); }
+.cs-flow__sub { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.cs-flow__sub li { position: relative; padding-left: 18px; font-size: 14.5px; line-height: 1.5; color: var(--fg-soft); }
+.cs-flow__sub li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: .65; }
+/* A step whose content is a CRM stage rather than a description. */
+.cs-flow__step--stage::before { background: var(--accent); }
+
+/* ---- timed sequence (the reminder schedule) ---- */
+.cs-seq { list-style: none; margin: clamp(30px, 4vw, 42px) 0 0; padding: 0; border-top: 1px solid var(--line); }
+.cs-seq__item {
+  display: grid; grid-template-columns: minmax(120px, 160px) 1fr; gap: clamp(14px, 2.5vw, 28px);
+  align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line);
+  transition: padding-left .4s var(--ease);
+}
+.cs-seq__item:hover { padding-left: 10px; }
+.cs-seq__time { font-family: var(--serif); font-weight: 500; font-size: clamp(1.05rem, 2vw, 1.3rem); color: var(--accent); line-height: 1.3; }
+.cs-seq__what { font-size: 15.5px; line-height: 1.55; color: var(--fg-soft); }
+/* The moment the sequence was building toward. */
+.cs-seq__item--live .cs-seq__what { color: var(--fg); font-weight: 500; }
+
+/* ---- two-column section: copy on one side, the visual on the other ----
+   A single narrow measure of prose leaves half the section empty; this pairs
+   it with whatever that section is actually showing. Also halves the rendered
+   height of the full-page screenshots, which run several thousand pixels at
+   full width. */
+.cs-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(30px, 4.5vw, 68px); align-items: start; }
+.cs-split__text, .cs-split__visual { min-width: 0; }
+.cs-split__text .prose p { max-width: none; }
+.cs-split--wide { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); }
+@media (min-width: 901px) {
+  /* The copy holds its place while a tall screenshot scrolls past it. */
+  .cs-split--sticky .cs-split__text { position: sticky; top: clamp(96px, 12vh, 130px); }
+}
+@media (max-width: 900px) {
+  .cs-split, .cs-split--wide { grid-template-columns: 1fr; }
+}
+
+/* ---- phase cards ---- */
+.cs-phases { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px, 2.6vw, 28px); margin-top: clamp(36px, 4.5vw, 48px); }
+.cs-phase {
+  padding: clamp(26px, 3vw, 34px) clamp(22px, 2.6vw, 30px);
+  border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+  transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+}
+.cs-phase:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 28px 58px -32px rgba(63,10,13,.4); }
+.cs-phase__num { font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.cs-phase h3 { font-family: var(--serif); font-weight: 500; font-size: clamp(1.25rem, 2.2vw, 1.5rem); color: var(--fg); margin: 12px 0 10px; }
+.cs-phase p { color: var(--fg-soft); font-size: 15px; line-height: 1.6; }
+
 /* ---- back link (detail page) ---- */
 .cs-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 14px; font-weight: 500; color: inherit; opacity: .85; }
 .cs-back svg { width: 15px; height: 15px; }
@@ -1170,6 +1258,12 @@ html.js .bookcal__fallback { display: none; }
   .cs-grid { grid-template-columns: 1fr; }
   .cs-outcomes { grid-template-columns: 1fr; }
   .cs-shipped { grid-template-columns: 1fr; }
+  .cs-phases { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  /* Stack the time above what happened rather than squeezing both into two
+     unreadable columns. */
+  .cs-seq__item { grid-template-columns: 1fr; gap: 4px; }
 }
 /* The board trio and the before/after pairs exist to be compared at a glance,
    so they hold their side-by-side layout further down than a normal card grid
