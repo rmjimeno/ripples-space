@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ripples Space · Case Studies</title>
+  <meta name="description" content="Branding, web design, and UI/UX work from Ripples Space — browse case studies by the kind of project they were." />
+
+  <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
+  <script src="../analytics.js"></script>
+
+  <!-- Motion state before first paint: no flash of un-revealed content, and
+       no pre-hiding for visitors without JS. Mirrors main.js. -->
+  <script>
+    (function () {
+      var d = document.documentElement, p = null;
+      try { p = localStorage.getItem("ripples-motion"); } catch (e) {}
+      d.classList.add("js");
+      if (p ? p === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion-reduced");
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../styles.css" />
+
+  <!-- Case studies index (page-specific) -->
+  <style>
+    /* Shorter, centered hero — same treatment as /contact/. */
+    .hero--short { min-height: auto; padding: clamp(130px,18vh,170px) 0 clamp(64px,9vh,96px); }
+    .hero__inner--center { grid-template-columns: 1fr; max-width: 760px; text-align: center; }
+    .hero__inner--center .hero__sub { margin-left: auto; margin-right: auto; }
+    .hero__inner--center .hero__actions { justify-content: center; }
+
+    /* The CTA label is a full sentence. On a phone the generous btn--lg side
+       padding buys nothing and only forces an extra line. */
+    @media (max-width: 560px) {
+      .cta__actions .btn--lg { padding-left: 20px; padding-right: 20px; }
+    }
+</style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <a class="skip-link" href="#top">Skip to content</a>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="brand" href="/" aria-label="Ripples Space home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#ng1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#ng2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#ng3)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="ng1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples&nbsp;Space</span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="/changemakers/">Coaches &amp; creators</a>
+        <a href="/service-businesses/">Service businesses</a>
+        <a href="/case-studies/">Case studies</a>
+      </nav>
+      <a href="/contact/#book" class="btn btn--cream nav__cta" data-book-open>Book a call</a>
+    </div>
+  </header>
+
+  <main id="top" tabindex="-1">
+
+    <!-- ============ HERO (light) ============ -->
+    <section class="hero hero--light hero--short" id="hero">
+      <div class="hero__veil" aria-hidden="true"></div>
+      <div class="hero__inner hero__inner--center">
+        <div class="hero__copy">
+          <p class="eyebrow reveal">Case studies</p>
+          <h1 class="hero__title reveal">Real projects, <em>real results.</em></h1>
+          <p class="hero__sub reveal">
+            A selection of projects where I've helped turn ideas into experiences, products, and
+            infrastructure—combining design, technology, and business thinking along the way.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CASE STUDY GRID + FILTERS (light) ============ -->
+    <section class="section" id="work">
+      <div class="wrap">
+        <p class="eyebrow reveal">Browse by type</p>
+        <h2 class="section__title reveal">Explore my works</h2>
+        <p class="lede reveal">
+          From shaping brands to building websites, custom tools, and the systems behind
+          growing businesses.
+        </p>
+
+        <div class="cs-filters reveal" id="cs-filters" role="group" aria-label="Filter case studies by type">
+          <!-- Populated by script below from each card's data-tags, "All" first. -->
+        </div>
+
+        <div class="cs-grid" id="cs-grid">
+          <!-- ============ CASE STUDY: Namu Travel Group ============ -->
+          <article class="cs-card reveal" data-tags="Branding,Web Design,UI/UX Design">
+            <div class="cs-card__media">
+              <img src="namu-travel-group/images/after-homepage-hero.jpeg" alt="The redesigned Namu Travel Group homepage." loading="lazy" />
+            </div>
+            <div class="cs-card__body">
+              <div class="cs-card__tags">
+                <span class="cs-tag">Branding</span>
+                <span class="cs-tag">Web Design</span>
+                <span class="cs-tag">UI/UX Design</span>
+              </div>
+              <h3 class="cs-card__title">Namu Travel Group</h3>
+              <p class="cs-card__desc">Turning a corporate travel website into an experience worth exploring — with an interactive destination map at the center.</p>
+              <span class="cs-card__more">View case study
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+            <a class="cs-card__link" href="/case-studies/namu-travel-group/" aria-label="View the Namu Travel Group case study"></a>
+          </article>
+        </div>
+
+        <p class="cs-empty" id="cs-empty">No case studies match that filter yet — check back soon.</p>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA (red) ============ -->
+    <section class="section sec--red cta" id="book">
+      <div class="wrap wrap--narrow cta__inner">
+        <h2 class="cta__title reveal">Have a project in mind?</h2>
+        <p class="cta__sub reveal">
+          You've seen how I approach different problems. Now let's talk about yours.
+        </p>
+        <div class="cta__actions reveal">
+          <!-- Label and arrow live in ONE flex child so that when the line wraps
+               on a phone the arrow follows the last word, instead of sitting
+               marooned beside a two-line label as a second flex item. -->
+          <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>
+            <span>Let's build something great together <span aria-hidden="true">→</span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#rg1f)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#rg2f)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#rg3f)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="rg1f" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="rg2f" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="rg3f" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples Space</span>
+      </div>
+      <p class="footer__copy">© 2026 Ripples Space. Creating ripples of impact.</p>
+    </div>
+  </footer>
+
+  <!-- ============ BOOKING MODAL ============ -->
+  <div class="bookmodal" id="book-modal" aria-hidden="true">
+    <div class="bookmodal__backdrop" data-book-close></div>
+    <div class="bookmodal__dialog" role="dialog" aria-modal="true" aria-labelledby="book-modal-title" tabindex="-1">
+      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close>&times;</button>
+      <div class="bookmodal__head">
+        <span class="bookmodal__eyebrow">Ripples Space</span>
+        <h2 class="bookmodal__title" id="book-modal-title">Book your strategy call</h2>
+        <p class="bookmodal__sub">
+          Pick a time that works. No pressure, just a clear next step.<br/>
+          Not a fan of calls? Message me in
+          <a href="https://wa.me/639272345247" target="_blank" rel="noopener noreferrer">WhatsApp</a> instead.
+        </p>
+      </div>
+      <div class="bookmodal__body">
+        <div data-bookcal data-variant="modal">
+          <div class="bookcal__fallback">
+            <p>
+              Booking needs JavaScript to show live availability. Email me at
+              <a href="mailto:rheannejimeno@gmail.com?subject=Booking%20a%20call">rheannejimeno@gmail.com</a>
+              with a couple of times that suit you and I'll send an invite back.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="../main.js"></script>
+
+  <!-- Booking widget + modal controller (shared) -->
+  <script src="../booking.js"></script>
+
+  <!-- ============ TAG FILTERING ============
+       Builds the filter pills from each card's data-tags so new case
+       studies only need to be added to the grid below — no filter-bar
+       edits required. -->
+  <script>
+    (function () {
+      var grid = document.getElementById("cs-grid");
+      var filters = document.getElementById("cs-filters");
+      var empty = document.getElementById("cs-empty");
+      if (!grid || !filters) return;
+
+      var cards = Array.prototype.slice.call(grid.querySelectorAll(".cs-card"));
+      var tags = [];
+      cards.forEach(function (card) {
+        (card.dataset.tags || "").split(",").forEach(function (t) {
+          t = t.trim();
+          if (t && tags.indexOf(t) === -1) tags.push(t);
+        });
+      });
+
+      function makeButton(label, isActive) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "cs-filter" + (isActive ? " is-active" : "");
+        btn.textContent = label;
+        btn.dataset.filter = label;
+        return btn;
+      }
+
+      var allBtn = makeButton("All", true);
+      filters.appendChild(allBtn);
+      tags.forEach(function (t) { filters.appendChild(makeButton(t, false)); });
+
+      function applyFilter(tag) {
+        var visible = 0;
+        cards.forEach(function (card) {
+          var cardTags = (card.dataset.tags || "").split(",").map(function (t) { return t.trim(); });
+          var show = tag === "All" || cardTags.indexOf(tag) !== -1;
+          card.classList.toggle("is-hidden", !show);
+          if (show) visible++;
+        });
+        empty.classList.toggle("is-visible", visible === 0);
+      }
+
+      filters.addEventListener("click", function (e) {
+        var btn = e.target.closest(".cs-filter");
+        if (!btn) return;
+        Array.prototype.forEach.call(filters.querySelectorAll(".cs-filter"), function (b) {
+          b.classList.toggle("is-active", b === btn);
+        });
+        applyFilter(btn.dataset.filter);
+      });
+    })();
+  </script>
+</body>
+</html>
