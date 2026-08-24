@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ripples Space · Café Training Center Case Study</title>
+  <meta name="description" content="Building the digital infrastructure for a masterclass launch in one week — brand, landing page, CRM, registration flow, and email communications for Café Training Center." />
+
+  <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
+  <script src="../../analytics.js"></script>
+
+  <!-- Motion state before first paint: no flash of un-revealed content, and
+       no pre-hiding for visitors without JS. Mirrors main.js. -->
+  <script>
+    (function () {
+      var d = document.documentElement, p = null;
+      try { p = localStorage.getItem("ripples-motion"); } catch (e) {}
+      d.classList.add("js");
+      if (p ? p === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion-reduced");
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../../styles.css" />
+
+  <!-- Case study detail (page-specific) -->
+  <style>
+    /* Same light, ripple-field hero as the homepage — it just sizes to its
+       content instead of filling the viewport. */
+    .cs-hero { min-height: auto; display: block; padding: clamp(124px, 15vh, 168px) 0 clamp(52px, 7vh, 80px); }
+    .cs-hero .hero__inner { grid-template-columns: 1fr; max-width: 900px; text-align: center; }
+    .cs-hero__back { margin-bottom: 26px; }
+    .cs-hero__title {
+      font-family: var(--serif); font-weight: 500;
+      font-size: clamp(1.75rem, 3.8vw, 2.85rem); line-height: 1.14; letter-spacing: -0.015em;
+      color: var(--ink); text-wrap: balance; margin-bottom: 22px;
+    }
+    .cs-hero__title em { font-style: italic; color: var(--red-accent); }
+    .cs-hero__dek { font-size: clamp(1rem, 1.5vw, 1.14rem); line-height: 1.65; color: var(--ink-soft); max-width: 62ch; margin: 0 auto; }
+    .cs-hero__dek + .cs-hero__dek { margin-top: 16px; }
+
+    /* Body copy keeps a readable measure while the visuals below use the full
+       .wrap — that contrast is what gives each section a clear focal point. */
+    .cs-lead { max-width: 64ch; }
+    .cs-lead .prose p + p { margin-top: 18px; }
+    /* The two systems are the spine of this study, so each gets a numbered
+       label above its heading. */
+    .cs-sysnum { font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <a class="skip-link" href="#top">Skip to content</a>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav nav--on-light" id="nav">
+    <div class="nav__inner">
+      <a class="brand" href="/" aria-label="Ripples Space home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#ng1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#ng2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#ng3)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="ng1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples&nbsp;Space</span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="/changemakers/">Coaches &amp; creators</a>
+        <a href="/service-businesses/">Service businesses</a>
+        <a href="/case-studies/">Case studies</a>
+      </nav>
+      <a href="/contact/#book" class="btn btn--cream nav__cta" data-book-open>Book a call</a>
+    </div>
+  </header>
+
+  <main id="top" tabindex="-1">
+
+    <!-- ============ HERO (light — matches the homepage) ============ -->
+    <section class="hero hero--light cs-hero" id="hero">
+      <canvas class="hero__canvas" id="ripple-canvas" data-theme="light" aria-hidden="true"></canvas>
+      <div class="hero__veil" aria-hidden="true"></div>
+
+      <div class="hero__inner">
+        <div class="hero__copy">
+          <a class="cs-back cs-hero__back reveal" href="/case-studies/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M12 5l-7 7 7 7"/></svg>
+            All case studies
+          </a>
+
+          <p class="eyebrow center reveal">Café Training Center</p>
+          <h1 class="cs-hero__title reveal">
+            Building the Digital Infrastructure for a Masterclass Launch in <em>One Week</em>
+          </h1>
+          <p class="cs-hero__dek reveal">
+            How we launched Café Training Center's first masterclass—from idea to live event.
+          </p>
+          <p class="cs-hero__dek reveal">
+            Café Training Center was preparing to launch its first live masterclass on August 7.
+            Within one week, I built the core digital infrastructure supporting the launch—from the
+            brand and landing page to the CRM, registration flow, and email communications.
+          </p>
+          <p class="cs-hero__dek reveal">
+            The project continued after the live event, expanding into replay lead capture and a
+            registration and onboarding system for Café Training Center's Pioneer Membership.
+          </p>
+
+          <div class="cs-meta reveal">
+            <div class="cs-meta__item">
+              <span class="cs-meta__label">Role</span>
+              <span class="cs-meta__value">Branding · Web Design &amp; Development · CRM &amp; Automation Implementation</span>
+            </div>
+            <div class="cs-meta__item">
+              <span class="cs-meta__label">Tools</span>
+              <span class="cs-meta__value">GoHighLevel · Zoom · Vercel</span>
+            </div>
+            <div class="cs-meta__item">
+              <span class="cs-meta__label">Project highlights</span>
+              <span class="cs-meta__value">1 week to launch · 140+ registrations by the live event · 72 peak attendees</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THE CHALLENGE (light-alt) ============ -->
+    <section class="section sec--alt" id="challenge">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">The challenge</p>
+          <h2 class="section__title reveal">Café Training Center was a new education business preparing for its <em>first public launch.</em></h2>
+          <div class="prose">
+            <p class="reveal">The first masterclass was scheduled for August 7. The business needed a brand, landing page, registration flow, CRM connection, and an email system to communicate with registrants before the event.</p>
+            <p class="reveal">The Pioneer Membership was also part of the launch plan, with registration opening around the masterclass and onboarding following after payment verification.</p>
+          </div>
+        </div>
+
+        <div class="cs-goal reveal">
+          <p class="cs-goal__label">The priority</p>
+          <p class="cs-goal__text">The timeline was tight, so the first priority was getting the infrastructure needed for <em>the live event</em> up and running.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THE ONE-WEEK SPRINT (light) ============ -->
+    <section class="section" id="sprint">
+      <div class="wrap process__grid">
+        <div class="process__head">
+          <p class="eyebrow reveal">The one-week sprint</p>
+          <h2 class="section__title reveal">Seven days, <em>idea to live event.</em></h2>
+          <p class="process__note reveal">Each day moved one part of the system from plan to production.</p>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <span class="timeline__line" aria-hidden="true"><span class="timeline__fill"></span><span class="timeline__dot"></span></span>
+          <ol class="timeline__steps">
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">1</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">July 31</span>
+                <h3>Initial planning</h3>
+                <p>The team met to align on the founder's vision, the launch timeline, and how the customer journey would work.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">2</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">August 3</span>
+                <h3>Project inputs</h3>
+                <p>I received the landing page copy, registration materials, and project timeline.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">3</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">August 4</span>
+                <h3>Brand and landing page</h3>
+                <p>I developed the initial brand identity, built the landing page, and deployed it on Vercel.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">4</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">August 5</span>
+                <h3>CRM setup</h3>
+                <p>I received access to GoHighLevel and connected the landing page backend to the CRM. The custom domain also went live.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">5</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">August 6</span>
+                <h3>Event communications</h3>
+                <p>I configured email sending in GoHighLevel, imported the masterclass registrants, and set up the communication flow for the live event.</p>
+              </div>
+            </li>
+            <li class="tstep reveal">
+              <span class="tstep__marker" aria-hidden="true"><span class="tstep__num">6</span></span>
+              <div class="tstep__card">
+                <span class="tstep__eyebrow">August 7</span>
+                <h3>Masterclass day</h3>
+                <p>Café Training Center's first masterclass went live.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="wrap" style="margin-top:clamp(48px,6vw,76px);">
+        <figure class="cs-figure reveal">
+          <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
+                  data-title="The Café Training Center landing page" data-full="images/landing-page.png">
+            <img src="images/landing-page.png" alt="The Café Training Center landing page in full: the hero, curriculum breakdown, hands-on class photography, membership pricing, and footer." width="1921" height="16310" loading="lazy" />
+          </button>
+          <figcaption class="cs-figure__cap">The brand and landing page, built and deployed on August 4.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ SYSTEM 01 — MASTERCLASS COMMUNICATIONS (red) ============ -->
+    <section class="section sec--red" id="system-01">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="cs-sysnum reveal">System 01</p>
+          <h2 class="section__title reveal">Masterclass communications</h2>
+          <div class="prose">
+            <p class="reveal">Registrations for the masterclass were collected through Zoom. With the launch approaching, I imported the registrants into GoHighLevel and set up the email campaign for the live event.</p>
+            <p class="reveal">The campaign focused on keeping the masterclass top of mind as the event approached and making sure registrants had clear reminders to join.</p>
+          </div>
+        </div>
+
+        <div class="cs-lead">
+          <ol class="cs-seq reveal">
+            <li class="cs-seq__item">
+              <span class="cs-seq__time">10:00 AM</span>
+              <p class="cs-seq__what">Masterclass-day reminder.</p>
+            </li>
+            <li class="cs-seq__item">
+              <span class="cs-seq__time">1 hour before</span>
+              <p class="cs-seq__what">A reminder to prepare and join the session.</p>
+            </li>
+            <li class="cs-seq__item">
+              <span class="cs-seq__time">15 minutes before</span>
+              <p class="cs-seq__what">A final reminder before the masterclass began.</p>
+            </li>
+            <li class="cs-seq__item cs-seq__item--live">
+              <span class="cs-seq__time">7:00 PM</span>
+              <p class="cs-seq__what">The masterclass is live.</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="cs-outcomes">
+          <article class="cs-outcome reveal">
+            <span class="cs-outcome__num">140+</span>
+            <span class="cs-outcome__label">Registrations</span>
+            <p class="cs-outcome__note">At the time of the event. Registrations continued after the webinar, eventually bringing the total to 150+ contacts.</p>
+          </article>
+          <article class="cs-outcome reveal">
+            <span class="cs-outcome__num">72</span>
+            <span class="cs-outcome__label">Peak attendees</span>
+            <p class="cs-outcome__note">The live session reached a peak of 72 attendees.</p>
+          </article>
+          <article class="cs-outcome reveal">
+            <span class="cs-outcome__num">~50%</span>
+            <span class="cs-outcome__label">Show-up rate</span>
+            <p class="cs-outcome__note">An approximate 50% show-up rate against registrations at the time of the event.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AFTER THE LIVE EVENT (light-alt) ============ -->
+    <section class="section sec--alt" id="replay">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">After the live event</p>
+          <h2 class="section__title reveal">The masterclass continued to be useful after the live session <em>ended.</em></h2>
+          <div class="prose">
+            <p class="reveal">Existing registrants received the replay through the post-event email campaign.</p>
+            <p class="reveal">I also built a separate path for people who discovered the masterclass after registration had closed.</p>
+          </div>
+
+          <h3 class="cs-sysnum reveal" style="margin-top:clamp(34px,4vw,44px);">Replay lead capture</h3>
+          <ol class="cs-flow reveal">
+            <li class="cs-flow__step"><p class="cs-flow__label">Replay link</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Replay landing page</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Email opt-in</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Replay delivered by email</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Added to the Café Training Center email list</p></li>
+          </ol>
+
+          <div class="prose" style="margin-top:clamp(30px,4vw,40px);">
+            <p class="reveal">The replay landing page created an additional entry point into Café Training Center's email ecosystem, allowing new contacts to receive future updates and nurturing toward future offers.</p>
+          </div>
+        </div>
+
+        <figure class="cs-figure reveal" style="margin-top:clamp(44px,5vw,64px);">
+          <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
+                  data-title="The replay landing page" data-full="images/replay-landing-page.png">
+            <img src="images/replay-landing-page.png" alt="The replay landing page: a Don't Open a Café Yet headline beside an email opt-in form offering instant access to the full 60-minute masterclass." width="1921" height="922" loading="lazy" />
+          </button>
+          <figcaption class="cs-figure__cap">The replay landing page — a second entry point into the email list.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ SYSTEM 02 — PIONEER MEMBERSHIP (light) ============ -->
+    <section class="section" id="system-02">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="cs-sysnum reveal">System 02</p>
+          <h2 class="section__title reveal">Pioneer Membership registration</h2>
+          <div class="prose">
+            <p class="reveal">The masterclass also introduced the Pioneer Membership. Interested members completed a registration form that collected their details and proof of payment.</p>
+            <p class="reveal">The submission entered the GoHighLevel pipeline under <code class="cs-stage">For Payment Verification</code>. The founder received a notification to review the payment.</p>
+            <p class="reveal">Once the payment was confirmed, the opportunity could be moved to <code class="cs-stage">Payment Confirmed</code>. That stage change triggered the next part of the workflow.</p>
+          </div>
+        </div>
+
+        <figure class="cs-figure reveal" style="margin-top:clamp(44px,5vw,64px);">
+          <button class="cs-zoom" type="button" data-zoom data-zoom-group="pages"
+                  data-title="The Pioneer Membership page" data-full="images/pioneer-membership-page.png">
+            <img src="images/pioneer-membership-page.png" alt="The Pioneer Membership page in full: the founding offer, what the membership includes, who it suits, pricing for the first 300 members, and an FAQ." width="1921" height="12557" loading="lazy" />
+          </button>
+          <figcaption class="cs-figure__cap">The Pioneer Membership page, introduced during the masterclass.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ PIONEER ONBOARDING (light-alt) ============ -->
+    <section class="section sec--alt" id="onboarding">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">Pioneer onboarding</p>
+          <h2 class="section__title reveal">Payment confirmed, <em>onboarding begins.</em></h2>
+          <div class="prose">
+            <p class="reveal">After payment confirmation, the new member automatically received:</p>
+          </div>
+          <ul class="cs-flow__sub reveal" style="margin-top:16px;">
+            <li>Confirmation of their Pioneer Membership</li>
+            <li>A welcome message from the founder</li>
+            <li>Instructions for the onboarding process</li>
+            <li>A link to the onboarding form</li>
+          </ul>
+          <div class="prose" style="margin-top:22px;">
+            <p class="reveal">The contact was also tagged as <span class="cs-tagchip">Pioneer</span></p>
+            <p class="reveal">The onboarding form collected additional information needed to support the membership experience. This included:</p>
+          </div>
+          <ul class="cs-flow__sub reveal" style="margin-top:16px;">
+            <li>Mailing address for exclusive Pioneer merchandise</li>
+            <li>Partner information for the enrollment discount</li>
+            <li>Preferred affiliate code for the future referral system</li>
+          </ul>
+          <div class="prose" style="margin-top:22px;">
+            <p class="reveal">Once the onboarding form was submitted, the contact was automatically tagged <span class="cs-tagchip">Onboarded</span></p>
+          </div>
+
+          <h3 class="cs-sysnum reveal" style="margin-top:clamp(40px,5vw,56px);">The membership workflow</h3>
+          <ol class="cs-flow reveal">
+            <li class="cs-flow__step"><p class="cs-flow__label">Pioneer Registration + Proof of Payment</p></li>
+            <li class="cs-flow__step cs-flow__step--stage"><code class="cs-stage">For Payment Verification</code></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Founder reviews payment</p></li>
+            <li class="cs-flow__step cs-flow__step--stage"><code class="cs-stage">Payment Confirmed</code></li>
+            <li class="cs-flow__step">
+              <p class="cs-flow__label">Membership confirmation</p>
+              <ul class="cs-flow__sub">
+                <li>Welcome email from the founder</li>
+                <li>Tagged as Pioneer</li>
+                <li>Onboarding instructions</li>
+              </ul>
+            </li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Onboarding form completed</p></li>
+            <li class="cs-flow__step cs-flow__step--stage"><code class="cs-stage">Onboarded</code></li>
+          </ol>
+
+          <div class="prose" style="margin-top:clamp(30px,4vw,40px);">
+            <p class="reveal">The pipeline gave the team a clear view of each member's progress, while the workflows handled the communications and next steps after payment confirmation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BUILDING AROUND THE LAUNCH TIMELINE (light) ============ -->
+    <section class="section" id="phases">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">Building around the launch timeline</p>
+          <h2 class="section__title reveal">The first priority was getting the masterclass infrastructure ready <em>before August 7.</em></h2>
+          <div class="prose">
+            <p class="reveal">The Zoom registrants were manually imported into GoHighLevel so the reminder campaign could be set up in time for the event.</p>
+            <p class="reveal">The Pioneer onboarding system was developed after the masterclass. Members had been informed that payment verification could take up to 72 hours, which provided time to build out the next stage of their journey.</p>
+            <p class="reveal">This allowed the project to move in two phases:</p>
+          </div>
+        </div>
+
+        <div class="cs-phases">
+          <article class="cs-phase reveal">
+            <span class="cs-phase__num">Phase 01</span>
+            <h3>Launch the masterclass</h3>
+            <p>Build and deploy the brand, landing page, CRM connection, registration flow, and event communications.</p>
+          </article>
+          <article class="cs-phase reveal">
+            <span class="cs-phase__num">Phase 02</span>
+            <h3>Build what comes next</h3>
+            <p>Expand the system with post-event communications, replay lead capture, Pioneer registration workflows, and member onboarding.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MY CONTRIBUTION (light-alt) ============ -->
+    <section class="section sec--alt" id="contribution">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">My contribution</p>
+          <h2 class="section__title reveal">Translating the plan into <em>working infrastructure.</em></h2>
+          <div class="prose">
+            <p class="reveal">The launch strategy and customer journey were developed collaboratively with the founder and team. My role focused on translating those plans into working digital infrastructure.</p>
+            <p class="reveal">I was responsible for:</p>
+          </div>
+        </div>
+
+        <ul class="cs-shipped reveal">
+          <li>Creating the initial brand identity</li>
+          <li>Designing and developing the landing page</li>
+          <li>Deploying the website on Vercel</li>
+          <li>Connecting the landing page to GoHighLevel</li>
+          <li>Configuring email sending</li>
+          <li>Importing and organizing masterclass contacts</li>
+          <li>Setting up the registration and thank-you pages</li>
+          <li>Building the masterclass reminder workflow</li>
+          <li>Creating the post-masterclass replay flow</li>
+          <li>Building the replay lead capture landing page</li>
+          <li>Setting up CRM pipeline stages</li>
+          <li>Implementing the Pioneer registration workflow</li>
+          <li>Building automation triggered by payment confirmation</li>
+          <li>Setting up Pioneer and onboarding tags</li>
+          <li>Creating the Pioneer onboarding flow and form</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ THE RESULT (light) ============ -->
+    <section class="section" id="result">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">The result</p>
+          <h2 class="section__title reveal">Within one week, the core digital infrastructure supporting Café Training Center's first masterclass was <em>live.</em></h2>
+          <div class="prose">
+            <p class="reveal">By the time of the event, the masterclass had 140+ registrations and reached a peak of 72 live attendees, with an approximate 50% show-up rate.</p>
+            <p class="reveal">The project also established the systems supporting the next stages of the customer journey:</p>
+          </div>
+
+          <ol class="cs-flow reveal">
+            <li class="cs-flow__step"><p class="cs-flow__label">Masterclass registration</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">CRM campaign</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Event reminders</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Replay and post-event communication</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Replay lead capture</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Pioneer registration</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Payment verification</p></li>
+            <li class="cs-flow__step"><p class="cs-flow__label">Member onboarding</p></li>
+          </ol>
+
+          <div class="prose" style="margin-top:clamp(30px,4vw,40px);">
+            <p class="reveal">The result was a connected set of systems that supported the launch and created a foundation for Café Training Center's future offers and member operations.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA (red) ============ -->
+    <section class="section sec--red cta" id="book">
+      <div class="wrap wrap--narrow cta__inner">
+        <h2 class="cta__title reveal">Have a project in mind?</h2>
+        <p class="cta__sub reveal">
+          You've seen how I approach different problems. Now let's talk about yours.
+        </p>
+        <div class="cta__actions reveal">
+          <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>
+            <span>Let's build something great together <span aria-hidden="true">→</span></span>
+          </a>
+        </div>
+        <p class="cta__note reveal"><a href="/case-studies/">← Back to all case studies</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ IMAGE LIGHTBOX ============ -->
+  <div class="cs-lightbox" id="cs-lightbox" aria-hidden="true">
+    <div class="cs-lightbox__backdrop" data-lb-close></div>
+    <div class="cs-lightbox__dialog" role="dialog" aria-modal="true" aria-labelledby="cs-lightbox-title">
+      <div class="cs-lightbox__head">
+        <p class="cs-lightbox__title">
+          <span id="cs-lightbox-title"></span>
+          <span class="cs-lightbox__count" id="cs-lightbox-count"></span>
+        </p>
+        <button class="cs-lightbox__btn" type="button" data-lb-close aria-label="Close">&times;</button>
+      </div>
+      <div class="cs-lightbox__stage" id="cs-lightbox-stage" tabindex="0">
+        <!-- src is set by the viewer script on open; an empty src="" would make
+             some browsers re-request the page itself. -->
+        <img id="cs-lightbox-img" alt="" />
+      </div>
+      <div class="cs-lightbox__foot" id="cs-lightbox-foot">
+        <button class="cs-lightbox__btn" type="button" data-lb-prev aria-label="Previous image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <button class="cs-lightbox__btn" type="button" data-lb-next aria-label="Next image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#rg1f)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#rg2f)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#rg3f)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="rg1f" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="rg2f" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="rg3f" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples Space</span>
+      </div>
+      <p class="footer__copy">© 2026 Ripples Space. Creating ripples of impact.</p>
+    </div>
+  </footer>
+
+  <!-- ============ BOOKING MODAL ============ -->
+  <div class="bookmodal" id="book-modal" aria-hidden="true">
+    <div class="bookmodal__backdrop" data-book-close></div>
+    <div class="bookmodal__dialog" role="dialog" aria-modal="true" aria-labelledby="book-modal-title" tabindex="-1">
+      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close>&times;</button>
+      <div class="bookmodal__head">
+        <span class="bookmodal__eyebrow">Ripples Space</span>
+        <h2 class="bookmodal__title" id="book-modal-title">Book your strategy call</h2>
+        <p class="bookmodal__sub">
+          Pick a time that works. No pressure, just a clear next step.<br/>
+          Not a fan of calls? Message me in
+          <a href="https://wa.me/639272345247" target="_blank" rel="noopener noreferrer">WhatsApp</a> instead.
+        </p>
+      </div>
+      <div class="bookmodal__body">
+        <div data-bookcal data-variant="modal">
+          <div class="bookcal__fallback">
+            <p>
+              Booking needs JavaScript to show live availability. Email me at
+              <a href="mailto:rheannejimeno@gmail.com?subject=Booking%20a%20call">rheannejimeno@gmail.com</a>
+              with a couple of times that suit you and I'll send an invite back.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="../../main.js"></script>
+
+  <!-- Booking widget + modal controller (shared) -->
+  <script src="../../booking.js"></script>
+
+  <!-- ============ IMAGE LIGHTBOX ============
+       Page screenshots are shown uncropped but small in the column, so any of
+       them opens large here. Arrows step within the image's own set. -->
+  <script>
+    (function () {
+      var lb = document.getElementById("cs-lightbox");
+      var zooms = Array.prototype.slice.call(document.querySelectorAll("[data-zoom]"));
+      if (!lb || !zooms.length) return;
+
+      var img    = document.getElementById("cs-lightbox-img");
+      var title  = document.getElementById("cs-lightbox-title");
+      var count  = document.getElementById("cs-lightbox-count");
+      var stage  = document.getElementById("cs-lightbox-stage");
+      var foot   = document.getElementById("cs-lightbox-foot");
+      var closer = lb.querySelector(".cs-lightbox__head [data-lb-close]");
+
+      var groups = {};
+      zooms.forEach(function (el) {
+        var g = el.getAttribute("data-zoom-group") || "default";
+        (groups[g] = groups[g] || []).push(el);
+      });
+
+      var set = [], index = 0, lastFocus = null;
+
+      function show(n) {
+        index = (n + set.length) % set.length;
+        var el = set[index], thumb = el.querySelector("img");
+        // Reset again once the new image has decoded: setting scrollTop before
+        // it has height leaves the browser free to restore the old offset as
+        // the tall screenshot lays out, landing you mid-way down it.
+        img.onload = function () { stage.scrollTop = 0; };
+        img.src = el.getAttribute("data-full");
+        img.alt = thumb ? thumb.alt : "";
+        title.textContent = el.getAttribute("data-title") || "";
+        count.textContent = set.length > 1 ? (index + 1) + " / " + set.length : "";
+        foot.style.display = set.length > 1 ? "" : "none";
+        stage.scrollTop = 0;
+      }
+
+      function open(el) {
+        set = groups[el.getAttribute("data-zoom-group") || "default"];
+        lastFocus = document.activeElement;
+        show(set.indexOf(el));
+        lb.classList.add("is-open");
+        lb.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        if (closer) closer.focus();
+      }
+
+      function close() {
+        lb.classList.remove("is-open");
+        lb.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        // Free the decoded image rather than leaving a multi-megabyte
+        // screenshot resident once the viewer is shut.
+        img.removeAttribute("src");
+        if (lastFocus) lastFocus.focus();
+      }
+
+      zooms.forEach(function (el) {
+        el.addEventListener("click", function () { open(el); });
+      });
+
+      lb.addEventListener("click", function (e) {
+        if (e.target.closest("[data-lb-close]")) close();
+        else if (e.target.closest("[data-lb-prev]")) show(index - 1);
+        else if (e.target.closest("[data-lb-next]")) show(index + 1);
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (!lb.classList.contains("is-open")) return;
+        if (e.key === "Escape") { close(); }
+        else if (e.key === "ArrowLeft" && set.length > 1) { show(index - 1); }
+        else if (e.key === "ArrowRight" && set.length > 1) { show(index + 1); }
+        else if (e.key === "Tab") {
+          var f = lb.querySelectorAll("button, [tabindex='0']");
+          if (!f.length) return;
+          var first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
