@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ripples Space · Namu Travel Group Case Study</title>
+  <meta name="description" content="Turning a corporate travel website into an experience worth exploring — the Namu Travel Group redesign: 17+ pages, 6 destinations, and an interactive destination map." />
+
+  <!-- Analytics + heatmap (GA4 + Microsoft Clarity) — IDs live in analytics.js -->
+  <script src="../../analytics.js"></script>
+
+  <!-- Motion state before first paint: no flash of un-revealed content, and
+       no pre-hiding for visitors without JS. Mirrors main.js. -->
+  <script>
+    (function () {
+      var d = document.documentElement, p = null;
+      try { p = localStorage.getItem("ripples-motion"); } catch (e) {}
+      d.classList.add("js");
+      if (p ? p === "reduce" : matchMedia("(prefers-reduced-motion: reduce)").matches) d.classList.add("motion-reduced");
+    })();
+  </script>
+
+  <link rel="stylesheet" href="../../styles.css" />
+
+  <!-- Case study detail (page-specific) -->
+  <style>
+    /* Same light, ripple-field hero as the homepage — it just sizes to its
+       content instead of filling the viewport. */
+    .cs-hero { min-height: auto; display: block; padding: clamp(124px, 15vh, 168px) 0 clamp(52px, 7vh, 80px); }
+    .cs-hero .hero__inner { grid-template-columns: 1fr; max-width: 900px; text-align: center; }
+    .cs-hero__back { margin-bottom: 26px; }
+    /* Steps down from the shared .hero__title: this headline is a full sentence,
+       so it takes a display measure instead of the section's full width. */
+    .cs-hero__title {
+      font-family: var(--serif); font-weight: 500;
+      font-size: clamp(1.8rem, 4vw, 2.95rem); line-height: 1.14; letter-spacing: -0.015em;
+      color: var(--ink); text-wrap: balance; margin-bottom: 22px;
+    }
+    .cs-hero__title em { font-style: italic; color: var(--red-accent); }
+    .cs-hero__dek { font-size: clamp(1rem, 1.5vw, 1.14rem); line-height: 1.65; color: var(--ink-soft); max-width: 62ch; margin: 0 auto; }
+    /* Above the veil and the ripple canvas. */
+    .cs-hero__stage { position: relative; z-index: 2; margin-top: clamp(42px, 6vw, 62px); }
+
+    /* Body copy keeps a readable measure while the visuals below use the full
+       .wrap — that contrast is what gives each section a clear focal point. */
+    .cs-lead { max-width: 64ch; }
+    .cs-lead .prose p + p { margin-top: 18px; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <a class="skip-link" href="#top">Skip to content</a>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav nav--on-light" id="nav">
+    <div class="nav__inner">
+      <a class="brand" href="/" aria-label="Ripples Space home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#ng1)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#ng2)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#ng3)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="ng1" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng2" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="ng3" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples&nbsp;Space</span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="/changemakers/">Coaches &amp; creators</a>
+        <a href="/service-businesses/">Service businesses</a>
+        <a href="/case-studies/">Case studies</a>
+      </nav>
+      <a href="/contact/#book" class="btn btn--cream nav__cta" data-book-open>Book a call</a>
+    </div>
+  </header>
+
+  <main id="top" tabindex="-1">
+
+    <!-- ============ HERO (light — matches the homepage) ============ -->
+    <section class="hero hero--light cs-hero" id="hero">
+      <canvas class="hero__canvas" id="ripple-canvas" data-theme="light" aria-hidden="true"></canvas>
+      <div class="hero__veil" aria-hidden="true"></div>
+
+      <div class="hero__inner">
+        <div class="hero__copy">
+          <a class="cs-back cs-hero__back reveal" href="/case-studies/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M12 5l-7 7 7 7"/></svg>
+            All case studies
+          </a>
+
+          <p class="eyebrow center reveal">Namu Travel Group</p>
+          <h1 class="cs-hero__title reveal">
+            Turning a corporate travel website into an experience <em>worth exploring.</em>
+          </h1>
+          <p class="cs-hero__dek reveal">
+            Namu Travel Group creates personalized travel experiences across Central America.
+            I redesigned its digital experience to better reflect the sense of discovery and
+            adventure behind the journeys it creates.
+          </p>
+
+          <div class="cs-meta reveal">
+            <div class="cs-meta__item">
+              <span class="cs-meta__label">Role</span>
+              <span class="cs-meta__value">Branding · Web Design · UI/UX Design</span>
+            </div>
+            <div class="cs-meta__item">
+              <span class="cs-meta__label">Live site</span>
+              <span class="cs-meta__value">
+                <a href="https://www.namutravel.com" target="_blank" rel="noopener noreferrer">namutravel.com</a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The fold, then and now. Drag (or arrow-key) the divider to wipe the
+           original homepage away and reveal the redesign underneath. -->
+      <div class="wrap cs-hero__stage reveal">
+        <div class="cs-slider" id="cs-slider">
+          <div class="cs-slider__frame">
+            <img class="cs-slider__shot" src="images/after-homepage-hero.jpeg" alt="After: the redesigned homepage — Discover Unique Vacation Experiences set over a rainforest waterfall, with Get a Quote and Explore buttons." width="1295" height="833" />
+
+            <div class="cs-slider__before">
+              <img class="cs-slider__shot" src="images/before-homepage-hero.jpeg" alt="Before: the original homepage — Central America Travel Experts over a dimmed resort photo, with a phone number and a Get A Quote button." width="1295" height="833" />
+            </div>
+
+            <span class="cs-slider__tag cs-slider__tag--before">Before</span>
+            <span class="cs-slider__tag cs-slider__tag--after">After</span>
+
+            <input class="cs-slider__range" id="cs-slider-range" type="range"
+                   min="0" max="100" step="1" value="50"
+                   aria-label="Reveal the redesigned homepage. Drag, or use the left and right arrow keys." />
+
+            <div class="cs-slider__divider" aria-hidden="true">
+              <span class="cs-slider__knob">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7l-5 5 5 5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 7l5 5-5 5"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="cs-cap cs-slider__hint">
+          Drag the handle to reveal the redesign — or focus it and press
+          <kbd>←</kbd> <kbd>→</kbd>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ THE CHALLENGE (light-alt) ============ -->
+    <section class="section sec--alt" id="challenge">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">The Challenge</p>
+          <h2 class="section__title reveal">Namu's existing website communicated its services—<em>but didn't fully communicate the experience.</em></h2>
+          <div class="prose">
+            <p class="reveal">Company information, benefits, and destinations competed for attention, making the site feel more like an informational brochure than the beginning of a journey.</p>
+          </div>
+        </div>
+
+        <div class="cs-goal reveal">
+          <p class="cs-goal__label">The goal</p>
+          <p class="cs-goal__text">Create a more immersive experience that inspires travelers to <em>discover, explore, and imagine their next trip.</em></p>
+        </div>
+
+        <!-- Before and after comparison — original homepage vs. redesigned
+             homepage. Both are full-page screenshots, shown at full length. -->
+        <div class="cs-compare reveal" style="margin-top:clamp(48px,6vw,76px);">
+          <div class="cs-compare__item cs-compare__item--before">
+            <p class="cs-compare__label">Before</p>
+            <figure class="cs-figure">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="homepage"
+                      data-title="Before — the original homepage" data-full="images/before-homepage.png">
+                <img src="images/before-homepage.png" alt="The original Namu Travel Group homepage in full: stacked service claims, badges, a partner logo, a testimonial, and a quote form." width="1295" height="4964" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The original homepage.</figcaption>
+            </figure>
+          </div>
+          <div class="cs-compare__item cs-compare__item--after">
+            <p class="cs-compare__label">After</p>
+            <figure class="cs-figure">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="homepage"
+                      data-title="After — the redesigned homepage" data-full="images/after-homepage-full.jpeg">
+                <img src="images/after-homepage-full.jpeg" alt="The full redesigned Namu Travel Group homepage, from the waterfall hero through regions, itineraries, testimonials and the footer." width="1295" height="9783" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The redesigned homepage.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FINDING THE RIGHT DIRECTION (light) ============ -->
+    <section class="section" id="direction">
+      <div class="wrap">
+        <div class="cs-lead">
+          <h2 class="section__title reveal">Finding the Right Direction</h2>
+          <p class="lede reveal">Before designing the website, I explored three distinct visual directions with the client—each offering a different interpretation of premium travel.</p>
+        </div>
+
+        <div class="cs-boards">
+          <figure class="cs-board reveal">
+            <button class="cs-zoom" type="button" data-zoom data-zoom-group="boards"
+                    data-title="Minimal" data-full="images/direction-minimal.png">
+              <img src="images/direction-minimal.png" alt="The Minimal mood board: soft neutrals with a rust accent, Playfair Display and Cinzel headings, and fine line icons." loading="lazy" />
+            </button>
+            <figcaption class="cs-board__cap">
+              <h3>Minimal</h3>
+              <p>Refined and understated.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="cs-board reveal">
+            <button class="cs-zoom" type="button" data-zoom data-zoom-group="boards"
+                    data-title="Trendy" data-full="images/direction-trendy.png">
+              <img src="images/direction-trendy.png" alt="The Trendy mood board: editorial display type, arched image masks, and a bold coral and teal palette." loading="lazy" />
+            </button>
+            <figcaption class="cs-board__cap">
+              <h3>Trendy</h3>
+              <p>Bold, contemporary, and editorial.</p>
+            </figcaption>
+          </figure>
+
+          <figure class="cs-board cs-board--selected reveal">
+            <button class="cs-zoom" type="button" data-zoom data-zoom-group="boards"
+                    data-title="Immersive — the selected direction" data-full="images/direction-immersive.png">
+              <img src="images/direction-immersive.png" alt="The Immersive mood board: full-bleed aerial rainforest photography, deep navy, Branley display type, and handdrawn line icons." loading="lazy" />
+            </button>
+            <figcaption class="cs-board__cap">
+              <span class="cs-board__badge">✓ Selected</span>
+              <h3>Immersive</h3>
+              <p>Destination-led, cinematic, and built around the feeling of exploration.</p>
+            </figcaption>
+          </figure>
+        </div>
+
+        <p class="lede reveal" style="margin-top:clamp(34px,4vw,44px);">The selected direction became the visual foundation for the final experience.</p>
+      </div>
+    </section>
+
+    <!-- ============ DESIGNING FOR EXPLORATION (red) ============ -->
+    <section class="section sec--red" id="exploration">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">Designing for Exploration</p>
+          <h2 class="section__title reveal">Travel starts with <em>curiosity.</em></h2>
+          <div class="prose">
+            <p class="reveal">Namu operates across multiple destinations, so I wanted discovery itself to become part of the experience.</p>
+            <p class="reveal">I designed an <em>interactive map</em> that allows travelers to explore destinations geographically and dive deeper into each one—turning navigation into part of the journey.</p>
+            <p class="reveal">The rest of the experience was designed to guide visitors from:</p>
+          </div>
+          <div class="cs-journey reveal">
+            <span class="cs-journey__step">Discover</span><span class="cs-journey__arrow" aria-hidden="true">→</span>
+            <span class="cs-journey__step">Explore</span><span class="cs-journey__arrow" aria-hidden="true">→</span>
+            <span class="cs-journey__step">Trust</span><span class="cs-journey__arrow" aria-hidden="true">→</span>
+            <span class="cs-journey__step">Inquire</span>
+          </div>
+        </div>
+
+        <div class="cs-compare reveal" style="margin-top:clamp(48px,6vw,76px);">
+          <div class="cs-compare__item cs-compare__item--before">
+            <p class="cs-compare__label">Before</p>
+            <figure class="cs-figure">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="destinations"
+                      data-title="Before — the original destinations page" data-full="images/before-destinations.png">
+                <img src="images/before-destinations.png" alt="The original Destinations page: a plain two-column list of six countries, each with a paragraph and an Explore button." width="1295" height="4394" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The original destinations page.</figcaption>
+            </figure>
+          </div>
+          <div class="cs-compare__item cs-compare__item--after">
+            <p class="cs-compare__label">After</p>
+            <figure class="cs-figure">
+              <button class="cs-zoom" type="button" data-zoom data-zoom-group="destinations"
+                      data-title="After — the redesigned destinations page" data-full="images/after-destinations-map.png">
+                <img src="images/after-destinations-map.png" alt="The redesigned Destinations page: a cinematic header, the interactive map of Central America with every country pinned, and a grid of destination cards." width="1295" height="5105" loading="lazy" />
+              </button>
+              <figcaption class="cs-figure__cap">The redesigned destinations page, built around the interactive map.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THE RESULT (light) ============ -->
+    <section class="section" id="result">
+      <div class="wrap">
+        <div class="cs-lead">
+          <p class="eyebrow reveal">The Result</p>
+          <h2 class="section__title reveal">A more immersive, destination-led digital experience that better reflects the <em>personalized journeys</em> Namu Travel creates.</h2>
+        </div>
+
+        <div class="cs-outcomes">
+          <article class="cs-outcome reveal">
+            <span class="cs-outcome__num">17+</span>
+            <span class="cs-outcome__label">Pages</span>
+            <p class="cs-outcome__note">A full site architecture — homepage, destinations, itineraries, advisors, and press, each built from the same design system.</p>
+          </article>
+          <article class="cs-outcome reveal">
+            <span class="cs-outcome__num">6</span>
+            <span class="cs-outcome__label">Destinations</span>
+            <p class="cs-outcome__note">Costa Rica, Belize, Panama, Colombia, Guatemala, and Nicaragua — each with its own page, its own photography, and its own pin on the map.</p>
+          </article>
+          <article class="cs-outcome reveal">
+            <span class="cs-outcome__num">1</span>
+            <span class="cs-outcome__label">Interactive destination map</span>
+            <p class="cs-outcome__note">The centerpiece. Navigation stopped being a menu and became the thing people came to do.</p>
+          </article>
+        </div>
+
+        <ul class="cs-shipped reveal">
+          <li>Brand direction &amp; visual system</li>
+          <li>Homepage &amp; destination page templates</li>
+          <li>Interactive destination map</li>
+          <li>Sample itinerary pages</li>
+          <li>Travel advisor partner section</li>
+          <li>Press room &amp; Namu Spotlight</li>
+          <li>Testimonial &amp; affiliate modules</li>
+          <li>Newsletter &amp; contact flows</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA (red) ============ -->
+    <section class="section sec--red cta" id="book">
+      <div class="wrap wrap--narrow cta__inner">
+        <p class="eyebrow center reveal">Ready when you are</p>
+        <h2 class="cta__title reveal">Want a project like this?</h2>
+        <p class="cta__sub reveal">
+          Book a free strategy call and let's talk about what your brand or website could become.
+        </p>
+        <div class="cta__actions reveal">
+          <a href="/contact/#book" class="btn btn--cream btn--lg magnetic" data-book-open>Book a call</a>
+        </div>
+        <p class="cta__note reveal"><a href="/case-studies/">← Back to all case studies</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ IMAGE LIGHTBOX ============ -->
+  <div class="cs-lightbox" id="cs-lightbox" aria-hidden="true">
+    <div class="cs-lightbox__backdrop" data-lb-close></div>
+    <div class="cs-lightbox__dialog" role="dialog" aria-modal="true" aria-labelledby="cs-lightbox-title">
+      <div class="cs-lightbox__head">
+        <p class="cs-lightbox__title">
+          <span id="cs-lightbox-title"></span>
+          <span class="cs-lightbox__count" id="cs-lightbox-count"></span>
+        </p>
+        <button class="cs-lightbox__btn" type="button" data-lb-close aria-label="Close">&times;</button>
+      </div>
+      <div class="cs-lightbox__stage" id="cs-lightbox-stage" tabindex="0">
+        <!-- src is set by the viewer script on open; an empty src="" would make
+             some browsers re-request the page itself. -->
+        <img id="cs-lightbox-img" alt="" />
+      </div>
+      <div class="cs-lightbox__foot" id="cs-lightbox-foot">
+        <button class="cs-lightbox__btn" type="button" data-lb-prev aria-label="Previous image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <button class="cs-lightbox__btn" type="button" data-lb-next aria-label="Next image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 258 258" role="img" aria-label="Ripples Space">
+            <g class="rl-static">
+              <circle cx="129" cy="129" r="44" fill="none" stroke="url(#rg1f)"/>
+              <circle cx="129" cy="129" r="63" fill="none" stroke="url(#rg2f)"/>
+              <circle cx="129" cy="129" r="91" fill="none" stroke="url(#rg3f)"/>
+            </g>
+            <g class="ripples-orbit">
+              <circle cx="145.6" cy="218.6" r="5.8" fill="currentColor"/>
+              <circle cx="138.8" cy="66.8" r="5.2" fill="currentColor"/>
+              <circle cx="170.1" cy="146.1" r="4.7" fill="currentColor"/>
+              <circle cx="65.2" cy="146.2" r="9" fill="currentColor"/>
+            </g>
+            <circle cx="129" cy="129" r="18" fill="currentColor" class="ripples-core"/>
+            <g fill="none" stroke="currentColor">
+              <circle cx="129" cy="129" r="30" class="ripple-ring"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-1"/>
+              <circle cx="129" cy="129" r="30" class="ripple-ring delay-2"/>
+            </g>
+            <defs>
+              <linearGradient id="rg1f" x1="129" y1="85" x2="129" y2="173" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="rg2f" x1="129" y1="66" x2="129" y2="192" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+              <linearGradient id="rg3f" x1="129" y1="37" x2="129" y2="220" gradientUnits="userSpaceOnUse"><stop stop-color="currentColor"/><stop offset="0.84" stop-color="currentColor" stop-opacity="0.26"/><stop offset="1" stop-color="currentColor" stop-opacity="0.12"/></linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand__word">Ripples Space</span>
+      </div>
+      <p class="footer__copy">© 2026 Ripples Space. Creating ripples of impact.</p>
+    </div>
+  </footer>
+
+  <!-- ============ BOOKING MODAL ============ -->
+  <div class="bookmodal" id="book-modal" aria-hidden="true">
+    <div class="bookmodal__backdrop" data-book-close></div>
+    <div class="bookmodal__dialog" role="dialog" aria-modal="true" aria-labelledby="book-modal-title" tabindex="-1">
+      <button class="bookmodal__close" type="button" aria-label="Close booking" data-book-close>&times;</button>
+      <div class="bookmodal__head">
+        <span class="bookmodal__eyebrow">Ripples Space</span>
+        <h2 class="bookmodal__title" id="book-modal-title">Book your strategy call</h2>
+        <p class="bookmodal__sub">
+          Pick a time that works. No pressure, just a clear next step.<br/>
+          Not a fan of calls? Message me in
+          <a href="https://wa.me/639272345247" target="_blank" rel="noopener noreferrer">WhatsApp</a> instead.
+        </p>
+      </div>
+      <div class="bookmodal__body">
+        <div data-bookcal data-variant="modal">
+          <div class="bookcal__fallback">
+            <p>
+              Booking needs JavaScript to show live availability. Email me at
+              <a href="mailto:rheannejimeno@gmail.com?subject=Booking%20a%20call">rheannejimeno@gmail.com</a>
+              with a couple of times that suit you and I'll send an invite back.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="../../main.js"></script>
+
+  <!-- Booking widget + modal controller (shared) -->
+  <script src="../../booking.js"></script>
+
+  <!-- ============ BEFORE/AFTER REVEAL SLIDER ============
+       All the interaction lives on the native range input; this only mirrors
+       its value onto --pos and keeps the announced value meaningful. -->
+  <script>
+    (function () {
+      var slider = document.getElementById("cs-slider");
+      var range  = document.getElementById("cs-slider-range");
+      if (!slider || !range) return;
+
+      var frame = slider.querySelector(".cs-slider__frame");
+
+      function sync() {
+        var v = Number(range.value);
+        frame.style.setProperty("--pos", v + "%");
+        // Without this a screen reader just reads "50" — say what 50 means.
+        range.setAttribute("aria-valuetext", v + "% original, " + (100 - v) + "% redesign");
+      }
+
+      range.addEventListener("input", sync);
+      sync();
+    })();
+  </script>
+
+  <!-- ============ IMAGE LIGHTBOX ============
+       Screenshots are shown uncropped but small in their columns, so any of
+       them opens large here. Arrows step within the set the image belongs to
+       (the three boards, the homepage pair, the destinations pair). -->
+  <script>
+    (function () {
+      var lb = document.getElementById("cs-lightbox");
+      var zooms = Array.prototype.slice.call(document.querySelectorAll("[data-zoom]"));
+      if (!lb || !zooms.length) return;
+
+      var img    = document.getElementById("cs-lightbox-img");
+      var title  = document.getElementById("cs-lightbox-title");
+      var count  = document.getElementById("cs-lightbox-count");
+      var stage  = document.getElementById("cs-lightbox-stage");
+      var foot   = document.getElementById("cs-lightbox-foot");
+      var closer = lb.querySelector(".cs-lightbox__head [data-lb-close]");
+
+      // Group the zoomable images so the arrows only step within one set.
+      var groups = {};
+      zooms.forEach(function (el) {
+        var g = el.getAttribute("data-zoom-group") || "default";
+        (groups[g] = groups[g] || []).push(el);
+      });
+
+      var set = [], index = 0, lastFocus = null;
+
+      function show(n) {
+        index = (n + set.length) % set.length;
+        var el = set[index], thumb = el.querySelector("img");
+        // Reset again once the new image has decoded: setting scrollTop before
+        // it has height leaves the browser free to restore the old offset as
+        // the tall screenshot lays out, landing you mid-way down it.
+        img.onload = function () { stage.scrollTop = 0; };
+        img.src = el.getAttribute("data-full");
+        img.alt = thumb ? thumb.alt : "";
+        title.textContent = el.getAttribute("data-title") || "";
+        count.textContent = set.length > 1 ? (index + 1) + " / " + set.length : "";
+        foot.style.display = set.length > 1 ? "" : "none";
+        stage.scrollTop = 0;
+      }
+
+      function open(el) {
+        set = groups[el.getAttribute("data-zoom-group") || "default"];
+        lastFocus = document.activeElement;
+        show(set.indexOf(el));
+        lb.classList.add("is-open");
+        lb.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        if (closer) closer.focus();
+      }
+
+      function close() {
+        lb.classList.remove("is-open");
+        lb.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        // Free the decoded image rather than leaving a multi-megabyte
+        // screenshot resident once the viewer is shut.
+        img.removeAttribute("src");
+        if (lastFocus) lastFocus.focus();
+      }
+
+      zooms.forEach(function (el) {
+        el.addEventListener("click", function () { open(el); });
+      });
+
+      lb.addEventListener("click", function (e) {
+        if (e.target.closest("[data-lb-close]")) close();
+        else if (e.target.closest("[data-lb-prev]")) show(index - 1);
+        else if (e.target.closest("[data-lb-next]")) show(index + 1);
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (!lb.classList.contains("is-open")) return;
+        if (e.key === "Escape") { close(); }
+        else if (e.key === "ArrowLeft" && set.length > 1) { show(index - 1); }
+        else if (e.key === "ArrowRight" && set.length > 1) { show(index + 1); }
+        else if (e.key === "Tab") {
+          // Keep tabbing inside the dialog while it is open.
+          var f = lb.querySelectorAll("button, [tabindex='0']");
+          if (!f.length) return;
+          var first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

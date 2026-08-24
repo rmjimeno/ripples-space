@@ -325,6 +325,9 @@ html.motion-reduced .navdrawer__panel { transition: none !important; }
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__links a:hover { color: var(--ink); }
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger { color: var(--ink); border-color: rgba(63,10,13,.22); }
 .nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__burger:hover { border-color: var(--red-accent); background: rgba(63,10,13,.05); }
+/* Pages that pair an on-light hero with a nav CTA (the case studies) — a cream
+   button on paper has nothing to sit on until .scrolled brings the bar back. */
+.nav--on-light:not(.scrolled):not(.is-drawer-open) .nav__cta { background: var(--ink); color: var(--paper); box-shadow: 0 12px 30px -14px rgba(63,10,13,.6); }
 
 /* Hero dashboard mockup (white / light-mode app on red) */
 .hero__stage { position: relative; }
@@ -894,6 +897,291 @@ html.js .bookcal__fallback { display: none; }
 @media (max-width: 560px) {
   .bookcal__summary-term { width: 100%; }
   .bookcal__actions .btn { flex: 1 1 100%; }
+}
+
+/* ============================================================
+   CASE STUDIES
+   Shared by /case-studies/ (the filterable index) and every
+   /case-studies/<slug>/ detail page. Built on the same theme
+   tokens as .section so it works on light, alt, or red surfaces.
+   ============================================================ */
+
+/* ---- tag chips (filter pills + card/hero tags share the shape) ---- */
+.cs-tag {
+  display: inline-flex; align-items: center;
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 7px 14px; border-radius: 100px;
+  border: 1px solid var(--card-line); color: var(--fg-soft);
+  background: transparent;
+}
+
+/* ---- filter bar (buttons; index page only) ---- */
+.cs-filters { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
+.cs-filter {
+  cursor: pointer; font-family: var(--sans); font-size: 13.5px; font-weight: 500;
+  padding: 9px 18px; border-radius: 100px; border: 1px solid var(--card-line);
+  background: var(--card); color: var(--fg-soft);
+  transition: border-color .3s ease, background .3s ease, color .3s ease, transform .3s var(--ease);
+}
+.cs-filter:hover { border-color: var(--accent); color: var(--fg); transform: translateY(-2px); }
+.cs-filter.is-active { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+.section.sec--red .cs-filter.is-active { color: var(--oxblood-dark); }
+
+/* ---- case study grid + card ---- */
+.cs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 48px; }
+.cs-card {
+  position: relative; display: flex; flex-direction: column;
+  border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+  overflow: hidden;
+  transition: opacity .4s var(--ease), transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+}
+.cs-card:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 30px 60px -32px rgba(63,10,13,.4); }
+.cs-card.is-hidden { display: none; }
+.cs-card__media { aspect-ratio: 4 / 3; overflow: hidden; }
+.cs-card__media img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform .6s var(--ease); }
+.cs-card:hover .cs-card__media img { transform: scale(1.04); }
+.cs-card__body { padding: 26px 28px 30px; }
+.cs-card__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.cs-card__tags .cs-tag { padding: 5px 12px; font-size: 11px; }
+.cs-card__title { font-family: var(--serif); font-weight: 500; font-size: 1.5rem; color: var(--fg); margin-bottom: 10px; }
+.cs-card__desc { color: var(--fg-soft); font-size: 15px; line-height: 1.6; }
+.cs-card__more { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-family: var(--sans); font-size: 13.5px; font-weight: 500; color: var(--accent); }
+.cs-card__more svg { width: 15px; height: 15px; transition: transform .35s var(--ease); }
+.cs-card:hover .cs-card__more svg { transform: translateX(3px); }
+.cs-card__link { position: absolute; inset: 0; z-index: 2; }
+.cs-empty { display: none; color: var(--fg-dim); font-size: 15px; margin-top: 48px; }
+.cs-empty.is-visible { display: block; }
+
+/* ---- hero meta row (client · role · scope · live link) ---- */
+.cs-meta {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0 clamp(22px, 4vw, 46px);
+  margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--card-line);
+}
+.cs-meta__item { display: flex; flex-direction: column; gap: 5px; padding: 6px 0; text-align: left; }
+.cs-meta__label { font-family: var(--sans); font-size: 10.5px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-dim); }
+.cs-meta__value { font-family: var(--sans); font-size: 14.5px; color: var(--fg); }
+.cs-meta__value a { border-bottom: 1px solid var(--accent); color: var(--accent); }
+
+/* ---- centered caption, for anything that isn't inside a <figure> ---- */
+.cs-cap {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 14px; font-family: var(--sans); font-size: 12.5px; letter-spacing: .04em; color: var(--fg-dim);
+}
+
+/* ---- unified figure: framed screenshot + caption ----
+   Screenshots are never cropped — a page shot is shown at its full length, so
+   the frame just sizes to the image. Full pages get long; that is the point,
+   and .cs-zoom opens any of them large. */
+.cs-figure { margin: 0; }
+.cs-figure__frame { border-radius: var(--radius); border: 1px solid var(--card-line); background: var(--card); overflow: hidden; }
+.cs-figure__frame img { display: block; width: 100%; height: auto; }
+.cs-figure__cap { margin-top: 12px; font-family: var(--sans); font-size: 12.5px; line-height: 1.5; letter-spacing: .03em; color: var(--fg-dim); }
+
+/* ---- a framed screenshot that opens in the lightbox ---- */
+.cs-zoom {
+  display: block; width: 100%; padding: 0; cursor: zoom-in; overflow: hidden;
+  border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+  transition: transform .45s var(--ease), border-color .3s ease, box-shadow .4s ease;
+}
+.cs-zoom img { display: block; width: 100%; height: auto; }
+.cs-zoom:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 30px 60px -32px rgba(63,10,13,.45); }
+.cs-zoom__hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-family: var(--sans); font-size: 12.5px; color: var(--fg-dim); }
+.cs-zoom__hint svg { width: 13px; height: 13px; }
+
+/* ---- before/after reveal slider ----
+   The control is a real <input type="range">, sized to cover the whole frame
+   and made invisible. That buys the arrow keys, Home/End, focus, touch
+   dragging and the "slider" role from the platform instead of reimplementing
+   them with pointer events; the visible divider and knob are just decoration
+   driven by --pos. */
+.cs-slider__frame {
+  --pos: 50%;
+  position: relative; overflow: hidden; border-radius: var(--radius);
+  border: 1px solid var(--card-line); background: var(--card);
+}
+.cs-slider__shot { display: block; width: 100%; height: auto; }
+/* The "before" shot sits exactly on top of the "after" one and is clipped back
+   to --pos. Both captures share a viewport ratio, so they register perfectly. */
+.cs-slider__before { position: absolute; inset: 0; z-index: 1; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+.cs-slider__before .cs-slider__shot { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+
+.cs-slider__tag {
+  position: absolute; top: 14px; z-index: 2; pointer-events: none;
+  font-family: var(--sans); font-size: 10.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  padding: 6px 12px; border-radius: 100px;
+  background: rgba(42, 2, 6, .62); color: var(--cream);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.cs-slider__tag--before { left: 14px; }
+.cs-slider__tag--after { right: 14px; }
+
+.cs-slider__range {
+  position: absolute; inset: 0; z-index: 3;
+  width: 100%; height: 100%; margin: 0; padding: 0;
+  -webkit-appearance: none; appearance: none;
+  background: transparent; border: 0; cursor: ew-resize;
+  /* Let a vertical swipe scroll the page; only horizontal drags drive it. */
+  touch-action: pan-y;
+}
+/* A hairline thumb keeps the reported value aligned with the pointer (a wide
+   thumb insets its own travel by half its width at each end). Pressing
+   anywhere on the track jumps to that spot and starts the drag. */
+.cs-slider__range::-webkit-slider-thumb { -webkit-appearance: none; width: 2px; height: 100%; background: transparent; border: 0; cursor: ew-resize; }
+.cs-slider__range::-moz-range-thumb { width: 2px; height: 100%; background: transparent; border: 0; border-radius: 0; cursor: ew-resize; }
+.cs-slider__range::-moz-range-track { background: transparent; border: 0; }
+.cs-slider__range:focus { outline: none; }
+
+.cs-slider__divider {
+  position: absolute; top: 0; bottom: 0; left: var(--pos); z-index: 4;
+  width: 2px; margin-left: -1px; background: var(--cream);
+  box-shadow: 0 0 0 1px rgba(42, 2, 6, .22);
+  pointer-events: none;
+}
+.cs-slider__knob {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; gap: 1px;
+  background: var(--cream); color: var(--oxblood);
+  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, .7);
+}
+.cs-slider__knob svg { width: 15px; height: 15px; }
+/* Focus sits on the invisible input, so surface it on the knob the user sees. */
+.cs-slider__range:focus-visible ~ .cs-slider__divider .cs-slider__knob { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+/* Not a flex row: the keycaps sit inside the sentence, so they have to wrap
+   with the words rather than being pushed to the end of the line. */
+.cs-slider__hint { display: block; text-align: center; }
+.cs-slider__hint kbd {
+  display: inline-block; vertical-align: baseline;
+  font-family: var(--sans); font-size: 11px; line-height: 1;
+  padding: 3px 6px; border-radius: 5px;
+  border: 1px solid var(--card-line); background: var(--card); color: var(--fg-soft);
+}
+/* ---- before / after comparison (stays side by side for real comparison) ---- */
+.cs-compare { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 2.4vw, 30px); align-items: start; margin-top: 44px; }
+.cs-compare__label {
+  display: inline-flex; align-items: center; gap: 7px; margin-bottom: 12px;
+  font-family: var(--sans); font-size: 10.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.cs-compare__label::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.cs-compare__item--after .cs-compare__label { color: var(--accent); }
+.cs-compare__item--after .cs-zoom { border-color: var(--accent); box-shadow: 0 26px 54px -30px rgba(63,10,13,.42); }
+
+/* ---- the goal: the pivot of the whole case study, so it gets a full-width
+       oxblood panel rather than a quiet inline note ---- */
+.cs-goal {
+  position: relative; overflow: hidden; text-align: center;
+  margin-top: clamp(48px, 6.5vw, 84px);
+  padding: clamp(42px, 6vw, 78px) clamp(26px, 5vw, 60px);
+  border-radius: var(--radius); background: var(--oxblood); color: var(--cream);
+  box-shadow: 0 40px 90px -50px rgba(63,10,13,.7);
+}
+.cs-goal::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(78% 70% at 50% 0%, rgba(233,196,138,.17), transparent 62%);
+}
+.cs-goal > * { position: relative; z-index: 1; }
+.cs-goal__label { font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.cs-goal__text {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem); line-height: 1.3; color: var(--cream);
+  max-width: 26ch; margin: 0 auto; text-wrap: balance;
+}
+.cs-goal__text em { font-style: italic; color: var(--gold); }
+
+/* ---- mood boards: shown whole (never cropped), click to open the lightbox ---- */
+.cs-boards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.4vw, 28px); align-items: start; margin-top: 48px; }
+.cs-board { margin: 0; display: flex; flex-direction: column; }
+.cs-board--selected .cs-zoom { border-color: var(--accent); box-shadow: 0 26px 54px -30px rgba(63,10,13,.42); }
+.cs-board__cap { margin-top: 18px; padding: 0 2px; }
+.cs-board__badge {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 9px;
+  font-family: var(--sans); font-size: 10.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent);
+}
+.cs-board__cap h3 { font-family: var(--serif); font-weight: 500; font-size: clamp(1.15rem, 1.8vw, 1.35rem); color: var(--fg); margin-bottom: 7px; }
+.cs-board__cap p { color: var(--fg-soft); font-size: 14.5px; line-height: 1.55; }
+
+/* ---- lightbox ---- */
+.cs-lightbox { position: fixed; inset: 0; z-index: 200; display: none; }
+.cs-lightbox.is-open { display: block; }
+.cs-lightbox__backdrop {
+  position: absolute; inset: 0; background: rgba(28, 1, 4, .90);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.cs-lightbox__dialog {
+  position: absolute; inset: clamp(10px, 2.4vw, 30px);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.cs-lightbox__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--cream); flex: none; }
+.cs-lightbox__title { font-family: var(--serif); font-size: clamp(1.05rem, 2vw, 1.35rem); font-weight: 500; }
+.cs-lightbox__count { font-family: var(--sans); font-size: 12.5px; letter-spacing: .12em; color: var(--taupe); margin-left: 12px; }
+/* The board images are several thousand pixels tall, so the stage scrolls. */
+.cs-lightbox__stage {
+  flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain;
+  border-radius: var(--radius); background: #fff;
+  width: 100%; max-width: 900px; margin: 0 auto;
+}
+.cs-lightbox__stage img { display: block; width: 100%; height: auto; }
+.cs-lightbox__btn {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer;
+  border-radius: 50%; border: 1px solid rgba(254,237,201,.28); background: rgba(254,237,201,.06);
+  color: var(--cream); font-size: 20px; line-height: 1;
+  transition: background .3s ease, border-color .3s ease, transform .3s var(--ease);
+}
+.cs-lightbox__btn:hover { background: rgba(254,237,201,.16); border-color: var(--gold); transform: translateY(-2px); }
+.cs-lightbox__btn svg { width: 18px; height: 18px; }
+.cs-lightbox__foot { display: flex; align-items: center; justify-content: center; gap: 18px; flex: none; }
+
+/* ---- journey / flow strip (Discover → Explore → Trust → Inquire) ----
+   Set as a typographic path, not pills: bordered chips read as buttons and
+   invite a click that isn't there. */
+.cs-journey { display: flex; flex-wrap: wrap; align-items: baseline; gap: clamp(10px, 1.8vw, 18px); margin-top: clamp(30px, 4vw, 40px); }
+.cs-journey__step {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem); line-height: 1.25; color: var(--fg);
+}
+.cs-journey__arrow { color: var(--accent); font-size: clamp(.9rem, 1.5vw, 1.1rem); }
+
+/* ---- outcomes: stat cards with room to say what the number means ---- */
+.cs-outcomes { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.4vw, 26px); margin-top: 48px; }
+.cs-outcome {
+  display: flex; flex-direction: column; padding: clamp(26px, 3vw, 34px) clamp(22px, 2.6vw, 30px);
+  border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+  transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+}
+.cs-outcome:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 28px 58px -32px rgba(63,10,13,.4); }
+.cs-outcome__num { font-family: var(--serif); font-weight: 500; font-size: clamp(2.6rem, 5.4vw, 3.6rem); line-height: 1; color: var(--accent); }
+.cs-outcome__label { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--fg); margin: 14px 0 10px; }
+.cs-outcome__note { font-size: 14.5px; line-height: 1.6; color: var(--fg-soft); }
+
+/* ---- what shipped ---- */
+.cs-shipped { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(28px, 5vw, 60px); margin-top: clamp(42px, 5vw, 62px); }
+.cs-shipped li { position: relative; padding: 15px 0 15px 28px; border-top: 1px solid var(--line); color: var(--fg-soft); font-size: 15px; line-height: 1.5; }
+.cs-shipped li::before { content: "✓"; position: absolute; left: 0; top: 15px; color: var(--accent); font-size: 13px; }
+
+/* ---- back link (detail page) ---- */
+.cs-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-size: 14px; font-weight: 500; color: inherit; opacity: .85; }
+.cs-back svg { width: 15px; height: 15px; }
+.cs-back:hover { opacity: 1; }
+
+@media (max-width: 860px) {
+  .cs-grid { grid-template-columns: 1fr; }
+  .cs-outcomes { grid-template-columns: 1fr; }
+  .cs-shipped { grid-template-columns: 1fr; }
+}
+/* The board trio and the before/after pairs exist to be compared at a glance,
+   so they hold their side-by-side layout further down than a normal card grid
+   would — stacking only once a column is too narrow to read anything in. */
+@media (max-width: 680px) {
+  .cs-boards { grid-template-columns: 1fr; }
+  .cs-boards .cs-zoom { max-width: 420px; }
+}
+@media (max-width: 560px) {
+  .cs-compare { grid-template-columns: 1fr; }
+  .cs-meta { justify-content: flex-start; gap: 0 26px; }
+  .cs-lightbox__dialog { inset: 8px; }
 }
 
 /* ============ PHONES: PARED-BACK MOTION ============ */
