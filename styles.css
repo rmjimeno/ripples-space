@@ -1162,6 +1162,28 @@ html.js .bookcal__fallback { display: none; }
 .cs-outcome__label { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--fg); margin: 14px 0 10px; }
 .cs-outcome__note { font-size: 14.5px; line-height: 1.6; color: var(--fg-soft); }
 
+/* ---- testimonials: client quotes as cards, mirroring the outcome cards'
+       border/card treatment so the section reads as part of the same system ---- */
+.cs-testimonials { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(16px, 2.4vw, 26px); margin-top: 48px; align-items: stretch; }
+.cs-testimonial {
+  position: relative; display: flex; flex-direction: column; margin: 0;
+  padding: clamp(30px, 3.4vw, 42px) clamp(26px, 3vw, 34px);
+  border: 1px solid var(--card-line); border-radius: var(--radius); background: var(--card);
+  transition: transform .5s var(--ease), border-color .4s ease, box-shadow .4s ease;
+}
+.cs-testimonial:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 28px 58px -32px rgba(63,10,13,.4); }
+.cs-testimonial::before {
+  content: "\201C"; display: block; font-family: var(--serif); font-weight: 500;
+  font-size: clamp(2.4rem, 4vw, 3.2rem); line-height: 1; color: var(--accent); opacity: .5;
+  margin-bottom: 6px;
+}
+.cs-testimonial__quote { flex: 1; }
+.cs-testimonial__quote p { font-family: var(--serif); font-weight: 500; font-size: clamp(1.02rem, 1.5vw, 1.18rem); line-height: 1.55; color: var(--fg); text-wrap: balance; }
+.cs-testimonial__quote p + p { margin-top: 14px; }
+.cs-testimonial__by { display: flex; flex-direction: column; gap: 4px; margin-top: clamp(22px, 2.6vw, 28px); padding-top: clamp(18px, 2vw, 22px); border-top: 1px solid var(--line); }
+.cs-testimonial__name { font-family: var(--sans); font-size: 14.5px; font-weight: 600; color: var(--fg); }
+.cs-testimonial__role { font-family: var(--sans); font-size: 12.5px; color: var(--fg-dim); }
+
 /* ---- what shipped ---- */
 .cs-shipped { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(28px, 5vw, 60px); margin-top: clamp(42px, 5vw, 62px); }
 .cs-shipped li { position: relative; padding: 15px 0 15px 28px; border-top: 1px solid var(--line); color: var(--fg-soft); font-size: 15px; line-height: 1.5; }
@@ -1259,6 +1281,7 @@ html.js .bookcal__fallback { display: none; }
   .cs-outcomes { grid-template-columns: 1fr; }
   .cs-shipped { grid-template-columns: 1fr; }
   .cs-phases { grid-template-columns: 1fr; }
+  .cs-testimonials { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
   /* Stack the time above what happened rather than squeezing both into two
